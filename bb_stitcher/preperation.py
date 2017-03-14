@@ -1,9 +1,8 @@
-import cv2
-import fb_stitcher.config as config
-from logging import getLogger
-import configparser
-import numpy as np
 import ast
+import configparser
+import cv2
+from logging import getLogger
+import numpy as np
 
 log = getLogger(__name__)
 
@@ -17,10 +16,9 @@ class Rectificator(object):
         self.dist_c = np.array(ast.literal_eval(config['Rectificator']['DIST_C']))
         self.cached_new_cam_mat = None
         self.cached_dim = None
-        print(self.intr_m.shape)
 
     def rectify_images(self, *images):
-        """Remove Lens distortion from images"""
+        """Remove Lens distortion from images."""
         log.info('Start rectification of {} images.'.format(len(images)))
         if not images:
             log.warning('List of images for rectification is empty.')
@@ -43,7 +41,7 @@ class Rectificator(object):
         return rect_imgs
 
     def rectify_points(self, points, size):
-        """Maps points from distorted image to its pos in an undistorted img. """
+        """Map points from distorted image to its pos in an undistorted img."""
         log.info(size)
         self.cached_new_cam_mat, __ = cv2.getOptimalNewCameraMatrix(self.intr_m,
                                                                     self.dist_c,
