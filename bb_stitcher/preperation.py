@@ -8,56 +8,61 @@ log = getLogger(__name__)
 
 
 class Rectificator(object):
-    """Class to rectify and remove lens distortion from images.
+    """Class to rectify and remove lens distortion from images and points.
 
     Attributes:
-        initr_m (:obj:`np.array`): initrinsic matrix
+        initr_m (ndarray): intrinsic matrix.
+        dist_c (ndarray): distortion coefficient.
     """
 
     def __init__(self, config):
-        """Initialize a rectificator with camera parameters."""
+        """Initialize a rectificator with camera parameters.
+
+        Args:
+            config: config file which holds the camera parameters.
+        """
+        #TODO(LINK) add link to discription for loading autoconfiguration.
+
         self.intr_m = np.array(ast.literal_eval(config['Rectificator']['INTR_M']))
         self.dist_c = np.array(ast.literal_eval(config['Rectificator']['DIST_C']))
         self.cached_new_cam_mat = None
         self.cached_dim = None
+        self.cached_size = None
 
-    def rectify_images(self, *images):
-        """Remove Lens distortion from images.
+    def rectify_image(self, img):
+        """Remove Lens distortion from an image.
 
-        Args:
-            *images: List of images.
+                Args:
+                    img (ndarray): Input (distorted) image.
 
-        Returns:
-            *images: list of images
+                Returns:
+                    ndarray: Output (corrected) image with same size and type as `img`.
         """
-        log.info('Start rectification of {} images.'.format(len(images)))
-        if not images:
-            log.warning('List of images for rectification is empty.')
-            return None
+        log.info('Start rectification of image with shape {}.'.format(img.shape))
+        h, w = img.shape[:2]
+        cached_new_cam_mat, __ = cv2.getOptimalNewCameraMatrix(self.intr_m, self.dist_c, (w, h), 1, (w, h), 0)
+        log.debug('new_camera_mat = \n{}'.format(cached_new_cam_mat))
+        return cv2.undistort(img, self.intr_m, self.dist_c, None, cached_new_cam_mat)
 
-        rect_imgs = []
-        for img in images:
-            if self.cached_new_cam_mat is None or self.cached_dim != img.shape[:2]:
-                self.cached_dim = img.shape[:2]
-                h, w = img.shape[:2]
-                self.cached_new_cam_mat, __ = cv2.getOptimalNewCameraMatrix(
-                    self.intr_m, self.dist_c, (w, h), 1, (w, h), 0)
-                log.debug('new_camera_mat = \n{}'.format(self.cached_new_cam_mat))
-            rect_imgs.append(cv2.undistort(
-                img, self.intr_m, self.dist_c, None, self.cached_new_cam_mat))
+    def rectify_points(self, points, img_height, img_width):
+        """Map points from distorted image to its pos in an undistorted img.
 
-        if len(rect_imgs) == 1:
-            return rect_imgs[0]
+            Args:
+                points (ndarray): List of (distorted) points.
+                img_height (int): The height of the original image, which was used for determine the points.
+                img_width (int): The width of the original image, which was used for determine the points.
 
-        return rect_imgs
-
-    def rectify_points(self, points, size):
-        """Map points from distorted image to its pos in an undistorted img."""
+            Returns:
+                ndarray: List of (corrected) points.
+        """
+        size = (img_width, img_height)
         log.info(size)
-        self.cached_new_cam_mat, __ = cv2.getOptimalNewCameraMatrix(self.intr_m,
-                                                                    self.dist_c,
-                                                                    size, 1,
-                                                                    size, 0)
+        if self.cached_size != size or self.cached_new_cam_mat is None:
+            self.size = size
+            self.cached_new_cam_mat, __ = cv2.getOptimalNewCameraMatrix(self.intr_m,
+                                                                        self.dist_c,
+                                                                        self.size, 1,
+                                                                        self.size, 0)
         log.debug('new_camera_mat = \n{}'.format(self.cached_new_cam_mat))
         return cv2.undistortPoints(points, self.intr_m, self.dist_c, None, self.cached_new_cam_mat)
 

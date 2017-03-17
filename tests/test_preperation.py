@@ -1,8 +1,10 @@
 import pytest
 import bb_stitcher.preperation as prep
+import cv2
+import os.path
 
-
-def test_Rectificator(img_hive_left, config):
+def test_Rectificator(img_hive_left, config, outdir):
     rectificator = prep.Rectificator(config)
-    assert rectificator.rectify_images() is None
-    rectificator.rectify_images(img_hive_left)
+    corrected_image = rectificator.rectify_image(img_hive_left)
+    out = os.path.join(outdir, 'correct_img_hive_left.jpg')
+    cv2.imwrite(out, corrected_image)
