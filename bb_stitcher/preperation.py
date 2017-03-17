@@ -63,5 +63,5 @@ class Rectificator(object):
 
 if __name__ == '__main__':
     config = configparser.ConfigParser()
-    config.read('config.ini')
+    config.read('default_config.ini')
     a = Rectificator(config)
