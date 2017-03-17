@@ -8,7 +8,11 @@ log = getLogger(__name__)
 
 
 class Rectificator(object):
-    """Class to rectify and remove lens distortion from images."""
+    """Class to rectify and remove lens distortion from images.
+
+    Attributes:
+        initr_m (:obj:`np.array`): initrinsic matrix
+    """
 
     def __init__(self, config):
         """Initialize a rectificator with camera parameters."""
@@ -18,7 +22,14 @@ class Rectificator(object):
         self.cached_dim = None
 
     def rectify_images(self, *images):
-        """Remove Lens distortion from images."""
+        """Remove Lens distortion from images.
+
+        Args:
+            *images: List of images.
+
+        Returns:
+            *images: list of images
+        """
         log.info('Start rectification of {} images.'.format(len(images)))
         if not images:
             log.warning('List of images for rectification is empty.')
