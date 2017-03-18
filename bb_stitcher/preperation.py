@@ -33,7 +33,7 @@ class Rectificator(object):
         Args:
             config: config file which holds the camera parameters.
         """
-        # TODO(gitmirgut) add link to discription for loading autoconfiguration.
+        # TODO(gitmirgut) add link to description for loading auto configuration.
 
         self.intr_m = np.array(ast.literal_eval(config['Rectificator']['INTR_M']))
         self.dist_c = np.array(ast.literal_eval(config['Rectificator']['DIST_C']))
