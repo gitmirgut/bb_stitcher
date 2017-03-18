@@ -12,19 +12,23 @@ def bname(path, discription, ext):
     basename_no_ext = os.path.basename(os.path.splitext(path)[0])
     return ''.join([basename_no_ext, '_', discription,'.', ext])
 
-def test_Rectificator(img_left_path, config, outdir, detections_left_img):
-    img = cv2.imread(img_left_path, -1)
-    bname_img = bname(img_left_path, 'rectified', 'jpg')
+def fname(path):
+    return os.path.basename(os.path.splitext(path)[0])
+
+def test_Rectificator(left_img, config, outdir):
     rectificator = prep.Rectificator(config)
-    corrected_image = rectificator.rectify_image(img)
-    out = os.path.join(outdir, bname_img)
+    corrected_image = rectificator.rectify_image(left_img['img'])
+    assert corrected_image.shape == left_img['img'].shape
+    name_img_rect = ''.join([left_img['name'], '_rectified.jpg'])
+    out = os.path.join(outdir, name_img_rect)
     cv2.imwrite(out, corrected_image)
 
-    corrected_points = rectificator.rectify_points(detections_left_img, 3000, 4000)
-    for pos in corrected_points:
+    corrected_detections = rectificator.rectify_points(left_img['detections'], left_img['height'], left_img['width'])
+    assert len(corrected_detections) == len(left_img['detections'])
+    for pos in corrected_detections:
         pos = pos.astype(np.int32)
         draw_circle(corrected_image, pos)
-    bname_img_detections = bname(img_left_path, 'rectified_detections', 'jpg')
-    out_detections = os.path.join(outdir, bname_img_detections)
-    cv2.imwrite(out_detections, corrected_image)
-    assert corrected_points.shape == detections_left_img.shape
+    name_img_rect_detec = ''.join([left_img['name'], '_rectified_detections.jpg'])
+    out = os.path.join(outdir, name_img_rect_detec)
+    cv2.imwrite(out, corrected_image)
+

@@ -15,21 +15,23 @@ def get_test_fname(name):
 def fname(path):
     return os.path.basename(os.path.splitext(path)[0])
 
-@pytest.fixture()
+@pytest.fixture
+def left_img():
+    relativ_path = 'data/Cam_0_2016-09-01T12:56:50.801920Z.jpg'
+    detections_path = 'data/Cam_0_2016-09-01T12:56:50.801920Z_detections.npy'
+    d = dict()
+    d['path'] = get_test_fname(relativ_path)
+    d['name'] = os.path.basename(os.path.splitext(d['path'])[0])
+    d['img'] = cv2.imread(d['path'], -1)
+    d['height'], d['width'] = d['img'].shape[:2]
+    d['detections'] = np.load(get_test_fname(detections_path))
+    return d
+
+@pytest.fixture
 def config():
     default_config = configparser.ConfigParser()
     default_config.read(core.get_default_config())
     return default_config
-
-@pytest.fixture
-def img_left_path():
-    path = get_test_fname('data/Cam_0_2016-09-01T12:56:50.801920Z.jpg')
-    return path
-
-@pytest.fixture
-def detections_left_img():
-    path = get_test_fname('data/Cam_0_2016-09-01T12:56:50.801920Z_detections.npy')
-    return np.load(path)
 
 @pytest.fixture
 def outdir():
