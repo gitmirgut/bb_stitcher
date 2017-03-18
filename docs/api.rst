@@ -6,7 +6,7 @@ Developer Interface
 
 ..  module:: bb_stitcher
 
-This part of the documentation covers all the interfaces of bb_binary
+This part of the documentation covers all the interfaces of bb_stitcher.
 
 .. automodule:: bb_stitcher.preperation
   :members:

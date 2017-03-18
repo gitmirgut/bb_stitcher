@@ -1,8 +1,8 @@
-import pytest
 import bb_stitcher.preperation as prep
 import cv2
-import os.path
 import numpy as np
+import os.path
+
 
 def draw_makers(img, pts, color=(0, 0, 255), marker_types=cv2.MARKER_CROSS):
     img_m = np.copy(img)
@@ -25,7 +25,8 @@ def test_Rectificator(left_img, config, outdir):
     out = os.path.join(outdir, name_img_rect)
     cv2.imwrite(out, corrected_image)
 
-    corrected_detections = rectificator.rectify_points(left_img['detections'], left_img['height'], left_img['width'])
+    corrected_detections = rectificator.rectify_points(
+        left_img['detections'], left_img['height'], left_img['width'])
     assert len(corrected_detections) == len(left_img['detections'])
 
     # for visual see /out
