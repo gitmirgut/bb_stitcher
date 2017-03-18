@@ -55,6 +55,7 @@ class Rectificator(object):
             Returns:
                 ndarray: List of (corrected) points.
         """
+        points = np.array([points])
         size = (img_width, img_height)
         log.info(size)
         if self.cached_size != size or self.cached_new_cam_mat is None:
@@ -64,7 +65,7 @@ class Rectificator(object):
                                                                         self.size, 1,
                                                                         self.size, 0)
         log.debug('new_camera_mat = \n{}'.format(self.cached_new_cam_mat))
-        return cv2.undistortPoints(points, self.intr_m, self.dist_c, None, self.cached_new_cam_mat)
+        return cv2.undistortPoints(points, self.intr_m, self.dist_c, None, self.cached_new_cam_mat)[0]
 
 if __name__ == '__main__':
     config = configparser.ConfigParser()
