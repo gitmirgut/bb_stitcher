@@ -73,6 +73,9 @@ class Rectificator(object):
         points = np.array([points])
         size = (img_width, img_height)
         log.info(size)
+
+        # size and camera matrix will be cached to speed up rectification if multiple images
+        # with same size will be rectified.
         if self.cached_size != size or self.cached_new_cam_mat is None:
             self.size = size
             self.cached_new_cam_mat, __ = cv2.getOptimalNewCameraMatrix(self.intr_m,
