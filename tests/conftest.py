@@ -28,6 +28,7 @@ def left_img():
     d['name'] = os.path.basename(os.path.splitext(d['path'])[0])
     d['img'] = cv2.imread(d['path'], -1)
     d['height'], d['width'] = d['img'].shape[:2]
+    d['size'] = d['width'], d['height']
     d['detections'] = np.load(get_test_fname(detections_path))
     d['img_w_detections'] = cv2.imread(get_test_fname(img_with_detections), -1)
     return d

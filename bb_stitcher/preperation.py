@@ -20,6 +20,13 @@ import numpy as np
 log = getLogger(__name__)
 
 
+@functools.lru_cache(maxsize=16)
+def __wrapper_getOptimalNewCameraMatrix(intr_m, dist_c, size):
+    """This wrapper is just for speed up."""
+    new_cam_mat, __ = cv2.getOptimalNewCameraMatrix(intr_m, dist_c, size, 1, size, 0)
+    return new_cam_mat
+
+
 class Rectificator(object):
     """Class to rectify and remove lens distortion from images and points.
 
@@ -89,7 +96,7 @@ class Rectificator(object):
 
 
 @functools.lru_cache(maxsize=16)
-def get_affine_mat_and_new_size(angle, img_width, img_height):
+def __get_affine_mat_and_new_size(angle, img_width, img_height):
     """Calculate the affine transformation to rotate image by given angle.
 
     Args:
@@ -101,17 +108,14 @@ def get_affine_mat_and_new_size(angle, img_width, img_height):
     Returns:
         - **affine_mat** (ndarray) -- An affine *(3,3)*--matrix  which rotates image .
         - **new_size** (tuple)  --  Size *(width, height)* of the future image after rotation .
-
     """
-
     # Get img size
     size = (img_width, img_height)
     center = tuple(np.array(size) / 2.0)
     (width_half, height_half) = center
 
     # Convert the 3x2 rotation matrix to 3x3 ''homography''
-    rotation_mat = np.vstack([cv2.getRotationMatrix2D(center, angle, 1.0),
-                                   [0, 0, 1]])
+    rotation_mat = np.vstack([cv2.getRotationMatrix2D(center, angle, 1.0), [0, 0, 1]])
 
     # To get just the rotation
     rot_matrix_2x2 = rotation_mat[:2, :2]
@@ -156,7 +160,7 @@ if __name__ == '__main__':
     import time
 
     start = time.time()
-    mat, size = get_affine_mat_and_new_size(90, 4000, 3000)
+    mat, size = __get_affine_mat_and_new_size(90, 4000, 3000)
     print(mat)
     print(mat.shape)
     end = time.time()
