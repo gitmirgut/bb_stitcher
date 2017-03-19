@@ -11,6 +11,7 @@
 #  under the License.
 """This module provides functions to prepare an image or points for stitching."""
 import ast
+import functools
 from logging import getLogger
 
 import cv2
@@ -57,15 +58,15 @@ class Rectificator(object):
         log.debug('new_camera_mat = \n{}'.format(cached_new_cam_mat))
         return cv2.undistort(img, self.intr_m, self.dist_c, None, cached_new_cam_mat)
 
-    def rectify_points(self, points, img_height, img_width):
+    def rectify_points(self, points, img_width, img_height):
         """Map points from distorted image to its pos in an undistorted img.
 
         Args:
-            points (ndarray (N,2)): List of (distorted) points.
-            img_height (int): The height of the original image, which was used for determine
-                                the points.
+            points (ndarray): List of (distorted) points (N,2).
             img_width (int): The width of the original image, which was used for determine the
                                 points.
+            img_height (int): The height of the original image, which was used for determine
+                                the points.
 
         Returns:
             ndarray: List of (corrected) points.
@@ -85,3 +86,78 @@ class Rectificator(object):
         log.debug('new_camera_mat = \n{}'.format(self.cached_new_cam_mat))
         return cv2.undistortPoints(
             points, self.intr_m, self.dist_c, None, self.cached_new_cam_mat)[0]
+
+
+@functools.lru_cache(maxsize=16)
+def get_affine_mat_and_new_size(angle, img_width, img_height):
+    """Calculate the affine transformation to rotate image by given angle.
+
+    Args:
+        angle (int): angle in degree.
+        img_width (int): The width of the original image, which was used for determine the
+                            points.
+        img_height (int): The height of the original image, which was used for determine
+                            the points.
+    Returns:
+        - **affine_mat** (ndarray) -- An affine *(3,3)*--matrix  which rotates image .
+        - **new_size** (tuple)  --  Size *(width, height)* of the future image after rotation .
+
+    """
+
+    # Get img size
+    size = (img_width, img_height)
+    center = tuple(np.array(size) / 2.0)
+    (width_half, height_half) = center
+
+    # Convert the 3x2 rotation matrix to 3x3 ''homography''
+    rotation_mat = np.vstack([cv2.getRotationMatrix2D(center, angle, 1.0),
+                                   [0, 0, 1]])
+
+    # To get just the rotation
+    rot_matrix_2x2 = rotation_mat[:2, :2]
+
+    # Declare the corners of the image in relation to the center
+    corners = np.array([
+        [-width_half, height_half],
+        [width_half, height_half],
+        [-width_half, -height_half],
+        [width_half, -height_half]
+    ])
+
+    # get the rotated corners
+    corners_rotated = corners.dot(rot_matrix_2x2)
+    corners_rotated = np.array(corners_rotated, np.float32)
+
+    # get the rectangle which would surround the rotated image
+    __, __, w, h = cv2.boundingRect(np.array(corners_rotated))
+
+    # boundingRect is 1px bigger so remove it
+    size_new = (w - 1, h - 1)
+    log.debug('size_new = {}'.format(size_new))
+
+    # matrix to center the rotated image
+    translation_matrix = np.array([
+        [1, 0, int(w / 2 - width_half)],
+        [0, 1, int(h / 2 - height_half)],
+        [0, 0, 1]
+    ])
+
+    # get the affine Matrix
+    affine_mat = translation_matrix.dot(rotation_mat)
+    log.debug('affine_mat = \n{}'.format(affine_mat))
+
+    return affine_mat, size_new
+
+    def rotate_image(self):
+        pass
+
+
+if __name__ == '__main__':
+    import time
+
+    start = time.time()
+    mat, size = get_affine_mat_and_new_size(90, 4000, 3000)
+    print(mat)
+    print(mat.shape)
+    end = time.time()
+    print(end-start)
