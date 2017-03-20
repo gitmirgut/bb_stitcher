@@ -74,21 +74,19 @@ class Rectificator(object):
         log.debug('new_camera_mat = \n{}'.format(cached_new_cam_mat))
         return cv2.undistort(img, self.intr_m, self.dist_c, None, cached_new_cam_mat)
 
-    def rectify_points(self, points, img_width, img_height):
+    def rectify_points(self, points, size):
         """Map points from distorted image to its pos in an undistorted img.
 
         Args:
             points (ndarray): List of (distorted) points (N,2).
-            img_width (int): The width of the original image, which was used for determine the
+            size (tuple): Size *(width, height)* of the image, which was used for determine the
                                 points.
-            img_height (int): The height of the original image, which was used for determine
-                                the points.
 
         Returns:
             ndarray: List of (corrected) points.
         """
         points = np.array([points])
-        size = (img_width, img_height)
+        # size = (img_width, img_height)
         log.info(size)
 
         # size and camera matrix will be cached to speed up rectification if multiple images
@@ -115,8 +113,8 @@ def __get_affine_mat_and_new_size(angle, img_width, img_height):
         img_height (int): The height of the original image, which was used for determine
                             the points.
     Returns:
-        - **affine_mat** (ndarray) -- An affine *(3,3)*--matrix  which rotates image .
-        - **new_size** (tuple)  --  Size *(width, height)* of the future image after rotation .
+        - **affine_mat** (ndarray) -- An affine *(3,3)*--matrix  which rotates image.
+        - **new_size** (tuple)  --  Size *(width, height)* of the future image after rotation.
     """
     # Get img size
     size = (img_width, img_height)
@@ -173,4 +171,4 @@ if __name__ == '__main__':
     print(mat)
     print(mat.shape)
     end = time.time()
-    print(end-start)
+    print(end - start)

@@ -26,7 +26,7 @@ def test_Rectificator(left_img, config, outdir):
     cv2.imwrite(out, corrected_image)
 
     corrected_detections = rectificator.rectify_points(
-        left_img['detections'], left_img['height'], left_img['width'])
+        left_img['detections'], left_img['size'])
     assert len(corrected_detections) == len(left_img['detections'])
 
     # for visual see /out
