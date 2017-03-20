@@ -22,7 +22,16 @@ log = getLogger(__name__)
 
 @functools.lru_cache(maxsize=16)
 def __wrapper_getOptimalNewCameraMatrix(intr_m, dist_c, size):
-    """This wrapper is just for speed up."""
+    """This wrapper is just for speed up by caching.
+
+    Args:
+        initr_m (ndarray): intrinsic matrix of the camera.
+        dist_c (ndarray): distortion coefficient of the camera.
+
+    Returns:
+        ndarray: Optimal new camera matrix based on the free scaling parameter.
+    """
+    # TODO(gitmirgut) add link to opencv original function.
     new_cam_mat, __ = cv2.getOptimalNewCameraMatrix(intr_m, dist_c, size, 1, size, 0)
     return new_cam_mat
 
@@ -31,8 +40,8 @@ class Rectificator(object):
     """Class to rectify and remove lens distortion from images and points.
 
     Attributes:
-        initr_m (ndarray): intrinsic matrix.
-        dist_c (ndarray): distortion coefficient.
+        initr_m (ndarray): intrinsic matrix of the camera.
+        dist_c (ndarray): distortion coefficient of the camera.
     """
 
     def __init__(self, config):
