@@ -118,6 +118,7 @@ def __get_affine_mat_and_new_size(angle, size):
     center = tuple(np.array(size) / 2.0)
     (width_half, height_half) = center
     log.debug('center of the rotation: {}'.format(center))
+
     # Convert the 3x2 rotation matrix to 3x3 ''homography''height'], left_img['width
     rotation_mat = np.vstack([cv2.getRotationMatrix2D(center, angle, 1.0), [0, 0, 1]])
 
@@ -131,7 +132,7 @@ def __get_affine_mat_and_new_size(angle, size):
         [-width_half, -height_half],
         [width_half, -height_half]
     ])
-
+    log.debug('corners of the rectangle: {}'.format(corners))
     # get the rotated corners
     corners_rotated = corners.dot(rot_matrix_2x2)
     corners_rotated = np.array(corners_rotated, np.float32)
@@ -140,7 +141,9 @@ def __get_affine_mat_and_new_size(angle, size):
     __, __, w, h = cv2.boundingRect(np.array(corners_rotated))
 
     # boundingRect is 1px bigger so remove it
-    size_new = (w - 1, h - 1)
+    w -= 1
+    h -= 1
+    size_new = (w, h)
     log.debug('size_new = {}'.format(size_new))
 
     # matrix to center the rotated image
