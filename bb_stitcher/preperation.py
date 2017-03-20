@@ -108,8 +108,8 @@ def __get_affine_mat_and_new_size(angle, size=(4000, 3000)):
 
     Args:
         angle (int): Rotation Angle in degree. Positive values mean counter-clockwise rotation.
-        size (tuple): Size *(width, height)* of the potential image, which was used for determine the
-                                points.
+        size (tuple): Size *(width, height)* of the potential image, which was used for determine
+                    the points.
     Returns:
         - **affine_mat** (ndarray) -- An affine *(3,3)*--matrix  which rotates and translate image.
         - **new_size** (tuple)  --  Size *(width, height)* of the future image after rotation.

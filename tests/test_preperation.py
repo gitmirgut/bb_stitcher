@@ -40,7 +40,8 @@ def test_Rectificator(left_img, config, outdir):
     cv2.imwrite(out, corrected_image_w_detections)
 
 
-def test_get_affine_mat_and_new_size():
+def test_get_affine_mat_and_new_size(left_img):
     import logging.config
     logging.config.fileConfig(core.get_default_debug_config())
-    mat, size = prep.__get_affine_mat_and_new_size(90, (4000, 3000))
+    # mat, size = prep.__get_affine_mat_and_new_size(90, (4000, 3000))
+    print(left_img['img'])
