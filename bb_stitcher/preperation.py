@@ -107,7 +107,7 @@ def __get_affine_mat_and_new_size(angle, size):
     """Calculate the affine transformation to rotate image by given angle.
 
     Args:
-        angle (int): angle in degree.
+        angle (int): Rotation Angle in degree. Positive values mean counter-clockwise rotation.
         size (tuple): Size *(width, height)* of the original image, which was used for determine the
                                 points.
     Returns:
@@ -173,7 +173,7 @@ if __name__ == '__main__':
     import time
 
     start = time.time()
-    mat, size = __get_affine_mat_and_new_size(90, (4000, 3000))
+    mat, size = __get_affine_mat_and_new_size(-90, (4000, 3000))
     print(mat)
     print(mat.shape)
     end = time.time()
