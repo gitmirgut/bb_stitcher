@@ -1,7 +1,10 @@
-import bb_stitcher.preperation as prep
+import os.path
+
 import cv2
 import numpy as np
-import os.path
+
+import bb_stitcher.preperation as prep
+import bb_stitcher.core as core
 
 
 def draw_makers(img, pts, color=(0, 0, 255), marker_types=cv2.MARKER_CROSS):
@@ -35,3 +38,9 @@ def test_Rectificator(left_img, config, outdir):
     name_img_rect_detec = ''.join([left_img['name'], '_detections_rectified.jpg'])
     out = os.path.join(outdir, name_img_rect_detec)
     cv2.imwrite(out, corrected_image_w_detections)
+
+
+def test_get_affine_mat_and_new_size():
+    import logging.config
+    logging.config.fileConfig(core.get_default_debug_config())
+    mat, size = prep.__get_affine_mat_and_new_size(90, (4000, 3000))

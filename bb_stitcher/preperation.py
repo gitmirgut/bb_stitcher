@@ -117,7 +117,7 @@ def __get_affine_mat_and_new_size(angle, size):
     # Get img size
     center = tuple(np.array(size) / 2.0)
     (width_half, height_half) = center
-
+    log.debug('center of the rotation: {}'.format(center))
     # Convert the 3x2 rotation matrix to 3x3 ''homography''height'], left_img['width
     rotation_mat = np.vstack([cv2.getRotationMatrix2D(center, angle, 1.0), [0, 0, 1]])
 
@@ -161,10 +161,16 @@ def __get_affine_mat_and_new_size(angle, size):
 
 
 if __name__ == '__main__':
+    import logging
+    import logging.config
+
+    logging.config.fileConfig('logging_config.ini')
+    logger = logging.getLogger()
+    logger.debug('often makes a very good meal of %s', 'visiting tourists')
     import time
 
     start = time.time()
-    mat, size = __get_affine_mat_and_new_size(90, 4000, 3000)
+    mat, size = __get_affine_mat_and_new_size(90, (4000, 3000))
     print(mat)
     print(mat.shape)
     end = time.time()
