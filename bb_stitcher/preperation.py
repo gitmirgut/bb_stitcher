@@ -103,18 +103,19 @@ class Rectificator(object):
 
 
 @functools.lru_cache(maxsize=16)
-def __get_affine_mat_and_new_size(angle, size):
-    import math
+def __get_affine_mat_and_new_size(angle, size=(4000, 3000)):
     """Calculate the affine transformation to rotate image by given angle.
 
     Args:
         angle (int): Rotation Angle in degree. Positive values mean counter-clockwise rotation.
-        size (tuple): Size *(width, height)* of the original image, which was used for determine the
+        size (tuple): Size *(width, height)* of the potential image, which was used for determine the
                                 points.
     Returns:
-        - **affine_mat** (ndarray) -- An affine *(3,3)*--matrix  which rotates image.
+        - **affine_mat** (ndarray) -- An affine *(3,3)*--matrix  which rotates and translate image.
         - **new_size** (tuple)  --  Size *(width, height)* of the future image after rotation.
     """
+    import math
+    # TODO(gitmirgut): write test for different angles.
     # Get img size
     center = tuple(np.array(size) / 2.0)
     (width_half, height_half) = center
@@ -165,6 +166,24 @@ def __get_affine_mat_and_new_size(angle, size):
     log.debug('affine_mat = \n{}'.format(affine_mat))
 
     return affine_mat, size_new
+
+
+def rotate_image(image, angle):
+    """Rotate image by given angle.
+
+    Args:
+        image (ndarray): Input image.
+        angle (int): Rotation Angle in degree. Positive values mean counter-clockwise rotation.
+
+    Returns:
+        - **rot_image** (ndarray) -- Rotated image.
+        - **affine_mat** (ndarray) -- An affine *(3,3)*--matrix  which rotates and translate image.
+    """
+    img_size = image.shape[:2][::-1]
+    affine_mat, size_new = __get_affine_mat_and_new_size(angle, img_size)
+
+    rot_image = cv2.warpPerspective(image, affine_mat, size_new)
+    return rot_image, affine_mat
 
     def rotate_image(self):
         pass
