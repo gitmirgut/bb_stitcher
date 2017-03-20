@@ -1,10 +1,12 @@
-import bb_stitcher.core as core
 import configparser
-import cv2
-import numpy as np
 import os
 import os.path
+
+import cv2
+import numpy as np
 import pytest
+
+import bb_stitcher.core as core
 
 test_dir = os.path.dirname(__file__)
 
