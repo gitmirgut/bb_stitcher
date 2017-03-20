@@ -22,7 +22,7 @@ log = getLogger(__name__)
 
 @functools.lru_cache(maxsize=16)
 def __wrapper_getOptimalNewCameraMatrix(intr_m, dist_c, size):
-    """This wrapper is just for speed up by caching.
+    """Wrapper to speed up calculation by caching.
 
     Args:
         initr_m (ndarray): intrinsic matrix of the camera.
@@ -104,6 +104,7 @@ class Rectificator(object):
 
 @functools.lru_cache(maxsize=16)
 def __get_affine_mat_and_new_size(angle, size):
+    import math
     """Calculate the affine transformation to rotate image by given angle.
 
     Args:
@@ -119,7 +120,7 @@ def __get_affine_mat_and_new_size(angle, size):
     (width_half, height_half) = center
     log.debug('center of the rotation: {}'.format(center))
 
-    # Convert the 3x2 rotation matrix to 3x3 ''homography''height'], left_img['width
+    # Convert the 3x2 rotation matrix to 3x3 homography
     rotation_mat = np.vstack([cv2.getRotationMatrix2D(center, angle, 1.0), [0, 0, 1]])
 
     # To get just the rotation
@@ -133,23 +134,29 @@ def __get_affine_mat_and_new_size(angle, size):
         [width_half, -height_half]
     ])
     log.debug('corners of the rectangle: {}'.format(corners))
+
     # get the rotated corners
     corners_rotated = corners.dot(rot_matrix_2x2)
     corners_rotated = np.array(corners_rotated, np.float32)
 
-    # get the rectangle which would surround the rotated image
-    __, __, w, h = cv2.boundingRect(np.array(corners_rotated))
+    # calculate the new dimension of the potential image.
+    x_cor = corners_rotated[:, [0][0]]
+    right_bound = max(x_cor[x_cor > 0])
+    left_bound = min(x_cor[x_cor < 0])
+    w = math.ceil(abs(right_bound - left_bound))
 
-    # boundingRect is 1px bigger so remove it
-    w -= 1
-    h -= 1
+    y_cor = corners_rotated[:, [1][0]]
+    top_bound = max(y_cor[y_cor > 0])
+    bot_bound = min(y_cor[y_cor < 0])
+    h = math.ceil(abs(top_bound - bot_bound))
+
     size_new = (w, h)
     log.debug('size_new = {}'.format(size_new))
 
     # matrix to center the rotated image
     translation_matrix = np.array([
-        [1, 0, int(w / 2 - width_half)],
-        [0, 1, int(h / 2 - height_half)],
+        [1, 0, math.ceil(w / 2.0 - width_half)],
+        [0, 1, math.ceil(h / 2.0 - height_half)],
         [0, 0, 1]
     ])
 
