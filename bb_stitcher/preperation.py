@@ -103,25 +103,22 @@ class Rectificator(object):
 
 
 @functools.lru_cache(maxsize=16)
-def __get_affine_mat_and_new_size(angle, img_width, img_height):
+def __get_affine_mat_and_new_size(angle, size):
     """Calculate the affine transformation to rotate image by given angle.
 
     Args:
         angle (int): angle in degree.
-        img_width (int): The width of the original image, which was used for determine the
-                            points.
-        img_height (int): The height of the original image, which was used for determine
-                            the points.
+        size (tuple): Size *(width, height)* of the original image, which was used for determine the
+                                points.
     Returns:
         - **affine_mat** (ndarray) -- An affine *(3,3)*--matrix  which rotates image.
         - **new_size** (tuple)  --  Size *(width, height)* of the future image after rotation.
     """
     # Get img size
-    size = (img_width, img_height)
     center = tuple(np.array(size) / 2.0)
     (width_half, height_half) = center
 
-    # Convert the 3x2 rotation matrix to 3x3 ''homography''
+    # Convert the 3x2 rotation matrix to 3x3 ''homography''height'], left_img['width
     rotation_mat = np.vstack([cv2.getRotationMatrix2D(center, angle, 1.0), [0, 0, 1]])
 
     # To get just the rotation
