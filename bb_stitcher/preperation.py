@@ -116,15 +116,19 @@ def __get_affine_mat_and_new_size(angle, size=(4000, 3000)):
     """
     import math
     # TODO(gitmirgut): write test for different angles.
-    # Get img size
-    center = tuple(np.array(size) / 2.0)
-    (width_half, height_half) = center
+
+    # determine the center.
+    (width_half, height_half) = tuple(np.array(size) / 2.0)
+
+    # because x,y are in [0, width-1 ] or [0, height-1] have to subtract 1.
+    center = (width_half-1, height_half-1)
+
     log.debug('center of the rotation: {}'.format(center))
 
-    # Convert the 3x2 rotation matrix to 3x3 homography
+    # Convert the 3x2 rotation matrix to 3x3 homography.
     rotation_mat = np.vstack([cv2.getRotationMatrix2D(center, angle, 1.0), [0, 0, 1]])
 
-    # To get just the rotation
+    # To get just the rotation.
     rot_matrix_2x2 = rotation_mat[:2, :2]
 
     # Declare the corners of the image in relation to the center
@@ -181,7 +185,7 @@ def rotate_image(image, angle):
     """
     img_size = image.shape[:2][::-1]
     affine_mat, size_new = __get_affine_mat_and_new_size(angle, img_size)
-
+    log.debug("The affine matrix = {} and the new size = {}".format(affine_mat, size_new))
     rot_image = cv2.warpPerspective(image, affine_mat, size_new)
     return rot_image, affine_mat
 
