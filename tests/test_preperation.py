@@ -62,3 +62,10 @@ def test_rotate_image():
     assert rot_img[20][-1] == 200 or rot_img[20][-2] == 200  # right
     assert rot_img[0][15] == 250 or rot_img[1][15] == 250  # top
     assert rot_img[20][0] == 100 or rot_img[20][1] == 100  # left
+
+
+def test_rotate_image_specifc(left_img, outdir):
+    img, mat = prep.rotate_image(left_img['img'], 90)
+    name_img_rot = ''.join([left_img['name'], '_rotated.jpg'])
+    out = os.path.join(outdir, name_img_rot)
+    cv2.imwrite(out, img)
