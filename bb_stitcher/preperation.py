@@ -121,7 +121,7 @@ def __get_affine_mat_and_new_size(angle, size=(4000, 3000)):
     (width_half, height_half) = tuple(np.array(size) / 2.0)
 
     # because x,y are in [0, width-1 ] or [0, height-1] have to subtract 1.
-    center = (width_half-1, height_half-1)
+    center = (width_half - 1, height_half - 1)
 
     log.debug('center of the rotation: {}'.format(center))
 
