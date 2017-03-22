@@ -1,17 +1,33 @@
 language: python
 python:
+  # We don't actually use the Travis Python, but this keeps it organized.
   - "2.6"
   - "2.7"
-  - "3.2"
   - "3.3"
   - "3.4"
-  # PyPy versions
-  - "pypy"  # PyPy2 2.5.0
-  - "pypy3" # Pypy3 2.4.0
-  - "pypy-5.3.1"
-# command to install dependencies
 install:
-  - pip install .
-  - pip install -r requirements.txt
-# command to run tests
+  - sudo apt-get update
+  # We do this conditionally because it saves us some downloading if the
+  # version is the same.
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+      wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
+    else
+      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    fi
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  # Useful for debugging any issues with conda
+  - conda info -a
+
+  # Replace dep1 dep2 ... with your dependencies
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy
+  - source activate test-environment
+  - conda install -q -c https://conda.binstar.org/menpo opencv3
+  - pip install --upgrade pytest pytest-benchmark pytest-cov pytest-xdist pytest-flake8
+  - pip install --upgrade coveralls sphinx_rtd_theme
+  - python setup.py install
+
 script: pytest
