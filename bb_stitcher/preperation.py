@@ -188,7 +188,3 @@ def rotate_points(points, angle, size):
     log.debug('Start rotate points.')
     affine_mat, __ = __get_affine_mat_and_new_size(angle, size)
     return cv2.transform(points, affine_mat[0:2])[0]
-
-
-if __name__ == '__main__':
-    pass
