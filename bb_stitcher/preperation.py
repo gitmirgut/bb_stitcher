@@ -42,21 +42,21 @@ class Rectificator(object):
         self.cached_dim = None
         self.cached_size = None
 
-    def rectify_image(self, img):
+    def rectify_image(self, image):
         """Remove Lens distortion from an image.
 
         Args:
-            img (ndarray): Input (distorted) image.
+            image (ndarray): Input (distorted) image.
 
         Returns:
-            ndarray: Output (corrected) image with same size and type as `img`.
+            ndarray: Output (corrected) image with same size and type as `image`.
         """
-        log.info('Start rectification of image with shape {}.'.format(img.shape))
-        h, w = img.shape[:2]
+        log.info('Start rectification of image with shape {}.'.format(image.shape))
+        h, w = image.shape[:2]
         cached_new_cam_mat, __ = cv2.getOptimalNewCameraMatrix(
             self.intr_m, self.dist_c, (w, h), 1, (w, h), 0)
         log.debug('new_camera_mat = \n{}'.format(cached_new_cam_mat))
-        return cv2.undistort(img, self.intr_m, self.dist_c, None, cached_new_cam_mat)
+        return cv2.undistort(image, self.intr_m, self.dist_c, None, cached_new_cam_mat)
 
     def rectify_points(self, points, size):
         """Map points from distorted image to its pos in an undistorted img.
@@ -102,9 +102,7 @@ def __get_affine_mat_and_new_size(angle, size=(4000, 3000)):
 
     # determine the center.
     (width_half, height_half) = tuple(np.array(size) / 2.0)
-
-    # because x,y are in [0, width-1 ] or [0, height-1] have to subtract 1.
-    center = (width_half - 1, height_half - 1)
+    center = (width_half - 0.5, height_half - 0.5)
 
     log.debug('center of the rotation: {}'.format(center))
 
@@ -174,11 +172,11 @@ def rotate_image(image, angle):
     return rot_image, affine_mat
 
 
-def rotate_points(pts, angle, size):
+def rotate_points(points, angle, size):
     """Rotate points by given angle and in relation to the size of an image.
 
     Args:
-        pts (ndarray): List of points (N, 2).
+        points (ndarray): List of points (N, 2).
         angle (int): Rotation Angle in degree. Positive values mean counter-clockwise rotation.
         size (tuple): Size *(width, height)* of the image, which was used for determine the
                     points.
@@ -186,23 +184,11 @@ def rotate_points(pts, angle, size):
     Returns:
         ndarray: Rotated points (N, 2).
     """
+    points = np.array([points])
     log.debug('Start rotate points.')
     affine_mat, __ = __get_affine_mat_and_new_size(angle, size)
-    return cv2.transform(pts, affine_mat[0:2])
+    return cv2.transform(points, affine_mat[0:2])[0]
 
 
 if __name__ == '__main__':
-    import logging
-    import logging.config
-
-    logging.config.fileConfig('logging_config.ini')
-    logger = logging.getLogger()
-    logger.debug('often makes a very good meal of %s', 'visiting tourists')
-    import time
-
-    start = time.time()
-    mat, size = __get_affine_mat_and_new_size(-90, (4000, 3000))
-    print(mat)
-    print(mat.shape)
-    end = time.time()
-    print(end - start)
+    pass

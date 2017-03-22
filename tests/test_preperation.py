@@ -2,6 +2,7 @@ import os.path
 
 import cv2
 import numpy as np
+import numpy.testing as npt
 
 import bb_stitcher.preperation as prep
 
@@ -41,7 +42,7 @@ def test_Rectificator(left_img, config, outdir):
 
 def test_rotate_image():
     img = np.zeros((30, 40), np.uint8)
-    border = 2
+    border = 1
     img[-border:, :] = 100  # bottom
     img[:, -border:] = 150  # right
     img[:border, :] = 200   # top
@@ -51,17 +52,45 @@ def test_rotate_image():
 
     assert img.shape[0] == rot_img.shape[1] and img.shape[1] == rot_img.shape[0]
 
-    assert rot_img[-1][15] == 250 or rot_img[-2][15] == 250  # bottom
-    assert rot_img[20][-1] == 100 or rot_img[20][-2] == 100  # right
-    assert rot_img[0][15] == 150 or rot_img[1][15] == 150  # top
-    assert rot_img[20][0] == 200 or rot_img[20][1] == 200  # left
+    assert rot_img[-1][15] == 250
+    assert rot_img[20][-1] == 100
+    assert rot_img[0][15] == 150
+    assert rot_img[20][0] == 200
 
     rot_img, mat = prep.rotate_image(img, -90)
     assert img.shape[0] == rot_img.shape[1] and img.shape[1] == rot_img.shape[0]
-    assert rot_img[-1][15] == 150 or rot_img[-2][15] == 150  # bottom
-    assert rot_img[20][-1] == 200 or rot_img[20][-2] == 200  # right
-    assert rot_img[0][15] == 250 or rot_img[1][15] == 250  # top
-    assert rot_img[20][0] == 100 or rot_img[20][1] == 100  # left
+    assert rot_img[-1][15] == 150
+    assert rot_img[20][-1] == 200
+    assert rot_img[0][15] == 250
+    assert rot_img[20][0] == 100
+
+
+def test_rotate_points():
+    size = (40, 30)
+    pts = np.array([
+        [0, 0],
+        [0, 29],
+        [39, 29],
+        [39, 0]
+    ])
+
+    rot_pts_pos90 = prep.rotate_points(pts, 90, size)
+    target_points_pos90 = np.array([
+        [0, 39],
+        [29, 39],
+        [29, 0],
+        [0, 0]
+    ])
+    npt.assert_equal(rot_pts_pos90, target_points_pos90)
+
+    rot_pts_neg90 = prep.rotate_points(pts, -90, size)
+    target_points_neg90 = np.array([
+        [29, 0],
+        [0, 0],
+        [0, 39],
+        [29, 39]
+    ])
+    npt.assert_equal(rot_pts_neg90, target_points_neg90)
 
 
 def test_rotate_image_specifc(left_img, outdir):
