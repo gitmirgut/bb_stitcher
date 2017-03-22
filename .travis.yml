@@ -1,6 +1,5 @@
 language: python
 python:
-  # We don't actually use the Travis Python, but this keeps it organized.
   - "3.4"
   - "3.5"
 install:
@@ -19,8 +18,6 @@ install:
   - conda update -q conda
   # Useful for debugging any issues with conda
   - conda info -a
-
-  # Replace dep1 dep2 ... with your dependencies
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy
   - source activate test-environment
   - conda install -q -c https://conda.binstar.org/menpo opencv3
