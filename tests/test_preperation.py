@@ -33,11 +33,11 @@ def test_Rectificator(left_img, config, outdir):
     assert len(corrected_detections) == len(left_img['detections'])
 
     # for visual see /out
-    corrected_image_w_detections = rectificator.rectify_image(left_img['img_w_detections'])
-    corrected_image_w_detections = draw_makers(corrected_image_w_detections, corrected_detections)
-    name_img_rect_detec = ''.join([left_img['name'], '_detections_rectified.jpg'])
-    out = os.path.join(outdir, name_img_rect_detec)
-    cv2.imwrite(out, corrected_image_w_detections)
+    rect_img = rectificator.rectify_image(left_img['img_w_detections'])
+    marked_img = draw_makers(rect_img, corrected_detections)
+    name_out = ''.join([left_img['name'], '_detections_rectified.jpg'])
+    out = os.path.join(outdir, name_out)
+    cv2.imwrite(out, marked_img)
 
 
 def test_rotate_image():
@@ -98,3 +98,18 @@ def test_rotate_points():
         [2999, 3999]
     ])
     npt.assert_equal(rot_pts_neg90, target_points_neg90)
+
+
+def test_rectify_and_rotate_image(left_img, config, outdir):
+    rectificator = prep.Rectificator(config)
+    rect_img = rectificator.rectify_image(left_img['img_w_detections'])
+    rect_detections = rectificator.rectify_points(left_img['detections'], left_img['size'])
+
+    angle = 90
+    rot_img, rot_mat = prep.rotate_image(rect_img, angle)
+    rot_detections = prep.rotate_points(rect_detections, angle, left_img['size'])
+
+    marked_img = draw_makers(rot_img, rot_detections)
+    name_out = ''.join([left_img['name'], '_detections_rectified_rot.jpg'])
+    out = os.path.join(outdir, name_out)
+    cv2.imwrite(out, marked_img)
