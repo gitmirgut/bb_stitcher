@@ -66,29 +66,29 @@ def test_rotate_image():
 
 
 def test_rotate_points():
-    size = (40, 30)
+    size = (4000, 3000)
     pts = np.array([
         [0, 0],
-        [0, 29],
-        [39, 29],
-        [39, 0]
+        [0, 2999],
+        [3999, 2999],
+        [3999, 0]
     ])
 
     rot_pts_pos90 = prep.rotate_points(pts, 90, size)
     target_points_pos90 = np.array([
-        [0, 39],
-        [29, 39],
-        [29, 0],
+        [0, 3999],
+        [2999, 3999],
+        [2999, 0],
         [0, 0]
     ])
     npt.assert_equal(rot_pts_pos90, target_points_pos90)
 
     rot_pts_neg90 = prep.rotate_points(pts, -90, size)
     target_points_neg90 = np.array([
-        [29, 0],
+        [2999, 0],
         [0, 0],
-        [0, 39],
-        [29, 39]
+        [0, 3999],
+        [2999, 3999]
     ])
     npt.assert_equal(rot_pts_neg90, target_points_neg90)
 
