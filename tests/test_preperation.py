@@ -65,6 +65,13 @@ def test_rotate_image():
     assert rot_img[20][0] == 100
 
 
+def test_rotate_image_specifc(left_img, outdir):
+    img, mat = prep.rotate_image(left_img['img'], 90)
+    name_img_rot = ''.join([left_img['name'], '_rotated.jpg'])
+    out = os.path.join(outdir, name_img_rot)
+    cv2.imwrite(out, img)
+
+
 def test_rotate_points():
     size = (4000, 3000)
     pts = np.array([
@@ -91,10 +98,3 @@ def test_rotate_points():
         [2999, 3999]
     ])
     npt.assert_equal(rot_pts_neg90, target_points_neg90)
-
-
-def test_rotate_image_specifc(left_img, outdir):
-    img, mat = prep.rotate_image(left_img['img'], 90)
-    name_img_rot = ''.join([left_img['name'], '_rotated.jpg'])
-    out = os.path.join(outdir, name_img_rot)
-    cv2.imwrite(out, img)
