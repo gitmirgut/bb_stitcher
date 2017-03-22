@@ -18,5 +18,8 @@ setup(
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Programming Language :: Python :: 3.5'
-    ]
+    ],
+    package_data={
+        'bb_stitcher': ['default_config.ini']
+    }
 )
