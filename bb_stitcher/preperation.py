@@ -43,7 +43,7 @@ class Rectificator(object):
         self.cached_size = None
 
     def rectify_image(self, image):
-        """Remove Lens distortion from an image.
+        """Remove lens distortion from an image.
 
         Args:
             image (ndarray): Input (distorted) image.
@@ -91,7 +91,7 @@ def __get_affine_mat_and_new_size(angle, size=(4000, 3000)):
     """Calculate the affine transformation to rotate image by given angle.
 
     Args:
-        angle (int): Rotation Angle in degree. Positive values mean counter-clockwise rotation.
+        angle (int): Rotation angle in degree. Positive values mean counter-clockwise rotation.
         size (tuple): Size *(width, height)* of the potential image, which was used for determine
                     the points.
     Returns:
@@ -158,7 +158,7 @@ def rotate_image(image, angle):
 
     Args:
         image (ndarray): Input image.
-        angle (int): Rotation Angle in degree. Positive values mean counter-clockwise rotation.
+        angle (int): Rotation angle in degree. Positive values mean counter-clockwise rotation.
 
     Returns:
         - **rot_image** (ndarray) -- Rotated image.
@@ -177,7 +177,7 @@ def rotate_points(points, angle, size):
 
     Args:
         points (ndarray): List of points (N, 2).
-        angle (int): Rotation Angle in degree. Positive values mean counter-clockwise rotation.
+        angle (int): Rotation angle in degree. Positive values mean counter-clockwise rotation.
         size (tuple): Size *(width, height)* of the image, which was used for determine the
                     points.
 
