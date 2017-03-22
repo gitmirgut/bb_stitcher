@@ -190,6 +190,23 @@ def rotate_image(image, angle):
     return rot_image, affine_mat
 
 
+def rotate_points(pts, angle, size):
+    """Rotate points by given angle and in relation to the size of an image.
+
+    Args:
+        pts (ndarray): List of points (N, 2).
+        angle (int): Rotation Angle in degree. Positive values mean counter-clockwise rotation.
+        size (tuple): Size *(width, height)* of the image, which was used for determine the
+                    points.
+
+    Returns:
+        ndarray: Rotated points (N, 2).
+    """
+    log.debug('Start rotate points.')
+    affine_mat, __ = __get_affine_mat_and_new_size(angle, size)
+    return cv2.transform(pts, affine_mat[0:2])
+
+
 if __name__ == '__main__':
     import logging
     import logging.config
