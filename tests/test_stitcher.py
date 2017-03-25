@@ -39,4 +39,4 @@ def test_calc_feature_mask():
 
 
 def test_estimate_transformation(fb_stitcher, left_img, right_img):
-    fb_stitcher.estimate_transformation(left_img['img'], left_img['img'])
+    fb_stitcher.estimate_transformation(left_img['img'], right_img['img'])
