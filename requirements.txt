@@ -1,3 +1,4 @@
 numpy==1.11.3 # BSD 3-clause
 
-#cv2 # BSD 3-clause
+# cv2 -> BSD 3-clause
+# SURF from opencv_contrib is noncommercial licensed, see http://www.vision.ee.ethz.ch/~surf/download.html
