@@ -1,4 +1,5 @@
 """Image Stitcher especially designed for the BeesBook Project."""
+import cv2
 import numpy as np
 
 
@@ -69,6 +70,23 @@ class FeatureBasedStitcher(Stitcher):
 
         return mask_left, mask_right
 
+    def _get_keypoints_and_descriptors(self, img, mask):
+        """Search for Features in <img>."""
+
+        # TODO(gitmirgut) opencv versions check
+
+        surf = cv2.xfeatures2d.SURF_create(hessianThreshold=100, nOctaves=4)
+        surf.setUpright(True)
+        surf.setExtended(128)
+
+        kps, ds = surf.detectAndCompute(img, mask)
+
+        # if drawMatches:
+        #     marked_matches = cv2.drawKeypoints(img, kps, None, (0, 0, 255), 4)
+        #     return kps, ds, marked_matches
+
+        return kps, ds
+
     def estimate_transformation(self, image_left, image_right):
         """Estimate transformation of images based on feature matching.
 
@@ -81,7 +99,19 @@ class FeatureBasedStitcher(Stitcher):
         # calculates the mask which will mark the feature searching area.
         mask_left, mask_right = self._calc_feature_mask(
             size_left, size_right, self.overlap, self.border_top, self.border_bottom)
-        pass
+
+        # Initialize the feature detector and descriptor SURF
+        # http://www.vision.ee.ethz.ch/~surf/download.html
+        # is noncommercial licensed
+        # TODO(gitmirgut) add note to doc and requirements on license
+        surf = cv2.xfeatures2d.SURF_create(hessianThreshold=100, nOctaves=4)
+        surf.setUpright(True)
+        surf.setExtended(128)
+
+        kps_left, kps_ds = surf.detectAndCompute(image_left, mask_left)
+        kps_right, kps_ds = surf.detectAndCompute(image_right, mask_right)
+
+        assert (len(kps_left) > 0 and len(kps_right) > 0)
 
 
 if __name__ == '__main__':
