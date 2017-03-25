@@ -18,7 +18,9 @@ def draw_makers(img, pts, color=(0, 0, 255), marker_types=cv2.MARKER_CROSS):
     return img_m
 
 
-def test_Rectificator(left_img, config, outdir):
+def test_Rectificator(left_img, right_img, config, outdir):
+
+    # left image
     rectificator = prep.Rectificator(config)
     corrected_image = rectificator.rectify_image(left_img['img'])
     assert corrected_image.shape == left_img['img'].shape
@@ -36,6 +38,26 @@ def test_Rectificator(left_img, config, outdir):
     rect_img = rectificator.rectify_image(left_img['img_w_detections'])
     marked_img = draw_makers(rect_img, corrected_detections)
     name_out = ''.join([left_img['name'], '_detections_rectified.jpg'])
+    out = os.path.join(outdir, name_out)
+    cv2.imwrite(out, marked_img)
+
+    # right image
+    corrected_image = rectificator.rectify_image(right_img['img'])
+    assert corrected_image.shape == right_img['img'].shape
+
+    # for visual see /out
+    name_img_rect = ''.join([right_img['name'], '_rectified.jpg'])
+    out = os.path.join(outdir, name_img_rect)
+    cv2.imwrite(out, corrected_image)
+
+    corrected_detections = rectificator.rectify_points(
+        right_img['detections'], right_img['size'])
+    assert len(corrected_detections) == len(right_img['detections'])
+
+    # for visual see /out
+    rect_img = rectificator.rectify_image(right_img['img_w_detections'])
+    marked_img = draw_makers(rect_img, corrected_detections)
+    name_out = ''.join([right_img['name'], '_detections_rectified.jpg'])
     out = os.path.join(outdir, name_out)
     cv2.imwrite(out, marked_img)
 
