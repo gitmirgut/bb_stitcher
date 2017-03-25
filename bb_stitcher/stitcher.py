@@ -45,22 +45,6 @@ class FeatureBasedStitcher(Stitcher):
         self.transform = config['FeatureBasedStitcher']['TRANSFORM']
 
     @staticmethod
-    def _calc_feature_masks_old(left_shape, right_shape, overlap, border):
-        """Calculate the mask, which define area for feature detection."""
-        left_mask = np.ones(left_shape, np.uint8) * 255
-        right_mask = np.ones(right_shape, np.uint8) * 255
-        if overlap is not None:
-            left_mask[:, :left_shape[1] - overlap] = 0
-            right_mask[:, overlap:] = 0
-        if border is not None:
-            left_mask[:border, :] = 0
-            left_mask[left_shape[0] - border:, :] = 0
-            right_mask[:border, :] = 0
-            right_mask[right_shape[0] - border:, :] = 0
-
-        return left_mask, right_mask
-
-    @staticmethod
     def _calc_feature_mask(size_left, size_right, overlap, border_top, border_bottom):
         """Calculate the masks, which defines the area for feature detection.
 
