@@ -38,6 +38,7 @@ class FeatureBasedStitcher(Stitcher):
         Args:
             config: config file which holds the basic stitching parameters.
         """
+        # TODO(gitmirgut) add autoload config file
         self.overlap = int(config['FeatureBasedStitcher']['OVERLAP'])
         self.border_top = int(config['FeatureBasedStitcher']['BORDER_TOP'])
         self.border_bottom = int(config['FeatureBasedStitcher']['BORDER_BOTTOM'])
