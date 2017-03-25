@@ -1,6 +1,7 @@
 """Image Stitcher especially designed for the BeesBook Project."""
 import numpy as np
 
+
 class Stitcher(object):
     """Class to create a 'panorama' from two images."""
 
@@ -64,10 +65,10 @@ class FeatureBasedStitcher(Stitcher):
             - **mask_right** (ndarray) -- mask area of the right image to search for features.
         """
         # TODO(gitmirgut): Add note, why to use border.
-        mask_left = np.zeros(size_left[::-1], np.uint8)
-        mask_right = np.zeros(size_right[::-1], np.uint8)
-        mask_left[border_top:size_left[1]-border_bottom, size_left[0]-overlap:] = 255
-        mask_right[border_top:size_left[1]-border_bottom, :overlap] = 255
+        mask_left = np.zeros(size_left[:: - 1], np.uint8)
+        mask_right = np.zeros(size_right[:: - 1], np.uint8)
+        mask_left[border_top:size_left[1] - border_bottom, size_left[0] - overlap:] = 255
+        mask_right[border_top:size_left[1] - border_bottom, :overlap] = 255
 
         return mask_left, mask_right
 
@@ -82,9 +83,4 @@ class FeatureBasedStitcher(Stitcher):
 
 
 if __name__ == '__main__':
-    left_mask, right_mask = FeatureBasedStitcher._calc_feature_masks_old((6,8), (6,8), 2, 1)
-    mask_left, mask_right = FeatureBasedStitcher._calc_feature_mask((3, 8), (3, 8), 2, 3, 1)
-    print(left_mask)
-    print(mask_left)
-
     pass
