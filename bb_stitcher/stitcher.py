@@ -32,6 +32,17 @@ class Stitcher(object):
 class FeatureBasedStitcher(Stitcher):
     """Class to create a feature based stitcher."""
 
+    def __init__(self, config):
+        """Initialize a feature based stitcher.
+
+        Args:
+            config: config file which holds the basic stitching parameters.
+        """
+        self.overlap = int(config['FeatureBasedStitcher']['OVERLAP'])
+        self.border_top = int(config['FeatureBasedStitcher']['BORDER_TOP'])
+        self.border_bottom = int(config['FeatureBasedStitcher']['BORDER_BOTTOM'])
+        self.transform = config['FeatureBasedStitcher']['TRANSFORM']
+
     @staticmethod
     def _calc_feature_masks_old(left_shape, right_shape, overlap, border):
         """Calculate the mask, which define area for feature detection."""
@@ -50,8 +61,9 @@ class FeatureBasedStitcher(Stitcher):
 
     @staticmethod
     def _calc_feature_mask(size_left, size_right, overlap, border_top, border_bottom):
-        """Calculate the masks, which defines the area for feature detection. The mask is used to
-        shrink the area for searching features.
+        """Calculate the masks, which defines the area for feature detection.
+
+        The mask is used to shrink the area for searching features.
 
         Args:
             size_left (tuple): Size of the left image.
@@ -72,13 +84,18 @@ class FeatureBasedStitcher(Stitcher):
 
         return mask_left, mask_right
 
-    def estimate_transformation(self, image_left, image_right, config):
+    def estimate_transformation(self, image_left, image_right):
         """Estimate transformation of images based on feature matching.
 
         Args:
             image_left (ndarray): Input left image.
             image_right (ndarray): Input right image.
         """
+        size_left = image_left.shape[:2][:: - 1]
+        size_right = image_right.shape[:2][:: - 1]
+        # calculates the mask which will mark the feature searching area.
+        mask_left, mask_right = self._calc_feature_mask(
+            size_left, size_right, self.overlap, self.border_top, self.border_bottom)
         pass
 
 
