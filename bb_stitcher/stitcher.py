@@ -44,6 +44,8 @@ class FeatureBasedStitcher(Stitcher):
         self.border_top = int(config['FeatureBasedStitcher']['BORDER_TOP'])
         self.border_bottom = int(config['FeatureBasedStitcher']['BORDER_BOTTOM'])
         self.transform = config['FeatureBasedStitcher']['TRANSFORM']
+        self.hessianThreshold = float(config['SURF']['HESSIANTHRESHOLD'])
+        self.nOctaves = int(config['SURF']['NOCTAVES'])
 
     @staticmethod
     def _calc_feature_mask(size_left, size_right, overlap, border_top, border_bottom):
@@ -87,15 +89,17 @@ class FeatureBasedStitcher(Stitcher):
         # http://www.vision.ee.ethz.ch/~surf/download.html
         # is noncommercial licensed
         # TODO(gitmirgut) add note to doc and requirements on license
-        surf = cv2.xfeatures2d.SURF_create(hessianThreshold=100, nOctaves=4)
+        surf = cv2.xfeatures2d.SURF_create(
+            hessianThreshold=self.hessianThreshold, nOctaves=self.nOctaves)
         surf.setUpright(True)
         surf.setExtended(128)
 
-        kps_left, kps_ds = surf.detectAndCompute(image_left, mask_left)
-        kps_right, kps_ds = surf.detectAndCompute(image_right, mask_right)
+        kps_left, ds_left = surf.detectAndCompute(image_left, mask_left)
+        kps_right, ds_right = surf.detectAndCompute(image_right, mask_right)
 
         assert (len(kps_left) > 0 and len(kps_right) > 0)
 
-
-if __name__ == '__main__':
-    pass
+        # Start with Feature Matching
+        bf = cv2.BFMatcher()
+        raw_matches = bf.knnMatch(ds_left, ds_right, k=2)
+        print(raw_matches)
