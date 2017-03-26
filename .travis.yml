@@ -22,7 +22,7 @@ install:
   - source activate test-environment
   - conda install -q -c https://conda.binstar.org/menpo opencv3
   - pip install --upgrade pytest pytest-benchmark pytest-cov pytest-xdist pytest-flake8
-  - pip install --upgrade coveralls sphinx_rtd_theme
+  - pip install --upgrade coveralls sphinx_rtd_theme python-coveralls
   - pip install -e .
 
 script: pytest -v
