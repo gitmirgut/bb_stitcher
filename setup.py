@@ -13,7 +13,7 @@ setup(
     author='gitmirgut',
     author_email="gitmirgut@users.noreply.github.com",
     packages=['bb_stitcher'],
-    license='GNU GPLv3',
+    license='Apache License 2.0',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
