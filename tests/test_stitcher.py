@@ -57,5 +57,9 @@ def test_calc_feature_mask():
     npt.assert_equal(mask_right, target_mask_right)
 
 
-def test_estimate_transformation(fb_stitcher, left_img_prep, right_img_prep):
-    fb_stitcher.estimate_transformation(left_img_prep, right_img_prep)
+def test_estimate_transformation(fb_stitcher, left_img_prep, right_img_prep, not_to_bee):
+    # find transformation
+    assert fb_stitcher.estimate_transformation(left_img_prep, right_img_prep) is not None
+
+    # provoke no finding of transformation
+    assert fb_stitcher.estimate_transformation(left_img_prep, not_to_bee) is None

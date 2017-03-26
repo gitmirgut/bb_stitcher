@@ -2,6 +2,8 @@
 import cv2
 import numpy as np
 
+import bb_stitcher.helpers as helpers
+
 
 class Stitcher(object):
     """Class to create a 'panorama' from two images."""
@@ -74,14 +76,20 @@ class FeatureBasedStitcher(Stitcher):
         return mask_left, mask_right
 
     def estimate_transformation(self, image_left, image_right):
-        """Estimate transformation of images based on feature matching.
+        """Estimate transformation for stitching of images based on feature matching.
 
         Args:
             image_left (ndarray): Input left image.
             image_right (ndarray): Input right image.
+
+        Returns:
+            - **homo_left** (ndarray) -- homography *(3,3)* of the left image to form a panorama.
+            - **homo_right** (ndarray) -- homography *(3,3)* of the right image to form a panorama.
+            - **pano_size** (tuple) -- Size *(width, height)* of the panorama.
         """
         size_left = image_left.shape[:2][:: - 1]
         size_right = image_right.shape[:2][:: - 1]
+
         # calculates the mask which will mark the feature searching area.
         mask_left, mask_right = self._calc_feature_mask(
             size_left, size_right, self.overlap, self.border_top, self.border_bottom)
@@ -124,7 +132,21 @@ class FeatureBasedStitcher(Stitcher):
             [kps_right[m.trainIdx].pt for m in good_matches]).reshape(-1, 1, 2)
 
         assert len(good_matches) > 2
-        similarity_m = cv2.estimateRigidTransform(good_pts_left, good_pts_right, False)
+        homo_right = cv2.estimateRigidTransform(good_pts_left, good_pts_right, False)
+        if homo_right is None:
+            return
+        homo_right = cv2.invertAffineTransform(homo_right)
+        homo_right = np.vstack([homo_right, [0, 0, 1]])
 
-        similarity_m = cv2.invertAffineTransform(similarity_m)
-        similarity_m = np.vstack([similarity_m, [0, 0, 1]])
+        homo_left = np.float64(
+            [[1, 0, 0],
+             [0, 1, 0],
+             [0, 0, 1]])
+
+        homo_trans, pano_size = helpers.align_to_display_area(
+            size_left, size_right, homo_left, homo_right)
+
+        self.homo_left = homo_trans.dot(homo_left)
+        self.homo_right = homo_trans.dot(homo_right)
+        self.pano_size = pano_size
+        return self.homo_left, self.homo_right, self.pano_size

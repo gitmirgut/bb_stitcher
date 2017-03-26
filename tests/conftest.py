@@ -53,6 +53,13 @@ def right_img():
 
 
 @pytest.fixture
+def not_to_bee():
+    img_path = get_test_fname('data/not_to_bee.jpg')
+    img = cv2.imread(img_path, -1)
+    return img
+
+
+@pytest.fixture
 def config():
     default_config = configparser.ConfigParser()
     default_config.read(core.get_default_config())
