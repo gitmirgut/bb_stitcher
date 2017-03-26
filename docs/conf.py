@@ -28,6 +28,7 @@ class Mock(MagicMock):
 
 MOCK_MODULES = ['cv2']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+
 sys.path.insert(0, os.path.abspath('../'))
 
 
