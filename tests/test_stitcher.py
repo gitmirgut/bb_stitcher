@@ -2,6 +2,7 @@ import numpy as np
 import numpy.testing as npt
 import pytest
 
+import bb_stitcher.preperation as prep
 import bb_stitcher.stitcher as stitcher
 
 
@@ -9,6 +10,24 @@ import bb_stitcher.stitcher as stitcher
 def fb_stitcher(config):
     fbs = stitcher.FeatureBasedStitcher(config)
     return fbs
+
+
+@pytest.fixture()
+def left_img_prep(left_img, config):
+    rect = prep.Rectificator(config)
+
+    prepared_img = rect.rectify_image(left_img['img'])
+    prepared_img, affine = prep.rotate_image(prepared_img, 90)
+    return prepared_img
+
+
+@pytest.fixture()
+def right_img_prep(right_img, config):
+    rect = prep.Rectificator(config)
+
+    prepared_img = rect.rectify_image(right_img['img'])
+    prepared_img, affine = prep.rotate_image(prepared_img, -90)
+    return prepared_img
 
 
 def test_calc_feature_mask():
@@ -38,5 +57,5 @@ def test_calc_feature_mask():
     npt.assert_equal(mask_right, target_mask_right)
 
 
-def test_estimate_transformation(fb_stitcher, left_img, right_img):
-    fb_stitcher.estimate_transformation(left_img['img'], right_img['img'])
+def test_estimate_transformation(fb_stitcher, left_img_prep, right_img_prep):
+    fb_stitcher.estimate_transformation(left_img_prep, right_img_prep)

@@ -45,7 +45,8 @@ class FeatureBasedStitcher(Stitcher):
         self.border_bottom = int(config['FeatureBasedStitcher']['BORDER_BOTTOM'])
         self.transform = config['FeatureBasedStitcher']['TRANSFORM']
         self.hessianThreshold = float(config['SURF']['HESSIANTHRESHOLD'])
-        self.nOctaves = int(config['SURF']['NOCTAVES'])
+        self.nOctaves = int(config['SURF']['N_OCTAVES'])
+        self.max_shift_y = int(config['FeatureMatcher']['MAX_SCHIFT_Y'])
 
     @staticmethod
     def _calc_feature_mask(size_left, size_right, overlap, border_top, border_bottom):
@@ -101,5 +102,32 @@ class FeatureBasedStitcher(Stitcher):
 
         # Start with Feature Matching
         bf = cv2.BFMatcher()
+
+        # search the 2 best matches for each left descriptor (ds_left)
         raw_matches = bf.knnMatch(ds_left, ds_right, k=2)
-        print(raw_matches)
+
+        good_matches = []
+        for m in raw_matches:
+            if len(m) == 2 and m[0].distance < m[1].distance:
+                good_match = m[0]
+                keypoint_left = np.array(kps_left[good_match.queryIdx].pt)
+                keypoint_right = np.array(kps_right[good_match.trainIdx].pt)
+                dist = abs(keypoint_left - keypoint_right)
+
+                # checks if the distance in the y direction is to big
+                if dist[1] < self.max_shift_y:
+                    good_matches.append(good_match)
+
+        good_pts_left = np.float32(
+            [kps_left[m.queryIdx].pt for m in good_matches]).reshape(-1, 1, 2)
+        good_pts_right = np.float32(
+            [kps_right[m.trainIdx].pt for m in good_matches]).reshape(-1, 1, 2)
+
+        assert len(good_matches) > 2
+        print(good_pts_left)
+        similarity_m = cv2.estimateRigidTransform(good_pts_left, good_pts_right, False)
+
+        print(similarity_m)
+        similarity_m = cv2.invertAffineTransform(similarity_m)
+        similarity_m = np.vstack([similarity_m, [0, 0, 1]])
+        print(similarity_m)
