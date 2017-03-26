@@ -8,7 +8,7 @@ Developer Interface
 
 This part of the documentation covers all the interfaces of bb_stitcher.
 
-.. automodule:: bb_sticher.readthedocstest readthedocstest
+.. automodule:: bb_stitcher.readthedocstest
   :members:
 
 .. automodule:: bb_stitcher.preperation

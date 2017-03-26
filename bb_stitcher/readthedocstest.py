@@ -1,10 +1,10 @@
 """Das ist nur ein Testfile fuer Readthedocs."""
 
 
-class Rectificator(object):
+class readthedocs(object):
     """Test me."""
 
-    def rectify_image(self, test=None):
+    def readthedocs(self, test=None):
         """Do nothing.
 
         Args:
@@ -14,4 +14,4 @@ class Rectificator(object):
             nothing: nothing
 
         """
-        pass
+        return test
