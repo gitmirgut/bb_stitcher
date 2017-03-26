@@ -74,5 +74,31 @@ def align_to_display_area(size_left, size_right, homo_left, homo_right):
     return homo_trans, display_size
 
 
+def add_alpha_channel(image):
+    """Add alpha channel to image for transparent areas.
+
+    Args:
+        image (ndarray): image of shape *(M,N)* (black/white), *(M,N,3)* (BGR)
+                        or *(M,N,4)* already with alpha channel.
+
+    Returns:
+        ndarray: image with alpha channel
+
+    """
+    if len(image.shape) == 2:
+        return cv2.cvtColor(image, cv2.COLOR_GRAY2BGRA)
+    elif len(image.shape) == 3:
+        if image.shape[2] == 3:
+            return cv2.cvtColor(image, cv2.COLOR_BGR2BGRA)
+        elif image.shape[2] == 4:
+            return image
+        else:
+            raise Exception("Shape {} of image is unknown cannot add alpha channel. "
+                            "Valid image shapes are (N,M), (N,M,3), (N,M,4).")
+    else:
+        raise Exception("Shape {} of image is unknown cannot add alpha channel. Valid image shapes"
+                        "are (N,M), (N,M,3), (N,M,4).")
+
+
 if __name__ == '__main__':
     pass
