@@ -8,10 +8,13 @@ import bb_stitcher.helpers as helpers
 class Stitcher(object):
     """Class to create a 'panorama' from two images."""
 
-    def __init__(self, homo_l=None, homo_r=None):
+    def __init__(self, homo_left=None, homo_right=None, pano_size=None):
         """"Initialize the stitcher."""
+        self.homo_left = homo_left
+        self.homo_right = homo_right
+        self.pano_size = pano_size
 
-    def estimate_transformation(self):
+    def estimate_transform(self):
         """Update self.homo_l and homo_r to new values.
 
         This should be overridden by a sublcass to customize stitching.
@@ -19,13 +22,26 @@ class Stitcher(object):
         """
         raise NotImplemented()
 
-    def compose_panorama(self, left=None, right=None):
+    def compose_panorama(self, left_image, right_image):
         """Try to compose the given images into the final pano.
 
         This happens under the assumption that the image transformations were estimated or loaded
         before.
         """
-        pass
+        # TODO(gitmirgut): Needs speed up.
+        if len(left_image.shape) == 2:
+            left_image = cv2.cvtColor(left_image, cv2.COLOR_GRAY2BGRA)
+        if len(right_image.shape) == 2:
+            right_image = cv2.cvtColor(right_image, cv2.COLOR_GRAY2BGRA)
+
+        left_image = cv2.warpPerspective(left_image, self.homo_left, self.pano_size)
+        right_image = cv2.warpPerspective(right_image, self.homo_right, self.pano_size)
+
+        for y in range(left_image.shape[0]):
+            for x in range(left_image.shape[1]):
+                if left_image[y][x][3] == 0 and right_image[y][x][3] != 0:
+                    left_image[y][x] = right_image[y][x]
+        return left_image
 
     def stitch(self, left_image, right_image):
         """Try to stitch the given images."""
@@ -75,7 +91,7 @@ class FeatureBasedStitcher(Stitcher):
 
         return mask_left, mask_right
 
-    def estimate_transformation(self, image_left, image_right):
+    def estimate_transform(self, image_left, image_right):
         """Estimate transformation for stitching of images based on feature matching.
 
         Args:
