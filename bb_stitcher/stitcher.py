@@ -124,10 +124,7 @@ class FeatureBasedStitcher(Stitcher):
             [kps_right[m.trainIdx].pt for m in good_matches]).reshape(-1, 1, 2)
 
         assert len(good_matches) > 2
-        print(good_pts_left)
         similarity_m = cv2.estimateRigidTransform(good_pts_left, good_pts_right, False)
 
-        print(similarity_m)
         similarity_m = cv2.invertAffineTransform(similarity_m)
         similarity_m = np.vstack([similarity_m, [0, 0, 1]])
-        print(similarity_m)
