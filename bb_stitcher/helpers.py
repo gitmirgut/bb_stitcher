@@ -93,11 +93,11 @@ def add_alpha_channel(image):
         elif image.shape[2] == 4:
             return image
         else:
-            raise Exception("Shape {} of image is unknown cannot add alpha channel. "
-                            "Valid image shapes are (N,M), (N,M,3), (N,M,4).")
+            raise Exception('Shape {} of image is unknown cannot add alpha channel. '
+                            'Valid image shapes are (N,M), (N,M,3), (N,M,4).'.format(str(image.shape)))
     else:
-        raise Exception("Shape {} of image is unknown cannot add alpha channel. Valid image shapes"
-                        "are (N,M), (N,M,3), (N,M,4).")
+        raise Exception('Shape {} of image is unknown cannot add alpha channel. Valid image shapes'
+                        'are (N,M), (N,M,3), (N,M,4).'.format(str(image.shape)))
 
 
 if __name__ == '__main__':
