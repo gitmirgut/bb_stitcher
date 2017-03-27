@@ -59,11 +59,12 @@ class Stitcher(object):
         before.
 
         Args:
-            points (ndarray): List of points from left image *(N,2)*.
+            points (ndarray(float)): List of points from left image *(N,2)*.
 
         Returns:
             ndarray: ``points`` mapped to panorama *(N,2)*
         """
+        # TODO(gitmirgut): PoC auto convert to float
         points = np.array([points])
         return cv2.perspectiveTransform(points, self.homo_left)[0]
 
@@ -74,11 +75,12 @@ class Stitcher(object):
         before.
 
         Args:
-            points (ndarray): List of points from right image *(N,2)*.
+            points (ndarray(float)): List of points from right image *(N,2)*.
 
         Returns:
             ndarray: ``points`` mapped to panorama *(N,2)*
         """
+        # TODO(gitmirgut): PoC auto convert to float
         points = np.array([points])
         return cv2.perspectiveTransform(points, self.homo_right)[0]
 
