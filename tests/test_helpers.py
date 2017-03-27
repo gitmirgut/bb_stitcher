@@ -51,5 +51,3 @@ def test_add_alpha_channel(left_img):
     img_not = np.zeros((3000, 4000, 5, 4), dtype=np.uint8)
     with pytest.raises(Exception):
         helpers.add_alpha_channel(img_not)
-
-
