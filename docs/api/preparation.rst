@@ -2,7 +2,7 @@ Preparation
 ===========
 
 
-.. automodule:: bb_stitcher.preperation
+.. automodule:: bb_stitcher.preparation
     :members:
     :undoc-members:
     :show-inheritance:

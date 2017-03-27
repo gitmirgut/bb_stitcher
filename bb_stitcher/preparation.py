@@ -22,7 +22,7 @@ log = getLogger(__name__)
 
 class Rectificator(object):
     """Class to rectify images and points.
-    
+
     Remove lens distortion from images and points.
     """
 
@@ -59,7 +59,7 @@ class Rectificator(object):
 
     def rectify_points(self, points, size):
         """Remove lens distortion from points.
-        
+
         Map points determined from distorted image to its position in an undistorted img.
 
         Args:
