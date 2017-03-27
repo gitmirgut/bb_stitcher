@@ -11,6 +11,12 @@ import bb_stitcher.stitcher as stitcher
 
 
 @pytest.fixture
+def super_stitcher():
+    st = stitcher.Stitcher()
+    return st
+
+
+@pytest.fixture
 def fb_stitcher(config):
     fbs = stitcher.FeatureBasedStitcher(config)
     return fbs
@@ -57,6 +63,11 @@ def homo_right():
 @pytest.fixture
 def pano_size():
     return (5666, 4200)
+
+
+def test_super_estimate_transform(super_stitcher):
+    with pytest.raises(NotImplementedError):
+        super_stitcher.estimate_transform()
 
 
 def test_calc_feature_mask():
