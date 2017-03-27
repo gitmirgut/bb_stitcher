@@ -27,6 +27,13 @@ class Stitcher(object):
 
         This happens under the assumption that the image transformations were estimated or loaded
         before.
+
+        Args:
+            image_left (ndarray): Input left image.
+            image_right (ndarray): Input right image.
+
+        Returns:
+            ndarray: panorama (stitched image)
         """
         # TODO(gitmirgut): Needs speed up.
         left_image = helpers.add_alpha_channel(left_image)
@@ -97,8 +104,8 @@ class FeatureBasedStitcher(Stitcher):
             image_right (ndarray): Input right image.
 
         Returns:
-            - **homo_left** (ndarray) -- homography *(3,3)* of the left image to form a panorama.
-            - **homo_right** (ndarray) -- homography *(3,3)* of the right image to form a panorama.
+            - **homo_left** (ndarray) -- homography *(3,3)* for ``image_left`` to form a panorama.
+            - **homo_right** (ndarray) -- homography *(3,3)* for ``image_right`` to form a panorama.
             - **pano_size** (tuple) -- Size *(width, height)* of the panorama.
         """
         size_left = image_left.shape[:2][:: - 1]
