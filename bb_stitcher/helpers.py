@@ -33,8 +33,7 @@ def align_to_display_area(size_left, size_right, homo_left, homo_right):
         homo_right (ndarray): An homography *(3,3)* which is used to transform the right image.
 
     Returns:
-        - **homo_trans** (ndarray) -- An homography *(3,3)* to translate the left and the right
-                                    image so that is they will be aligned with the display area.
+        - **homo_trans** (ndarray) -- homography *(3,3)* to translate the left and the right image.
         - **display_size** (tuple) -- Size *(width, height)* of the panorama.
     """
     h_l, w_l = size_left
