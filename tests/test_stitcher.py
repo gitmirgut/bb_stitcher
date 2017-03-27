@@ -24,20 +24,38 @@ def fb_stitcher(config):
 
 @pytest.fixture
 def left_img_prep(left_img, config):
-    rect = prep.Rectificator(config)
-    left_img = helpers.add_alpha_channel(left_img['img'])
-    prepared_img = rect.rectify_image(left_img)
-    prepared_img, affine = prep.rotate_image(prepared_img, 90)
-    return prepared_img
+    left_img_alpha = helpers.add_alpha_channel(left_img['img'])
+    rectificator = prep.Rectificator(config)
+    rect_img = rectificator.rectify_image(left_img_alpha)
+    rect_detections = rectificator.rectify_points(left_img['detections'], left_img['size'])
+
+    angle = 90
+    rot_img, rot_mat = prep.rotate_image(rect_img, angle)
+    rot_detections = prep.rotate_points(rect_detections, angle, left_img['size'])
+
+    d = dict()
+    d['img'] = rot_img
+    d['detections'] = rot_detections
+
+    return d
 
 
 @pytest.fixture
 def right_img_prep(right_img, config):
-    rect = prep.Rectificator(config)
-    right_img = helpers.add_alpha_channel(right_img['img'])
-    prepared_img = rect.rectify_image(right_img)
-    prepared_img, affine = prep.rotate_image(prepared_img, -90)
-    return prepared_img
+    right_img_alpha = helpers.add_alpha_channel(right_img['img'])
+    rectificator = prep.Rectificator(config)
+    rect_img = rectificator.rectify_image(right_img_alpha)
+    rect_detections = rectificator.rectify_points(right_img['detections'], right_img['size'])
+
+    angle = -90
+    rot_img, rot_mat = prep.rotate_image(rect_img, angle)
+    rot_detections = prep.rotate_points(rect_detections, angle, right_img['size'])
+
+    d = dict()
+    d['img'] = rot_img
+    d['detections'] = rot_detections
+
+    return d
 
 
 @pytest.fixture
@@ -99,14 +117,14 @@ def test_calc_feature_mask():
 
 def test_estimate_transform(fb_stitcher, left_img_prep, right_img_prep, not_to_bee):
     # find transformation
-    assert fb_stitcher.estimate_transform(left_img_prep, right_img_prep) is not None
+    assert fb_stitcher.estimate_transform(left_img_prep['img'], right_img_prep['img']) is not None
 
     # provoke no finding of transformation
-    assert fb_stitcher.estimate_transform(left_img_prep, not_to_bee) is None
+    assert fb_stitcher.estimate_transform(left_img_prep['img'], not_to_bee) is None
 
 
 def test_compose_panorama(left_img_prep, right_img_prep, homo_left, homo_right, pano_size, outdir):
     st = stitcher.Stitcher(homo_left, homo_right, pano_size)
-    pano = st.compose_panorama(left_img_prep, right_img_prep)
+    pano = st.compose_panorama(left_img_prep['img'], right_img_prep['img'])
     out = os.path.join(outdir, 'panorama.jpg')
     cv2.imwrite(out, pano)
