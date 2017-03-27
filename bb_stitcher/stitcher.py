@@ -23,7 +23,7 @@ class Stitcher(object):
         raise NotImplementedError()
 
     def compose_panorama(self, left_image, right_image):
-        """Try to compose the given images into the final pano.
+        """Try to compose the given images into the final panorama.
 
         This happens under the assumption that the image transformations were estimated or loaded
         before.
@@ -49,7 +49,7 @@ class Stitcher(object):
         return left_image
 
     def stitch(self, left_image, right_image):
-        """Try to stitch the given images."""
+        """Try to stitch the given images into a panorama."""
         pass
 
 
