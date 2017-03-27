@@ -55,6 +55,9 @@ class Stitcher(object):
     def map_left_points(self, points):
         """Map points from the left image to the panorama.
 
+        This happens under the assumption that the image transformations were estimated or loaded
+        before.
+
         Args:
             points (ndarray): List of points from left image *(N,2)*.
 
@@ -65,6 +68,9 @@ class Stitcher(object):
 
     def map_right_points(self, points):
         """Map points from the right image to the panorama.
+
+        This happens under the assumption that the image transformations were estimated or loaded
+        before.
 
         Args:
             points (ndarray): List of points from right image *(N,2)*.
