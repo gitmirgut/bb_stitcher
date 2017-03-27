@@ -29,10 +29,8 @@ class Stitcher(object):
         before.
         """
         # TODO(gitmirgut): Needs speed up.
-        if len(left_image.shape) == 2:
-            left_image = cv2.cvtColor(left_image, cv2.COLOR_GRAY2BGRA)
-        if len(right_image.shape) == 2:
-            right_image = cv2.cvtColor(right_image, cv2.COLOR_GRAY2BGRA)
+        left_image = helpers.add_alpha_channel(left_image)
+        right_image = helpers.add_alpha_channel(right_image)
 
         left_image = cv2.warpPerspective(left_image, self.homo_left, self.pano_size)
         right_image = cv2.warpPerspective(right_image, self.homo_right, self.pano_size)
