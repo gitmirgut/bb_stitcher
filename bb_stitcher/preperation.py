@@ -163,7 +163,7 @@ def rotate_image(image, angle):
 
     Returns:
         - **rot_image** (ndarray) -- Rotated image.
-        - **affine_mat** (ndarray) -- An affine *(3,3)*--matrix  which rotates and translate image.
+        - **affine_mat** (ndarray) -- An affine *(3,3)*--matrix  which rotates.
     """
     # TODO(gitmirgut) fix 'one pixel-problem'
     img_size = image.shape[:2][::-1]
