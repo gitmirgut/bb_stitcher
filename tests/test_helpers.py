@@ -25,21 +25,31 @@ def test_align_to_display_area():
 
 
 def test_add_alpha_channel(left_img):
-    img = left_img['color']
+    color = left_img['color']
     w, h = left_img['size']
-    print(img.shape)
-    target = helpers.add_alpha_channel(img)
+
+    # test color image without alpha channel
+    target = helpers.add_alpha_channel(color)
     assert target.shape == (h, w, 4)
 
+    # test black and white image
     img_bw = left_img['bw']
-    print(img_bw.shape)
     target = helpers.add_alpha_channel(img_bw)
     assert target.shape == (h, w, 4)
 
+    # test already alpha
+    img_alpha = np.zeros((3000, 4000, 4), dtype=np.uint8)
+    helpers.add_alpha_channel(img_alpha)
+    assert img_alpha.shape == (h, w, 4)
+
+    # provoke exception
     img_not = np.zeros((3000, 4000, 5), dtype=np.uint8)
     with pytest.raises(Exception):
         helpers.add_alpha_channel(img_not)
 
+    # provoke exception
     img_not = np.zeros((3000, 4000, 5, 4), dtype=np.uint8)
     with pytest.raises(Exception):
         helpers.add_alpha_channel(img_not)
+
+

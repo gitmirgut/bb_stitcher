@@ -20,7 +20,7 @@ class Stitcher(object):
         This should be overridden by a sublcass to customize stitching.
         Return the transformation matrix for the left and right image.
         """
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def compose_panorama(self, left_image, right_image):
         """Try to compose the given images into the final pano.
