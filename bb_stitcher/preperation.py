@@ -21,11 +21,9 @@ log = getLogger(__name__)
 
 
 class Rectificator(object):
-    """Class to rectify and remove lens distortion from images and points.
-
-    Attributes:
-        initr_m (ndarray): intrinsic matrix of the camera.
-        dist_c (ndarray): distortion coefficient of the camera.
+    """Class to rectify images and points.
+    
+    Remove lens distortion from images and points.
     """
 
     def __init__(self, config):
@@ -50,7 +48,7 @@ class Rectificator(object):
             image (ndarray): Input (distorted) image.
 
         Returns:
-            ndarray: Output (corrected) image with same size and type as `image`.
+            ndarray: Output (corrected) image with same size and type as ``image``.
         """
         log.info('Start rectification of image with shape {}.'.format(image.shape))
         h, w = image.shape[:2]
@@ -60,15 +58,17 @@ class Rectificator(object):
         return cv2.undistort(image, self.intr_m, self.dist_c, None, cached_new_cam_mat)
 
     def rectify_points(self, points, size):
-        """Map points from distorted image to its pos in an undistorted img.
+        """Remove lens distortion from points.
+        
+        Map points determined from distorted image to its position in an undistorted img.
 
         Args:
-            points (ndarray): List of (distorted) points (N,2).
+            points (ndarray): List of (distorted) points *(N,2)*.
             size (tuple): Size *(width, height)* of the image, which was used for determine the
                                 points.
 
         Returns:
-            ndarray: List of (corrected) points.
+            ndarray: List of corrected ``points``.
         """
         points = np.array([points])
         # size = (img_width, img_height)
@@ -159,11 +159,11 @@ def rotate_image(image, angle):
 
     Args:
         image (ndarray): Input image.
-        angle (int): Rotation angle in degree. Positive values mean counter-clockwise rotation.
+        angle (int): Rotation angle in degree. Positive value means counter-clockwise rotation.
 
     Returns:
-        - **rot_image** (ndarray) -- Rotated image.
-        - **affine_mat** (ndarray) -- An affine *(3,3)*--matrix  which rotates.
+        - **rot_image** (ndarray) -- Rotated ``image``.
+        - **affine_mat** (ndarray) -- An affine *(3,3)*--matrix for rotation of image or points.
     """
     # TODO(gitmirgut) fix 'one pixel-problem'
     img_size = image.shape[:2][::-1]
@@ -177,13 +177,13 @@ def rotate_points(points, angle, size):
     """Rotate points by given angle and in relation to the size of an image.
 
     Args:
-        points (ndarray): List of points (N, 2).
+        points (ndarray): List of points *(N, 2)*.
         angle (int): Rotation angle in degree. Positive values mean counter-clockwise rotation.
         size (tuple): Size *(width, height)* of the image, which was used for determine the
-                    points.
+                    ``points``.
 
     Returns:
-        ndarray: Rotated points (N, 2).
+        ndarray: Rotated ``points`` *(N, 2)*.
     """
     points = np.array([points])
     log.debug('Start rotate points.')
