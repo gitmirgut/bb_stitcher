@@ -15,7 +15,7 @@ class Stitcher(object):
         self.pano_size = pano_size
 
     def estimate_transform(self):
-        """Update self.homo_l and homo_r to new values.
+        """Update self.homo_l and homo_r to /home/mrpoin/Beesbook/bb_stitcher/bb_stitcher/core.pynew values.
 
         This should be overridden by a sublcass to customize stitching.
         Return the transformation matrix for the left and right image.
@@ -51,6 +51,28 @@ class Stitcher(object):
     def stitch(self, left_image, right_image):
         """Try to stitch the given images into a panorama."""
         pass
+
+    def map_left_points(self, points):
+        """Map points from the left image to the panorama.
+
+        Args:
+            points (ndarray): List of points from left image *(N,2)*.
+
+        Returns:
+            ndarray: ``points`` mapped to panorama *(N,2)*
+        """
+        return cv2.perspectiveTransform(points, self.homo_left)
+
+    def map_right_points(self, points):
+        """Map points from the right image to the panorama.
+
+        Args:
+            points (ndarray): List of points from right image *(N,2)*.
+
+        Returns:
+            ndarray: ``points`` mapped to panorama *(N,2)*
+        """
+        return cv2.perspectiveTransform(points, self.homo_left)
 
 
 class FeatureBasedStitcher(Stitcher):
