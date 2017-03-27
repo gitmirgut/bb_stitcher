@@ -128,3 +128,17 @@ def test_compose_panorama(left_img_prep, right_img_prep, homo_left, homo_right, 
     pano = st.compose_panorama(left_img_prep['img'], right_img_prep['img'])
     out = os.path.join(outdir, 'panorama.jpg')
     cv2.imwrite(out, pano)
+
+
+def test_map_left_points(left_img_prep, homo_left, homo_right, pano_size):
+    st = stitcher.Stitcher(homo_left, homo_right, pano_size)
+    pano_points = st.map_left_points(left_img_prep['detections'])
+    assert pano_points is not None
+    assert len(pano_points) == len(left_img_prep['detections'])
+
+
+def test_map_right_points(right_img_prep, homo_left, homo_right, pano_size):
+    st = stitcher.Stitcher(homo_left, homo_right, pano_size)
+    pano_points = st.map_left_points(right_img_prep['detections'])
+    assert pano_points is not None
+    assert len(pano_points) == len(right_img_prep['detections'])
