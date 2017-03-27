@@ -64,7 +64,8 @@ class Stitcher(object):
         Returns:
             ndarray: ``points`` mapped to panorama *(N,2)*
         """
-        return cv2.perspectiveTransform(points, self.homo_left)
+        points = np.array([points])
+        return cv2.perspectiveTransform(points, self.homo_left)[0]
 
     def map_right_points(self, points):
         """Map points from the right image to the panorama.
@@ -78,7 +79,8 @@ class Stitcher(object):
         Returns:
             ndarray: ``points`` mapped to panorama *(N,2)*
         """
-        return cv2.perspectiveTransform(points, self.homo_left)
+        points = np.array([points])
+        return cv2.perspectiveTransform(points, self.homo_left)[0]
 
 
 class FeatureBasedStitcher(Stitcher):
