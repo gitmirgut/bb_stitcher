@@ -223,9 +223,5 @@ def linkcode_resolve(domain, info):
 
     fn = relpath(fn, start=dirname(bb_stitcher.__file__))
 
-    if 'dev' in bb_stitcher.__version__:
-        return ("http://github.com/gitmirgut/bb_stitcher/blob/"
+    return ("http://github.com/gitmirgut/bb_stitcher/blob/"
                 "master/bb_stitcher/%s%s" % (fn, linespec))
-    else:
-        return ("http://github.com/gitmirgut/bb_stitcher/blob/"
-"v%s/bb_stitcher/%s%s" % (bb_stitcher.__version__, fn, linespec))
