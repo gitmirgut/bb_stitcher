@@ -9,6 +9,9 @@ Welcome to bb_stitcher's documentation!
 .. toctree::
    :maxdepth: 2
 
+   api/preparation
+   api/stitcher
+   api/helpers
 #   intro
 #   tutorial
 
@@ -21,14 +24,3 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-
-The API Documentation / Guide
------------------------------
-
-If you are looking for information on a specific function, class, or method,
-this part of the documentation is for you.
-
-.. toctree::
-    :maxdepth: 2
-
-    api
