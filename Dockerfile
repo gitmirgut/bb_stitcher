@@ -30,6 +30,7 @@ RUN wget https://bootstrap.pypa.io/get-pip.py && \
 
 RUN pip3 install \
     numpy \
+    Cython \
     git+https://github.com/scikit-image/scikit-image.git
 
 RUN cd ~ && \
