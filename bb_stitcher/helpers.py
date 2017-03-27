@@ -81,7 +81,7 @@ def add_alpha_channel(image):
                         or *(M,N,4)* already with alpha channel.
 
     Returns:
-        ndarray: image with alpha channel
+        ndarray: ``image`` extended alpha channel
 
     """
     if len(image.shape) == 2:
