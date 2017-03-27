@@ -131,7 +131,6 @@ def test_compose_panorama(left_img_prep, right_img_prep, homo_left, homo_right, 
 
 
 def test_map_points(left_img_prep):
-    # TODO(gitmirgut) need better test
     homo_left = np.array(
         [[1, 0, 2],
          [0, 1, 1],
@@ -158,4 +157,3 @@ def test_map_points(left_img_prep):
 
     npt.assert_equal(pano_points_left, target_left)
     npt.assert_equal(pano_points_right, target_right)
-
