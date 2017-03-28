@@ -10,6 +10,17 @@ import bb_stitcher.preparation as prep
 import bb_stitcher.stitcher as stitcher
 
 
+def draw_marks(img, pts, color=(0, 0, 255), marker_types=cv2.MARKER_CROSS):
+    img_m = np.copy(img)
+    if len(img_m.shape) == 2:
+        img_m = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+    pts = pts.astype(int)
+    for pt in pts:
+        cv2.drawMarker(img_m, tuple(pt), color, markerType=marker_types,
+                       markerSize=40, thickness=5)
+    return img_m
+
+
 @pytest.fixture
 def super_stitcher():
     st = stitcher.Stitcher()
@@ -165,9 +176,14 @@ def test_map_points(left_img_prep):
     npt.assert_equal(pano_points_left, target_left)
     npt.assert_equal(pano_points_right, target_right)
 
-
+@pytest.mark.slow
 def test_overall_stitching(fb_stitcher, left_img_prep, right_img_prep, outdir):
     assert fb_stitcher.estimate_transform(left_img_prep['img'], right_img_prep['img']) is not None
     pano = fb_stitcher.compose_panorama(left_img_prep['img_w_detections'], right_img_prep['img_w_detections'])
+    detections_left_mapped = fb_stitcher.map_left_points(left_img_prep['detections'])
+    detections_right_mapped = fb_stitcher.map_right_points(right_img_prep['detections'])
+    pano = draw_marks(pano, detections_left_mapped)
+    pano = draw_marks(pano, detections_right_mapped)
+
     out = os.path.join(outdir, 'panorama_fb_w_detections.jpg')
     cv2.imwrite(out, pano)
