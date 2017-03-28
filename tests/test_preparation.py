@@ -7,7 +7,7 @@ import numpy.testing as npt
 import bb_stitcher.preparation as prep
 
 
-def draw_makers(img, pts, color=(0, 0, 255), marker_types=cv2.MARKER_CROSS):
+def draw_marks(img, pts, color=(0, 0, 255), marker_types=cv2.MARKER_CROSS):
     img_m = np.copy(img)
     if len(img_m.shape) == 2:
         img_m = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
@@ -36,7 +36,7 @@ def test_Rectificator(left_img, right_img, config, outdir):
 
     # for visual see /out
     rect_img = rectificator.rectify_image(left_img['img_w_detections'])
-    marked_img = draw_makers(rect_img, corrected_detections)
+    marked_img = draw_marks(rect_img, corrected_detections)
     name_out = ''.join([left_img['name'], '_detections_rectified.jpg'])
     out = os.path.join(outdir, name_out)
     cv2.imwrite(out, marked_img)
@@ -56,7 +56,7 @@ def test_Rectificator(left_img, right_img, config, outdir):
 
     # for visual see /out
     rect_img = rectificator.rectify_image(right_img['img_w_detections'])
-    marked_img = draw_makers(rect_img, corrected_detections)
+    marked_img = draw_marks(rect_img, corrected_detections)
     name_out = ''.join([right_img['name'], '_detections_rectified.jpg'])
     out = os.path.join(outdir, name_out)
     cv2.imwrite(out, marked_img)
@@ -131,7 +131,7 @@ def test_rectify_and_rotate_image(left_img, config, outdir):
     rot_img, rot_mat = prep.rotate_image(rect_img, angle)
     rot_detections = prep.rotate_points(rect_detections, angle, left_img['size'])
 
-    marked_img = draw_makers(rot_img, rot_detections)
+    marked_img = draw_marks(rot_img, rot_detections)
     name_out = ''.join([left_img['name'], '_detections_rectified_rot.jpg'])
     out = os.path.join(outdir, name_out)
     cv2.imwrite(out, marked_img)
