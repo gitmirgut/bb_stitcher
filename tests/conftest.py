@@ -11,6 +11,10 @@ import bb_stitcher.core as core
 test_dir = os.path.dirname(__file__)
 
 
+def pytest_addoption(parser):
+    parser.addoption("--runslow", action="store_true", help="run slow tests")
+
+
 def get_test_fname(name):
     test_dir = os.path.dirname(__file__)
     return os.path.join(test_dir, name)
