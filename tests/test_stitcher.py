@@ -28,14 +28,17 @@ def left_img_prep(left_img, config):
     rectificator = prep.Rectificator(config)
     rect_img = rectificator.rectify_image(left_img_alpha)
     rect_detections = rectificator.rectify_points(left_img['detections'], left_img['size'])
+    rect_img_w_detections = rectificator.rectify_image(left_img['img_w_detections'])
 
     angle = 90
     rot_img, rot_mat = prep.rotate_image(rect_img, angle)
     rot_detections = prep.rotate_points(rect_detections, angle, left_img['size'])
+    rot_img_w_detections, rot_mat = prep.rotate_image(rect_img_w_detections, angle)
 
     d = dict()
     d['img'] = rot_img
     d['detections'] = rot_detections
+    d['img_w_detections'] = rot_img_w_detections
 
     return d
 
@@ -46,14 +49,17 @@ def right_img_prep(right_img, config):
     rectificator = prep.Rectificator(config)
     rect_img = rectificator.rectify_image(right_img_alpha)
     rect_detections = rectificator.rectify_points(right_img['detections'], right_img['size'])
+    rect_img_w_detections = rectificator.rectify_image(right_img['img_w_detections'])
 
     angle = -90
     rot_img, rot_mat = prep.rotate_image(rect_img, angle)
     rot_detections = prep.rotate_points(rect_detections, angle, right_img['size'])
+    rot_img_w_detections, rot_mat = prep.rotate_image(rect_img_w_detections, angle)
 
     d = dict()
     d['img'] = rot_img
     d['detections'] = rot_detections
+    d['img_w_detections'] = rot_img_w_detections
 
     return d
 
@@ -158,3 +164,10 @@ def test_map_points(left_img_prep):
 
     npt.assert_equal(pano_points_left, target_left)
     npt.assert_equal(pano_points_right, target_right)
+
+
+def test_overall_stitching(fb_stitcher, left_img_prep, right_img_prep, outdir):
+    assert fb_stitcher.estimate_transform(left_img_prep['img'], right_img_prep['img']) is not None
+    pano = fb_stitcher.compose_panorama(left_img_prep['img_w_detections'], right_img_prep['img_w_detections'])
+    out = os.path.join(outdir, 'panorama_fb_w_detections.jpg')
+    cv2.imwrite(out, pano)
