@@ -25,6 +25,6 @@ install:
   - pip install --upgrade coveralls sphinx_rtd_theme python-coveralls
   - pip install -e .
 
-script: pytest -v --runslow
+script: pytest -v
 after_success:
   - coveralls
