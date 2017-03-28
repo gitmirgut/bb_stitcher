@@ -10,12 +10,6 @@ import bb_stitcher.preparation as prep
 import bb_stitcher.stitcher as stitcher
 
 
-slow = pytest.mark.skipif(
-    not pytest.config.getoption("--runslow"),
-    reason="need --runslow option to run"
-)
-
-
 @pytest.fixture
 def super_stitcher():
     st = stitcher.Stitcher()
@@ -129,7 +123,7 @@ def test_estimate_transform(fb_stitcher, left_img_prep, right_img_prep, not_to_b
     assert fb_stitcher.estimate_transform(left_img_prep['img'], not_to_bee) is None
 
 
-@slow
+@pytest.mark.slow
 def test_compose_panorama(left_img_prep, right_img_prep, homo_left, homo_right, pano_size, outdir):
     st = stitcher.Stitcher(homo_left, homo_right, pano_size)
     pano = st.compose_panorama(left_img_prep['img'], right_img_prep['img'])
