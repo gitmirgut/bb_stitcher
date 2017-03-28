@@ -15,7 +15,7 @@ class Stitcher(object):
         self.pano_size = pano_size
 
     def estimate_transform(self):
-        """Update self.homo_l and homo_r to /home/mrpoin/Beesbook/bb_stitcher/bb_stitcher/core.pynew values.
+        """Estimate transformation/homography of the left and right images/data to form a panorama.
 
         This should be overridden by a sublcass to customize stitching.
         Return the transformation matrix for the left and right image.
