@@ -16,12 +16,13 @@ class Stitcher(object):
 
     def estimate_transform(self, image_left, image_right):
         """Estimate transformation/homography of the left and right images/data to form a panorama.
+
         Return the transformation matrix for the left and right image.
-        
+
         Args:
             image_left (ndarray): Input left image.
             image_right (ndarray): Input right image.
-        
+
         Note:
             This should be overridden by a sublcass to customize stitching.
         """
