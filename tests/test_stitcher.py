@@ -176,10 +176,12 @@ def test_map_points(left_img_prep):
     npt.assert_equal(pano_points_left, target_left)
     npt.assert_equal(pano_points_right, target_right)
 
+
 @pytest.mark.slow
 def test_overall_stitching(fb_stitcher, left_img_prep, right_img_prep, outdir):
     assert fb_stitcher.estimate_transform(left_img_prep['img'], right_img_prep['img']) is not None
-    pano = fb_stitcher.compose_panorama(left_img_prep['img_w_detections'], right_img_prep['img_w_detections'])
+    pano = fb_stitcher.compose_panorama(
+        left_img_prep['img_w_detections'], right_img_prep['img_w_detections'])
     detections_left_mapped = fb_stitcher.map_left_points(left_img_prep['detections'])
     detections_right_mapped = fb_stitcher.map_right_points(right_img_prep['detections'])
     pano = draw_marks(pano, detections_left_mapped)
