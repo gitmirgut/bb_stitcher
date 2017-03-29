@@ -14,11 +14,16 @@ class Stitcher(object):
         self.homo_right = homo_right
         self.pano_size = pano_size
 
-    def estimate_transform(self):
+    def estimate_transform(self, image_left, image_right):
         """Estimate transformation/homography of the left and right images/data to form a panorama.
-
-        This should be overridden by a sublcass to customize stitching.
         Return the transformation matrix for the left and right image.
+        
+        Args:
+            image_left (ndarray): Input left image.
+            image_right (ndarray): Input right image.
+        
+        Note:
+            This should be overridden by a sublcass to customize stitching.
         """
         raise NotImplementedError()
 
