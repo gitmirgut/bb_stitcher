@@ -9,6 +9,8 @@ import pytest
 import bb_stitcher.core as core
 
 
+# add marker for incremental testing
+# http://doc.pytest.org/en/latest/example/simple.html#incremental-testing-test-steps
 def pytest_runtest_makereport(item, call):
     if "incremental" in item.keywords:
         if call.excinfo is not None:
