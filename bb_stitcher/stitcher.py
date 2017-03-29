@@ -34,8 +34,8 @@ class Stitcher(object):
         before.
 
         Args:
-            image_left (ndarray): Input left image.
-            image_right (ndarray): Input right image.
+            left_image (ndarray): Input left image.
+            right_image (ndarray): Input right image.
 
         Returns:
             ndarray: panorama (stitched image)
