@@ -90,3 +90,11 @@ ENV/
 /tests/out/*
 /docs/make.bat
 /jupyter/*
+.benchmarks/
+.idea/
+docs/.benchmarks/
+docs/_static/
+docs/_templates/
+jupyter/
+tests/.benchmarks/
+tests/out/
