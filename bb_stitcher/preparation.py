@@ -77,11 +77,11 @@ class Rectificator(object):
         # size and camera matrix will be cached to speed up rectification if multiple images
         # with same size will be rectified.
         if self.cached_size != size or self.cached_new_cam_mat is None:
-            self.size = size
+            self.cached_size = size
             self.cached_new_cam_mat, __ = cv2.getOptimalNewCameraMatrix(self.intr_m,
                                                                         self.dist_c,
-                                                                        self.size, 1,
-                                                                        self.size, 0)
+                                                                        self.cached_size, 1,
+                                                                        self.cached_size, 0)
         log.debug('new_camera_mat = \n{}'.format(self.cached_new_cam_mat))
         return cv2.undistortPoints(
             points, self.intr_m, self.dist_c, None, self.cached_new_cam_mat)[0]
