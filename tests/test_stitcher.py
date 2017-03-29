@@ -102,7 +102,7 @@ def pano_size():
 
 def test_super_estimate_transform(super_stitcher):
     with pytest.raises(NotImplementedError):
-        super_stitcher.estimate_transform()
+        super_stitcher.estimate_transform(None, None)
 
 
 def test_calc_feature_mask():
