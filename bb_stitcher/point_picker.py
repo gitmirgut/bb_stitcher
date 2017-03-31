@@ -157,6 +157,10 @@ class PointPicker(object):
         A matplot GUI will be initialised, where the user has to pick 4 points
         on the left and right image. Afterwards the PointPicker will return 2
         clockwise sorted list of the picked points.
+        
+        Returns:
+            list: Returns a List of len(*image), where each cell contains an ndarray (N,2), which
+            holds the coordinates of the selected points per image.
         """
         count_images = len(self.images)
         # creating one list per image, which will hold the draggable markers
