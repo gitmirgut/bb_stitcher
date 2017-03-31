@@ -28,33 +28,33 @@ class Stitcher(object):
         """
         raise NotImplementedError()
 
-    def compose_panorama(self, left_image, right_image):
+    def compose_panorama(self, image_left, image_right):
         """Try to compose the given images into the final panorama.
 
         This happens under the assumption that the image transformations were estimated or loaded
         before.
 
         Args:
-            left_image (ndarray): Input left image.
-            right_image (ndarray): Input right image.
+            image_left (ndarray): Input left image.
+            image_right (ndarray): Input right image.
 
         Returns:
             ndarray: panorama (stitched image)
         """
         # TODO(gitmirgut): Needs speed up.
-        left_image = helpers.add_alpha_channel(left_image)
-        right_image = helpers.add_alpha_channel(right_image)
+        image_left = helpers.add_alpha_channel(image_left)
+        image_right = helpers.add_alpha_channel(image_right)
 
-        left_image = cv2.warpPerspective(left_image, self.homo_left, self.pano_size)
-        right_image = cv2.warpPerspective(right_image, self.homo_right, self.pano_size)
+        image_left = cv2.warpPerspective(image_left, self.homo_left, self.pano_size)
+        image_right = cv2.warpPerspective(image_right, self.homo_right, self.pano_size)
 
-        for y in range(left_image.shape[0]):
-            for x in range(left_image.shape[1]):
-                if left_image[y][x][3] == 0 and right_image[y][x][3] != 0:
-                    left_image[y][x] = right_image[y][x]
-        return left_image
+        for y in range(image_left.shape[0]):
+            for x in range(image_left.shape[1]):
+                if image_left[y][x][3] == 0 and image_right[y][x][3] != 0:
+                    image_left[y][x] = image_right[y][x]
+        return image_left
 
-    def stitch(self, left_image, right_image):
+    def stitch(self, image_left, image_right):
         """Try to stitch the given images into a panorama."""
         pass
 
