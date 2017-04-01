@@ -4,7 +4,7 @@ Picking
 GUI
 ---
 
-.. automodule:: bb_stitcher.picking.gui
+.. automodule:: bb_stitcher.picking.picker
     :members:
     :undoc-members:
     :show-inheritance:
