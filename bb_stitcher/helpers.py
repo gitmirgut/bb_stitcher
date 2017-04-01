@@ -99,5 +99,64 @@ def add_alpha_channel(image):
                         'are (N,M), (N,M,3), (N,M,4).'.format(str(image.shape)))
 
 
-if __name__ == '__main__':
-    pass
+def sort_pts(points):
+    r"""Sort points as convex quadrilateral.
+
+    Sort points in clockwise order, so that they form A convex quadrilateral.
+
+    Example:
+        .. code::
+
+            pts:                sorted_pts:
+                 x   x                      A---B
+                              --->         /     \
+               x       x                  D-------C
+
+    Args:
+        points (ndarray): List of points *(N,2)*.
+
+    Returns:
+        ndarray: Clockwise ordered ``points`` *(N,2)*, where the most up left point is the \
+        starting point.
+    """
+    assert (len(points) == 4)
+
+    # calculate the barycentre / centre of gravity
+    barycentre = points.sum(axis=0) / 4
+
+    # var for saving the points in relation to the barycentre
+    bary_vectors = np.zeros((4, 2), np.float32)
+
+    # var for saving the A point of the origin
+    A = None
+    min_dist = None
+
+    for i, point in enumerate(points):
+
+        # determine the distance to the origin
+        cur_dist_origin = np.linalg.norm(point)
+
+        # save the A point of the origin
+        if A is None or cur_dist_origin < min_dist:
+            min_dist = cur_dist_origin
+            A = i
+
+        # determine point in relation to the barycentre
+        bary_vectors[i] = point - barycentre
+
+    angles = np.zeros(4, np.float32)
+    # determine the angles of the different points in relation to the line
+    # between closest point of origin (A) and barycentre
+    for i, bary_vector in enumerate(bary_vectors):
+        if i != A:
+            cur_angle = np.arctan2(
+                (np.linalg.det((bary_vectors[A], bary_vector))), np.dot(
+                    bary_vectors[A], bary_vector))
+            if cur_angle < 0:
+                cur_angle += 2 * np.pi
+            angles[i] = cur_angle
+    index_sorted = np.argsort(angles)
+    sorted_pts = np.zeros((len(points), 2), np.float32)
+    for i in range(len(points)):
+        sorted_pts[i] = points[index_sorted[i]]
+    return sorted_pts

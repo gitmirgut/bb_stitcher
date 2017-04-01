@@ -234,6 +234,9 @@ class RectangleStitcher(Stitcher):
         # TODO(gitmirgut) set all to False
         pt_picker = picker.PointPicker()
         pts_left, pts_right = pt_picker.pick([image_left, image_right], False)
-        assert len(pts_left) == len(pts_right)
+        assert len(pts_left) == 4 and len(pts_right) == 4
+        pts_left = helpers.sort_pts(pts_left)
+        pts_right = helpers.sort_pts(pts_right)
+        print(helpers.sort_pts(pts_left))
         print(pts_left)
         print(pts_right)

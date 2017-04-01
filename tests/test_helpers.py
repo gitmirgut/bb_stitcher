@@ -51,3 +51,19 @@ def test_add_alpha_channel(left_img):
     img_not = np.zeros((3000, 4000, 5, 4), dtype=np.uint8)
     with pytest.raises(Exception):
         helpers.add_alpha_channel(img_not)
+
+
+def test_sort_pts():
+    # TODO(gitmirgut) Add more test.
+    points = np.array([
+        [2, 2],
+        [2, 1],
+        [1, 1],
+        [1, 2]])
+    target_points = np.array([
+        [1, 1],
+        [2, 1],
+        [2, 2],
+        [1, 2]], dtype=np.float32)
+    sorted_points = helpers.sort_pts(points)
+    npt.assert_equal(sorted_points, target_points)
