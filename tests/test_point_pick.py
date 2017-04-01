@@ -2,7 +2,7 @@ import pytest
 
 import bb_stitcher.helpers as helpers
 import bb_stitcher.prep as prep
-import bb_stitcher.point_pick as point_picker
+import bb_stitcher.picking.point_pick as point_picker
 
 
 @pytest.fixture
@@ -51,5 +51,5 @@ def right_img_prep(right_img, config):
 def test_point_picker(left_img_prep, right_img_prep):
     pt = point_picker.PointPicker()
     print(pt)
-    #points = pt.pick(left_img_prep['img'], left_img_prep['img'])
-    #print(points)
+    points = pt.pick([left_img_prep['img'], right_img_prep['img']])
+    print(points)

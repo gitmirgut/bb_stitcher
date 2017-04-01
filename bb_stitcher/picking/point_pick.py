@@ -197,7 +197,7 @@ class PointPicker(object):
         mpl.rcParams['keymap.zoom'] = ['o', 'z']
         self.selection = selection
 
-    def pick(self, *images):
+    def pick(self, images, select = True):
         """Initialise GUI to pick 4 points on each side.
 
         A matplot GUI will be initialised, where the user has to pick 4 points
