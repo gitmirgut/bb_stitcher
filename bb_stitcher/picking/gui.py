@@ -33,10 +33,10 @@ class PointPicker(object):
         mpl.rcParams['keymap.zoom'] = ['o', 'z']
 
     def pick(self, images, all=True):
-        """Initialise a GUI to pick points on multiple images.
+        r"""Initialise a GUI to pick points on multiple images.
 
         A matplot GUI will be initialised, where the user can pick multiple points
-        on the **N** ``images``. Afterwards the ``PointPicker`` will return **N** ndarrays, which 
+        on the **N** ``images``. Afterwards the ``PointPicker`` will return **N** ndarrays, which
         holds the coordinates of the marked points. Each ndarray holds the points for one image.
 
         Args:
