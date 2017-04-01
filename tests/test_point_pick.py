@@ -2,7 +2,7 @@ import pytest
 
 import bb_stitcher.helpers as helpers
 import bb_stitcher.prep as prep
-import bb_stitcher.picking.gui as gui
+import bb_stitcher.picking.picker as gui
 
 
 @pytest.fixture

@@ -6,6 +6,7 @@ import numpy.testing as npt
 import pytest
 
 import bb_stitcher.helpers as helpers
+import bb_stitcher.picking.picker
 import bb_stitcher.prep as prep
 import bb_stitcher.stitcher as stitcher
 
@@ -189,3 +190,22 @@ def test_overall_stitching(fb_stitcher, left_img_prep, right_img_prep, outdir):
 
     out = os.path.join(outdir, 'panorama_fb_w_detections.jpg')
     cv2.imwrite(out, pano)
+
+
+def test_rectangle_stitcher(left_img_prep, right_img_prep, monkeypatch):
+    def mockreturn(myself, image_list, all):
+        left_points = np.array([
+            [88.91666412, 3632.6015625],
+            [2760.26855469, 3636.70849609],
+            [2726.26708984, 363.4861145],
+            [93.88884735, 371.98330688]], dtype=np.float32)
+        right_points = np.array([
+            [181.49372864, 3687.71582031],
+            [2903.44042969, 3723.99926758],
+            [2921.27368164, 458.77352905],
+            [255.66642761, 431.24780273]], dtype=np.float32)
+        return left_points, right_points
+    monkeypatch.setattr(bb_stitcher.picking.picker.PointPicker, 'pick', mockreturn)
+    # print(left_points)
+    rt_stitcher = stitcher.RectangleStitcher()
+    rt_stitcher.estimate_transform(left_img_prep['img'], right_img_prep['img'])

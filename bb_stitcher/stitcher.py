@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 
 import bb_stitcher.helpers as helpers
+import bb_stitcher.picking.picker as picker
 
 
 class Stitcher(object):
@@ -101,6 +102,7 @@ class FeatureBasedStitcher(Stitcher):
             config: config file which holds the basic stitching parameters.
         """
         # TODO(gitmirgut) add autoload config file
+        # TODO(gitmirgut) initialize super()
         self.overlap = int(config['FeatureBasedStitcher']['OVERLAP'])
         self.border_top = int(config['FeatureBasedStitcher']['BORDER_TOP'])
         self.border_bottom = int(config['FeatureBasedStitcher']['BORDER_BOTTOM'])
@@ -212,6 +214,10 @@ class FeatureBasedStitcher(Stitcher):
 
 
 class RectangleStitcher(Stitcher):
+    """Class to create a rectangle stitcher.
+
+    The ``RectangleStitcher`` maps selected points to an abstracted rectangle.
+    """
 
     def estimate_transform(self, image_left, image_right):
         """Estimate transformation for stitching of images based on 'rectangle' Stitching.
@@ -225,4 +231,9 @@ class RectangleStitcher(Stitcher):
             - **homo_right** (ndarray) -- homography *(3,3)* for ``image_right`` to form a panorama.
             - **pano_size** (tuple) -- Size *(width, height)* of the panorama.
         """
-        pass
+        # TODO(gitmirgut) set all to False
+        pt_picker = picker.PointPicker()
+        pts_left, pts_right = pt_picker.pick([image_left, image_right], False)
+        assert len(pts_left) == len(pts_right)
+        print(pts_left)
+        print(pts_right)
