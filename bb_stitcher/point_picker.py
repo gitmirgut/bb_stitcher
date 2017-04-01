@@ -26,7 +26,11 @@ class DraggableMarks(object):
         self.selected = False
 
     def get_coordinate(self):
-        """Return the current coordinate of the mark."""
+        """Return the current coordinate of the mark.
+        
+        Returns:
+            ndarray: center of the mark *(2,)*.
+        """
         return self.mark.get_xydata()[0]
 
     def connect(self):
