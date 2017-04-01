@@ -37,9 +37,9 @@ class DraggableMarks(object):
         """Connect to all needed Events."""
         self.cid_press = self.mark.figure.canvas.mpl_connect('button_press_event', self._on_press)
         self.cid_release = self.mark.figure.canvas.mpl_connect(
-            'button_release_event', self.on_release)
+            'button_release_event', self._on_release)
         self.cid_motion = self.mark.figure.canvas.mpl_connect('motion_notify_event', self._on_motion)
-        self.cid_key = self.mark.figure.canvas.mpl_connect('key_release_event', self.on_key)
+        self.cid_key = self.mark.figure.canvas.mpl_connect('key_release_event', self._on_key)
 
     def _on_press(self, event):
         """Check on button press if mouse is over this DraggableMarks."""
@@ -102,7 +102,7 @@ class DraggableMarks(object):
         # blit just the redrawn area
         canvas.blit(axes.bbox)
 
-    def on_release(self, event):
+    def _on_release(self, event):
         """On release the press data will be reset."""
         if DraggableMarks.lock is not self:
             return
@@ -117,7 +117,7 @@ class DraggableMarks(object):
         # redraw the full figure
         self.mark.figure.canvas.draw()
 
-    def on_key(self, event):
+    def _on_key(self, event):
         """Check what key ist pressed and executes corresponding function."""
         if event.inaxes != self.mark.axes:
             return

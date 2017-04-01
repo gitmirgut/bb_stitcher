@@ -51,5 +51,5 @@ def right_img_prep(right_img, config):
 def test_point_picker(left_img_prep, right_img_prep):
     pt = point_picker.PointPicker(left_img_prep['img'], left_img_prep['img'])
     print(pt)
-    # points = pt.pick()
-    # print(points)
+    points = pt.pick()
+    print(points)
