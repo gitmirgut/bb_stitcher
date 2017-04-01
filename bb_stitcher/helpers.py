@@ -102,7 +102,7 @@ def add_alpha_channel(image):
 def sort_pts(points):
     r"""Sort points as convex quadrilateral.
 
-    Sort points in clockwise order, so that they form A convex quadrilateral.
+    Sort points in clockwise order, so that they form a convex quadrilateral.
 
     Example:
         .. code::
