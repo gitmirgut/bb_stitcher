@@ -209,3 +209,20 @@ class FeatureBasedStitcher(Stitcher):
         self.homo_right = homo_trans.dot(homo_right)
         self.pano_size = pano_size
         return self.homo_left, self.homo_right, self.pano_size
+
+
+class RectangleStitcher(Stitcher):
+
+    def estimate_transform(self, image_left, image_right):
+        """Estimate transformation for stitching of images based on 'rectangle' Stitching.
+
+        Args:
+            image_left (ndarray): Input left image.
+            image_right (ndarray): Input right image.
+
+        Returns:
+            - **homo_left** (ndarray) -- homography *(3,3)* for ``image_left`` to form a panorama.
+            - **homo_right** (ndarray) -- homography *(3,3)* for ``image_right`` to form a panorama.
+            - **pano_size** (tuple) -- Size *(width, height)* of the panorama.
+        """
+        pass
