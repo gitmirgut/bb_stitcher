@@ -23,8 +23,8 @@ class Stitcher(object):
             image_left (ndarray): Input left image.
             image_right (ndarray): Input right image.
 
-        Note:
-            This should be overridden by a sublcass to customize stitching.
+        Warning:
+            This must be overridden by a sublcass to customize stitching.
         """
         raise NotImplementedError()
 
