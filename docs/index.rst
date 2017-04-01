@@ -12,6 +12,7 @@ Welcome to bb_stitcher's documentation!
    api/preparation
    api/stitcher
    api/helpers
+   api/picking
 #   intro
 #   tutorial
 
