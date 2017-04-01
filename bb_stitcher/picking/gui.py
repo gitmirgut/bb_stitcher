@@ -1,7 +1,18 @@
-"""Initialise GUI to pick various point on an image.
+#  Licensed under the Apache License, Version 2.0 (the "License"); you may
+#  not use this file except in compliance with the License. You may obtain
+#  a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+"""Initialise GUI to pick various points on an images.
 
 This Module provides a class to initialise a GUI, to pick various points
-on one ore multiple images.
+on one or multiple images.
 """
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -14,24 +25,28 @@ import bb_stitcher.picking.draggables as draggs
 class PointPicker(object):
     """GUI for picking points."""
 
-    def __init__(self, selection=True):
+    def __init__(self):
         """Initialise GUI to pick various point on an image."""
         mpl.rcParams['keymap.quit'] = ['ctrl+w', 'cmd+w', 'q']
         mpl.rcParams['keymap.home'] = ['h', 'home']
         mpl.rcParams['keymap.save'] = ['ctrl+s']
         mpl.rcParams['keymap.zoom'] = ['o', 'z']
-        self.selection = selection
 
-    def pick(self, images, select=True):
-        """Initialise GUI to pick points on multiple images.
+    def pick(self, images, all=True):
+        """Initialise a GUI to pick points on multiple images.
 
-        A matplot GUI will be initialised, where the user has to pick 4 points
-        on the left and right image. Afterwards the PointPicker will return 2
-        clockwise sorted list of the picked points.
+        A matplot GUI will be initialised, where the user can pick multiple points
+        on the **N** ``images``. Afterwards the ``PointPicker`` will return **N** ndarrays, which 
+        holds the coordinates of the marked points. Each ndarray holds the points for one image.
+
+        Args:
+            images (list(ndarray)): List of images (ndarray)
+            all: If ``True`` all points will be returned and else just 'selected' points will be\
+            returned.
 
         Returns:
-            list: Returns a List of len(*image), where each cell contains an ndarray (N,2), which
-            holds the coordinates of the selected points per image.
+            list(ndarray): Returns a List of length **N**, where each cell contains a ndarray\
+             *(M,2)*, which holds the coordinates of the *M* marked points per image.
         """
         imgs_a = []
         for img in images:
@@ -75,6 +90,6 @@ class PointPicker(object):
         plt.show()
         points = []
         for i, dms in enumerate(dms_per_image):
-            points_per_image = dms.get_points(all=False)
+            points_per_image = dms.get_points(all=all)
             points.append(points_per_image)
         return points

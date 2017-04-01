@@ -1,6 +1,17 @@
+#  Licensed under the Apache License, Version 2.0 (the "License"); you may
+#  not use this file except in compliance with the License. You may obtain
+#  a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
 """This module contains draggable objects for the matplotlib GUI.
 
-The objects are used to mark specif points on an image. The module also
+The objects are used to mark specific points on an image. The module also
 contains a special list to save these objects. This list is extended with
 special functions to get the coordinates of the marked points.
 """
@@ -12,7 +23,7 @@ class DraggableMark(object):
     """Defines Marker which can be dragged by mouse.
 
     The placed mark can be dragged by simple left click and can be refined
-    by pressing the specif button.
+    by pressing the specific button.
     """
 
     lock = None  # only one mark at at time can be animated.
@@ -184,7 +195,7 @@ class DraggableMark(object):
 
 
 class DraggableMarkList(list):
-    """Extended List with some extras functions for DraggableMarks."""
+    """Extended List with some extra functions for DraggableMarks."""
 
     def __init__(self, *args):
         """Initialize a list which holds DraggableMarks."""
@@ -194,8 +205,8 @@ class DraggableMarkList(list):
         """Convert the list of DraggableMarks to a ndarray holding just coordinates.
 
         Args:
-            all (bool): if ``True`` function returns all coordinate. If ``False`` function return
-            returns just coordinates form DraggableMarks marked as selected.
+            all (bool): if ``True`` function returns all coordinate. If ``False`` function return \
+            just coordinates form DraggableMarks marked as selected.
 
         Returns:
             ndarray: array that contains just the coordinates of the DraggableMarks of the list.

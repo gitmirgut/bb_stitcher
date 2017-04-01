@@ -1,4 +1,4 @@
-"""Image Stitcher especially designed for the BeesBook Project."""
+"""This module contains various image stitchers especially designed for the BeesBook Project."""
 import cv2
 import numpy as np
 
