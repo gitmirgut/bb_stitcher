@@ -27,7 +27,7 @@ class DraggableMarks(object):
 
     def get_coordinate(self):
         """Return the current coordinate of the mark.
-        
+
         Returns:
             ndarray: center of the mark *(2,)*.
         """
@@ -35,11 +35,14 @@ class DraggableMarks(object):
 
     def connect(self):
         """Connect to all needed Events."""
-        self.cid_press = self.mark.figure.canvas.mpl_connect('button_press_event', self._on_press)
+        self.cid_press = self.mark.figure.canvas.mpl_connect(
+            'button_press_event', self._on_press)
         self.cid_release = self.mark.figure.canvas.mpl_connect(
             'button_release_event', self._on_release)
-        self.cid_motion = self.mark.figure.canvas.mpl_connect('motion_notify_event', self._on_motion)
-        self.cid_key = self.mark.figure.canvas.mpl_connect('key_release_event', self._on_key)
+        self.cid_motion = self.mark.figure.canvas.mpl_connect(
+            'motion_notify_event', self._on_motion)
+        self.cid_key = self.mark.figure.canvas.mpl_connect(
+            'key_release_event', self._on_key)
 
     def _on_press(self, event):
         """Check on button press if mouse is over this DraggableMarks."""
@@ -161,7 +164,7 @@ class PointPicker(object):
         A matplot GUI will be initialised, where the user has to pick 4 points
         on the left and right image. Afterwards the PointPicker will return 2
         clockwise sorted list of the picked points.
-        
+
         Returns:
             list: Returns a List of len(*image), where each cell contains an ndarray (N,2), which
             holds the coordinates of the selected points per image.

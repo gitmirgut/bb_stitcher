@@ -1,8 +1,8 @@
 import pytest
 
 import bb_stitcher.helpers as helpers
-import bb_stitcher.preparation as prep
-import bb_stitcher.point_picker as point_picker
+import bb_stitcher.prep as prep
+import bb_stitcher.point_pick as point_picker
 
 
 @pytest.fixture

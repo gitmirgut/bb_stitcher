@@ -6,7 +6,7 @@ import numpy.testing as npt
 import pytest
 
 import bb_stitcher.helpers as helpers
-import bb_stitcher.preparation as prep
+import bb_stitcher.prep as prep
 import bb_stitcher.stitcher as stitcher
 
 

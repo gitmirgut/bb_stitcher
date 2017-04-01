@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 import numpy.testing as npt
 
-import bb_stitcher.preparation as prep
+import bb_stitcher.prep as prep
 
 
 def draw_marks(img, pts, color=(0, 0, 255), marker_types=cv2.MARKER_CROSS):
