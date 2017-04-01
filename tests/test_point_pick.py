@@ -49,7 +49,7 @@ def right_img_prep(right_img, config):
 
 @pytest.mark.slow
 def test_point_picker(left_img_prep, right_img_prep):
-    pt = point_picker.PointPicker(left_img_prep['img'], left_img_prep['img'])
+    pt = point_picker.PointPicker()
     print(pt)
-    points = pt.pick()
-    print(points)
+    #points = pt.pick(left_img_prep['img'], left_img_prep['img'])
+    #print(points)

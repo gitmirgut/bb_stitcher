@@ -3,6 +3,8 @@
 This Module provides a class to initialise a GUI, to pick various points
 on one ore multiple images.
 """
+import cv2
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -18,9 +20,10 @@ class DraggableMarks(object):
 
     lock = None  # only one mark at at time can be animated.
 
-    def __init__(self, mark):
+    def __init__(self, mark, img=None):
         """Initialize a draggable mark."""
         self.mark = mark
+        self.img = cv2.cvtColor(img, cv2.COLOR_BGRA2GRAY)
         self.press = None
         self.background = None
         self.selected = False
@@ -32,6 +35,39 @@ class DraggableMarks(object):
             ndarray: center of the mark *(2,)*.
         """
         return self.mark.get_xydata()[0]
+
+    def _toggle_select(self):
+        """Toggle mark selection state."""
+        if self.selected is False:
+            self.selected = True
+            self.mark.set_color('g')
+        else:
+            self.selected = False
+            self.mark.set_color('r')
+
+    def _select(self):
+        self.selected = True
+        self.mark.set_color('g')
+
+    def _unselect(self):
+        self.selected = False
+        self.mark.set_color('r')
+
+    def _refine(self):
+        """Refine the location of the mark.
+
+        Use it if you want that the mark should be on a corner.
+        """
+        criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
+        new_coordinate = self.get_coordinate()
+        new_coordinate = np.array([[new_coordinate]], dtype=np.float32)
+        cv2.cornerSubPix(self.img, new_coordinate, (40, 40), (-1, -1), criteria)
+        x, y = new_coordinate[0][0]
+        self.mark.set_xdata(x)
+        self.mark.set_ydata(y)
+        self._unselect()
+        self.mark.set_color('y')
+        self.mark.figure.canvas.draw()
 
     def connect(self):
         """Connect to all needed Events."""
@@ -58,6 +94,10 @@ class DraggableMarks(object):
         contains, __ = self.mark.contains(event)
         if not contains:
             return
+
+        # set back the color to red to mark that is not refined and remove
+        # selection flag
+        self._unselect()
 
         # get the current coordinates of the marker
         x, y = self.get_coordinate()
@@ -130,13 +170,10 @@ class DraggableMarks(object):
         if not contains:
             return
 
-        if event.key == 'x':
-            if self.selected is False:
-                self.mark.set_color('g')
-                self.selected = True
-            else:
-                self.mark.set_color('r')
-                self.selected = False
+        if event.key == 's':
+            self._toggle_select()
+        elif event.key == 'r':
+            self._refine()
 
         self.mark.figure.canvas.draw()
 
@@ -152,13 +189,15 @@ class DraggableMarks(object):
 class PointPicker(object):
     """GUI for picking points."""
 
-    def __init__(self, *images):
+    def __init__(self, selection=True):
         """Initialise GUI to pick various point on an image."""
-        self.images = []
-        for image in images:
-            self.images.append(helpers.add_alpha_channel(image))
+        mpl.rcParams['keymap.quit'] = ['ctrl+w', 'cmd+w', 'q']
+        mpl.rcParams['keymap.home'] = ['h', 'home']
+        mpl.rcParams['keymap.save'] = ['ctrl+s']
+        mpl.rcParams['keymap.zoom'] = ['o', 'z']
+        self.selection = selection
 
-    def pick(self, selected=False):
+    def pick(self, *images):
         """Initialise GUI to pick 4 points on each side.
 
         A matplot GUI will be initialised, where the user has to pick 4 points
@@ -169,7 +208,10 @@ class PointPicker(object):
             list: Returns a List of len(*image), where each cell contains an ndarray (N,2), which
             holds the coordinates of the selected points per image.
         """
-        count_images = len(self.images)
+        imgs_a = []
+        for img in images:
+            imgs_a.append(helpers.add_alpha_channel((img)))
+        count_images = len(imgs_a)
         # creating one list per image, which will hold the draggable markers
         # e.g. for 2 images:
         # dms_per_image = [[<dragableMarks first image>],[<dragableMarks second image>]]
@@ -185,7 +227,7 @@ class PointPicker(object):
                     if event.inaxes == ax:
                         marker, = ax.plot(
                             event.xdata, event.ydata, 'xr', markersize=10, markeredgewidth=2)
-                        dm = DraggableMarks(marker)
+                        dm = DraggableMarks(marker, imgs_a[i])
                         dm.connect()
                         dms_per_image[i].append(dm)
                         fig.canvas.draw()
@@ -198,7 +240,7 @@ class PointPicker(object):
         if count_images == 1:
             axes = np.array([axes])
 
-        for i, image in enumerate(self.images):
+        for i, image in enumerate(imgs_a):
             # don't draw y-axis on every image, just on first image
             if i > 0:
                 plt.setp(axes[i].get_yticklabels(), visible=False)
