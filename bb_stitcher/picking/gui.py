@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import bb_stitcher.helpers as helpers
-from bb_stitcher.picking.draggables import DraggableMarks
+import bb_stitcher.picking.draggables as draggs
 
 
 class PointPicker(object):
@@ -22,8 +22,8 @@ class PointPicker(object):
         mpl.rcParams['keymap.zoom'] = ['o', 'z']
         self.selection = selection
 
-    def pick(self, images, select = True):
-        """Initialise GUI to pick 4 points on each side.
+    def pick(self, images, select=True):
+        """Initialise GUI to pick points on multiple images.
 
         A matplot GUI will be initialised, where the user has to pick 4 points
         on the left and right image. Afterwards the PointPicker will return 2
@@ -43,7 +43,7 @@ class PointPicker(object):
 
         dms_per_image = []
         for __ in range(count_images):
-            dms_per_image.append([])
+            dms_per_image.append(draggs.DraggableMarkList())
 
         def _on_click(event):
             # double click left mouse button
@@ -52,7 +52,7 @@ class PointPicker(object):
                     if event.inaxes == ax:
                         marker, = ax.plot(
                             event.xdata, event.ydata, 'xr', markersize=10, markeredgewidth=2)
-                        dm = DraggableMarks(marker, imgs_a[i])
+                        dm = draggs.DraggableMark(marker, imgs_a[i])
                         dm.connect()
                         dms_per_image[i].append(dm)
                         fig.canvas.draw()
@@ -75,8 +75,6 @@ class PointPicker(object):
         plt.show()
         points = []
         for i, dms in enumerate(dms_per_image):
-            points_per_image = np.zeros((len(dms), 2), dtype=np.float64)
-            for j, dm in enumerate(dms):
-                points_per_image[j] = dm.get_coordinate()
+            points_per_image = dms.get_points(all=False)
             points.append(points_per_image)
         return points

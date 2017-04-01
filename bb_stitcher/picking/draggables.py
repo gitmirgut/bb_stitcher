@@ -1,8 +1,14 @@
+"""This module contains draggable objects for the matplotlib GUI.
+
+The objects are used to mark specif points on an image. The module also
+contains a special list to save these objects. This list is extended with
+special functions to get the coordinates of the marked points.
+"""
 import cv2
 import numpy as np
 
 
-class DraggableMarks(object):
+class DraggableMark(object):
     """Defines Marker which can be dragged by mouse.
 
     The placed mark can be dragged by simple left click and can be refined
@@ -78,7 +84,7 @@ class DraggableMarks(object):
             return
 
         # checks if an other DraggableMarks is already chosen
-        if DraggableMarks.lock is not None:
+        if DraggableMark.lock is not None:
             return
 
         # This checks if the mouse is over us (marker)
@@ -97,7 +103,7 @@ class DraggableMarks(object):
         self.press = x, y, event.xdata, event.ydata
 
         # Locks the dragging of other DraggableMarker
-        DraggableMarks.lock = self
+        DraggableMark.lock = self
 
         # draw everything but the selected marker and store the pixel buffer
         canvas = self.mark.figure.canvas
@@ -114,7 +120,7 @@ class DraggableMarks(object):
 
     def _on_motion(self, event):
         """On motion the mark will move if the mouse is over this marker."""
-        if DraggableMarks.lock is not self:
+        if DraggableMark.lock is not self:
             return
         if event.inaxes != self.mark.axes:
             return
@@ -138,11 +144,11 @@ class DraggableMarks(object):
 
     def _on_release(self, event):
         """On release the press data will be reset."""
-        if DraggableMarks.lock is not self:
+        if DraggableMark.lock is not self:
             return
 
         self.press = None
-        DraggableMarks.lock = None
+        DraggableMark.lock = None
 
         # turn off the mark animation property and reset the background
         self.mark.set_animated(False)
@@ -175,3 +181,34 @@ class DraggableMarks(object):
         self.mark.figure.canvas.mpl_disconnect(self.c_id_motion)
         self.mark.figure.canvas.mpl_disconnect(self.cid_key)
         self.mark.figure.canvas.draw()
+
+
+class DraggableMarkList(list):
+    """Extended List with some extras functions for DraggableMarks."""
+
+    def __init__(self, *args):
+        """Initialize a list which holds DraggableMarks."""
+        list.__init__(self, *args)
+
+    def get_points(self, all=True):
+        """Convert the list of DraggableMarks to a ndarray holding just coordinates.
+
+        Args:
+            all (bool): if ``True`` function returns all coordinate. If ``False`` function return
+            returns just coordinates form DraggableMarks marked as selected.
+
+        Returns:
+            ndarray: array that contains just the coordinates of the DraggableMarks of the list.
+        """
+        dms = []
+        if all:
+            dms = self
+        else:
+            for i, dm in enumerate(self):
+                if dm.selected:
+                    dms.append(dm)
+        points = np.zeros((len(dms), 2), np.float32)
+        for i, dm in enumerate(dms):
+            points[i] = dm.get_coordinate()
+
+        return points

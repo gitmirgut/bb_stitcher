@@ -12,7 +12,7 @@ setup(
     url='https://github.com/gitmirgut/bb_stitcher',
     author='gitmirgut',
     author_email="gitmirgut@users.noreply.github.com",
-    packages=['bb_stitcher'],
+    packages=['bb_stitcher', 'bb_stitcher.picking'],
     license='Apache License 2.0',
     classifiers=[
         'Development Status :: 3 - Alpha',
