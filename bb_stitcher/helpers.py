@@ -81,7 +81,7 @@ def add_alpha_channel(image):
                         or *(M,N,4)* already with alpha channel.
 
     Returns:
-        ndarray: ``image`` extended alpha channel
+        ndarray: ``image`` extended with alpha channel
 
     """
     if len(image.shape) == 2:
@@ -103,6 +103,7 @@ def form_rectangle(width, height):
     """Return a rectangle represented by 4 points ndarray *(4,2)*.
 
     The starting point is the Origin and the points are sorted in clockwise order.
+
     Args:
         width (float): width of the rectangle.
         height (float): width of the rectangle.
@@ -183,10 +184,11 @@ def sort_pts(points):
 
 
 def raw_estimate_rect(points):
-    r"""Abstract an rectangle from an convex quadrilateral.
+    """Abstract an rectangle from an convex quadrilateral.
 
     The convex quadrilateral is defined by ``Points``. The points must be sorted in clockwise order
     where the most up left point is the starting point. (see sort_pts)
+
     Example:
         .. code::
 
@@ -196,7 +198,7 @@ def raw_estimate_rect(points):
                D-------C                  D'------C'
 
     The dimension of the rectangle is estimated in the following manner:
-    |A'B'|=|D'C'|=max(|AB|,|DC|) and |A'D'|=|B'C'|=max(|AD|,|BC|)
+    ``|A'B'|=|D'C'|=max(|AB|,|DC|)`` and ``|A'D'|=|B'C'|=max(|AD|,|BC|)``
 
     Args:
         points (ndarray): Array of clockwise ordered points *(4,2)*, where most up left point is\
@@ -230,13 +232,22 @@ def harmonize_rects(rect_a, rect_b):
     Example:
         .. code::
 
-        rect_a:     rect_b:         rect_a:           rect_b:
+           rect_a:    rect_b:        harm_rect_a:       harm_rect_b:
 
-                    W-----X         A'--------------B'    W'----X'
-        A-----B     |     |         |               |     |     |
-        |     |     |     |   -->   |               |     |     |
-        D-----C     |     |         |               |     |     |
-                    Z-----Y         D'--------------C'    Z'----Y'
+                        W-----X         A'--------------B'    W'----X'
+            A-----B     |     |         |               |     |     |
+            |     |     |     |   -->   |               |     |     |
+            D-----C     |     |         |               |     |     |
+                        Z-----Y         D'--------------C'    Z'----Y'
+
+    Args:
+        rect_a (ndarray): Array of clockwise ordered points *(4,2)*, where most up left point is\
+        the starting point.
+        rect_b (ndarray): Same as ``rect_a``
+
+    Returns:
+        - **harm_rect_a** (ndarray) -- harmonized version of ``rect_a``
+        - **harm_rect_b** (ndarray) -- harmonized version of ``rect_b``
     """
     A = rect_a[0]
     B = rect_a[1]
@@ -269,14 +280,14 @@ def harmonize_rects(rect_a, rect_b):
     vert_b = XY
 
     if vert_a > vert_b:
-        new_vert_b = vert_a
+        harm_vert_b = vert_a
         ratio = vert_a / vert_b
-        new_hori_b = ratio * hori_b
-        new_rect_b = form_rectangle(new_hori_b, new_vert_b)
-        return rect_a, new_rect_b
+        harm_hori_b = ratio * hori_b
+        harm_rect_b = form_rectangle(harm_hori_b, harm_vert_b)
+        return rect_a, harm_rect_b
     else:
-        new_vert_a = vert_b
+        harm_vert_a = vert_b
         ratio = vert_b / vert_a
-        new_hori_a = ratio * hori_a
-        new_rect_a = form_rectangle(new_hori_a, new_vert_a)
-        return new_rect_a, rect_b
+        harm_hori_a = ratio * hori_a
+        harm_rect_a = form_rectangle(harm_hori_a, harm_vert_a)
+        return harm_rect_a, rect_b

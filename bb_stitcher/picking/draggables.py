@@ -202,7 +202,7 @@ class DraggableMarkList(list):
         list.__init__(self, *args)
 
     def get_points(self, all=True):
-        r"""Convert the list of DraggableMarks to a ndarray holding just coordinates.
+        """Convert the list of DraggableMarks to a ndarray holding just coordinates.
 
         Args:
             all (bool): if ``True`` function returns all coordinate. If ``False`` function return \
