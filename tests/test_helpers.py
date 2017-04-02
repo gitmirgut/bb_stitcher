@@ -67,3 +67,20 @@ def test_sort_pts():
         [1, 2]], dtype=np.float32)
     sorted_points = helpers.sort_pts(points)
     npt.assert_equal(sorted_points, target_points)
+
+
+def test_raw_estimate_rect():
+    points = np.array([
+        [2, 2],
+        [6, 1],
+        [8, 8],
+        [1, 7]
+    ], dtype=np.float32)
+    target_points = np.array([
+        [0, 0],
+        [7.0710, 0],
+        [7.0710, 7.2801],
+        [0, 7.2801]
+    ])
+    result = helpers.raw_estimate_rect(points)
+    npt.assert_almost_equal(result, target_points, decimal=4)

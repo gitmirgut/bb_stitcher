@@ -113,7 +113,7 @@ def sort_pts(points):
                x       x                  D-------C
 
     Args:
-        points (ndarray): List of points *(N,2)*.
+        points (ndarray): Array of points *(N,2)*.
 
     Returns:
         ndarray: Clockwise ordered ``points`` *(N,2)*, where the most up left point is the \
@@ -160,3 +160,49 @@ def sort_pts(points):
     for i in range(len(points)):
         sorted_pts[i] = points[index_sorted[i]]
     return sorted_pts
+
+
+def raw_estimate_rect(points):
+    r"""Abstract an rectangle from an convex quadrilateral.
+
+    The convex quadrilateral is defined by ``Points``. The points must be sorted in clockwise order
+    where the most up left point is the starting point. (see sort_pts)
+    Example:
+        .. code::
+
+            points:             rectangled points:
+                 A---B                    A'------B'
+                /     \       --->        |       |
+               D-------C                  D'------C'
+
+    The dimension of the rectangle is estimated in the following manner:
+    |A'B'|=|D'C'|=max(|AB|,|DC|) and |A'D'|=|B'C'|=max(|AD|,|BC|)
+
+    Args:
+        points (ndarray): Array of clockwise ordered points *(4,2)*, where most up left point is\
+        the starting point.
+
+    Returns:
+        ndarray: 'Rectangled' points (the rectangle is aligned to the origin).
+    """
+    # TODO(gitmirgut) add link to sort_pts
+    A = points[0]
+    B = points[1]
+    C = points[2]
+    D = points[3]
+
+    AB = np.linalg.norm(B - A)
+    BC = np.linalg.norm(C - B)
+    CD = np.linalg.norm(D - C)
+    DA = np.linalg.norm(D - A)
+
+    hori_len = max(AB, CD)
+    vert_len = max(BC, DA)
+
+    dest_rect = np.zeros((4, 2), np.float32)
+    dest_rect[0] = 0, 0
+    dest_rect[1] = hori_len, 0
+    dest_rect[2] = hori_len, vert_len
+    dest_rect[3] = 0, vert_len
+
+    return dest_rect
