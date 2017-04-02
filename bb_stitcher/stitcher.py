@@ -245,7 +245,7 @@ class FeatureBasedStitcher(Stitcher):
         assert len(good_matches) > 2
         homo_right = cv2.estimateRigidTransform(good_pts_left, good_pts_right, False)
         if homo_right is None:
-            return
+            return None
         homo_right = cv2.invertAffineTransform(homo_right)
         homo_right = np.vstack([homo_right, [0, 0, 1]])
 
