@@ -232,11 +232,29 @@ class RectangleStitcher(Stitcher):
             - **pano_size** (tuple) -- Size *(width, height)* of the panorama.
         """
         # TODO(gitmirgut) set all to False
+        size_left = image_left.shape[:2][::-1]
+        size_right = image_right.shape[:2][::-1]
         pt_picker = picker.PointPicker()
         pts_left, pts_right = pt_picker.pick([image_left, image_right], False)
         assert len(pts_left) == 4 and len(pts_right) == 4
         pts_left = helpers.sort_pts(pts_left)
         pts_right = helpers.sort_pts(pts_right)
-        print(helpers.sort_pts(pts_left))
-        print(pts_left)
-        print(pts_right)
+
+        target_pts_left = helpers.raw_estimate_rect(pts_left)
+        target_pts_right = helpers.raw_estimate_rect(pts_right)
+        target_pts_left, target_pts_right = helpers.harmonize_rects(
+            target_pts_left, target_pts_right)
+
+        # declare the shift of the right points
+        shift_right = np.amax(target_pts_left[:, 0])
+        target_pts_right[:, 0] = target_pts_right[:, 0] + shift_right
+        homo_left, __ = cv2.findHomography(pts_left, target_pts_left)
+        homo_right, __ = cv2.findHomography(pts_right, target_pts_right)
+
+        homo_trans, pano_size = helpers.align_to_display_area(
+            size_left, size_right, homo_left, homo_right)
+
+        self.homo_left = homo_trans.dot(homo_left)
+        self.homo_right = homo_trans.dot(homo_right)
+        self.pano_size = pano_size
+        return self.homo_left, self.homo_right, self.pano_size

@@ -192,7 +192,7 @@ def test_overall_stitching(fb_stitcher, left_img_prep, right_img_prep, outdir):
     cv2.imwrite(out, pano)
 
 
-def test_rectangle_stitcher(left_img_prep, right_img_prep, monkeypatch):
+def test_rectangle_stitcher(left_img_prep, right_img_prep, outdir, monkeypatch):
     def mockreturn(myself, image_list, all):
         left_points = np.array([
             [88.91666412, 3632.6015625],
@@ -208,4 +208,11 @@ def test_rectangle_stitcher(left_img_prep, right_img_prep, monkeypatch):
     monkeypatch.setattr(bb_stitcher.picking.picker.PointPicker, 'pick', mockreturn)
     # print(left_points)
     rt_stitcher = stitcher.RectangleStitcher()
-    rt_stitcher.estimate_transform(left_img_prep['img'], right_img_prep['img'])
+    homo_left, homo_right, pano_size = rt_stitcher.estimate_transform(
+        left_img_prep['img'], right_img_prep['img'])
+    assert homo_left is not None
+    assert homo_right is not None
+    assert pano_size is not None
+    pano = rt_stitcher.compose_panorama(left_img_prep['img'], right_img_prep['img'])
+    out = os.path.join(outdir, 'panorama_rect_stitch.jpg')
+    cv2.imwrite(out, pano)
