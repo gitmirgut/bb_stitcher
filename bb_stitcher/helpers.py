@@ -99,6 +99,26 @@ def add_alpha_channel(image):
                         'are (N,M), (N,M,3), (N,M,4).'.format(str(image.shape)))
 
 
+def form_rectangle(width, height):
+    """Return a rectangle represented by 4 points ndarray *(4,2)*.
+
+    The starting point is the Origin and the points are sorted in clockwise order.
+    Args:
+        width (float): width of the rectangle.
+        height (float): width of the rectangle.
+
+    Returns:
+        ndarray: rectangle represented by 4 points as ndarray *(4,2)*.
+    """
+    rect = np.zeros((4, 2), dtype=np.float32)
+    rect[0] = 0, 0
+    rect[1] = width, 0
+    rect[2] = width, height
+    rect[3] = 0, height
+
+    return rect
+
+
 def sort_pts(points):
     r"""Sort points as convex quadrilateral.
 
@@ -199,10 +219,64 @@ def raw_estimate_rect(points):
     hori_len = max(AB, CD)
     vert_len = max(BC, DA)
 
-    dest_rect = np.zeros((4, 2), np.float32)
-    dest_rect[0] = 0, 0
-    dest_rect[1] = hori_len, 0
-    dest_rect[2] = hori_len, vert_len
-    dest_rect[3] = 0, vert_len
+    dest_rect = form_rectangle(hori_len, vert_len)
 
     return dest_rect
+
+
+def harmonize_rects(rect_a, rect_b):
+    """Harmonize two rectangles in there vertical dimension.
+
+    Example:
+        .. code::
+
+        rect_a:     rect_b:         rect_a:           rect_b:
+
+                    W-----X         A'--------------B'    W'----X'
+        A-----B     |     |         |               |     |     |
+        |     |     |     |   -->   |               |     |     |
+        D-----C     |     |         |               |     |     |
+                    Z-----Y         D'--------------C'    Z'----Y'
+    """
+    A = rect_a[0]
+    B = rect_a[1]
+    C = rect_a[2]
+    D = rect_a[3]
+
+    W = rect_b[0]
+    X = rect_b[1]
+    Y = rect_b[2]
+    Z = rect_b[3]
+
+    AB = np.linalg.norm(B - A)
+    BC = np.linalg.norm(C - B)
+    CD = np.linalg.norm(D - C)
+    DA = np.linalg.norm(D - A)
+
+    assert AB == CD and BC == DA
+
+    WX = np.linalg.norm(X - W)
+    XY = np.linalg.norm(Y - X)
+    YZ = np.linalg.norm(Z - Y)
+    ZW = np.linalg.norm(W - Z)
+
+    assert WX == YZ and XY == ZW
+
+    hori_a = AB
+    vert_a = BC
+
+    hori_b = WX
+    vert_b = XY
+
+    if vert_a > vert_b:
+        new_vert_b = vert_a
+        ratio = vert_a / vert_b
+        new_hori_b = ratio * hori_b
+        new_rect_b = form_rectangle(new_hori_b, new_vert_b)
+        return rect_a, new_rect_b
+    else:
+        new_vert_a = vert_b
+        ratio = vert_b / vert_a
+        new_hori_a = ratio * hori_a
+        new_rect_a = form_rectangle(new_hori_a, new_vert_a)
+        return new_rect_a, rect_b

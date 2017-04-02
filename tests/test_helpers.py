@@ -53,6 +53,19 @@ def test_add_alpha_channel(left_img):
         helpers.add_alpha_channel(img_not)
 
 
+def test_form_rectangle():
+    height = 4
+    width = 3
+    target = np.array([
+        [0, 0],
+        [3, 0],
+        [3, 4],
+        [0, 4]
+    ])
+    result = helpers.form_rectangle(width, height)
+    npt.assert_equal(result, target)
+
+
 def test_sort_pts():
     # TODO(gitmirgut) Add more test.
     points = np.array([
@@ -84,3 +97,33 @@ def test_raw_estimate_rect():
     ])
     result = helpers.raw_estimate_rect(points)
     npt.assert_almost_equal(result, target_points, decimal=4)
+
+
+def test_harmonize_rects():
+    rect_a = np.array([
+        [0, 0],
+        [5, 0],
+        [5, 4],
+        [0, 4]
+    ], dtype=np.float32)
+
+    rect_b = np.array([
+        [0, 0],
+        [7, 0],
+        [7, 6],
+        [0, 6]
+    ], dtype=np.float32)
+
+    target_rect_a = np.array([
+        [0, 0],
+        [7.5, 0],
+        [7.5, 6],
+        [0, 6]
+    ], dtype=np.float32)
+    new_rect_a, new_rect_b = helpers.harmonize_rects(rect_a, rect_b)
+    npt.assert_equal(new_rect_a, target_rect_a)
+    npt.assert_equal(new_rect_b, rect_b)
+
+    new_rect_b, new_rect_a = helpers.harmonize_rects(rect_b, rect_a)
+    npt.assert_equal(new_rect_a, target_rect_a)
+    npt.assert_equal(new_rect_b, rect_b)
