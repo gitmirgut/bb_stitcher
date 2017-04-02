@@ -237,19 +237,19 @@ class RectangleStitcher(Stitcher):
         pt_picker = picker.PointPicker()
         pts_left, pts_right = pt_picker.pick([image_left, image_right], False)
         assert len(pts_left) == 4 and len(pts_right) == 4
-        pts_left = helpers.sort_pts(pts_left)
-        pts_right = helpers.sort_pts(pts_right)
+        pts_left_srt = helpers.sort_pts(pts_left)
+        pts_right_srt = helpers.sort_pts(pts_right)
 
-        target_pts_left = helpers.raw_estimate_rect(pts_left)
-        target_pts_right = helpers.raw_estimate_rect(pts_right)
+        target_pts_left = helpers.raw_estimate_rect(pts_left_srt)
+        target_pts_right = helpers.raw_estimate_rect(pts_right_srt)
         target_pts_left, target_pts_right = helpers.harmonize_rects(
             target_pts_left, target_pts_right)
 
         # declare the shift of the right points
         shift_right = np.amax(target_pts_left[:, 0])
         target_pts_right[:, 0] = target_pts_right[:, 0] + shift_right
-        homo_left, __ = cv2.findHomography(pts_left, target_pts_left)
-        homo_right, __ = cv2.findHomography(pts_right, target_pts_right)
+        homo_left, __ = cv2.findHomography(pts_left_srt, target_pts_left)
+        homo_right, __ = cv2.findHomography(pts_right_srt, target_pts_right)
 
         homo_trans, pano_size = helpers.align_to_display_area(
             size_left, size_right, homo_left, homo_right)
@@ -257,4 +257,9 @@ class RectangleStitcher(Stitcher):
         self.homo_left = homo_trans.dot(homo_left)
         self.homo_right = homo_trans.dot(homo_right)
         self.pano_size = pano_size
+
+        # set origin/start and end point of reference line segment
+        self.origin = self.map_left_points(np.array([pts_left_srt[0]]))
+        self.end_point = self.map_right_points(np.array([pts_right_srt[1]]))
+
         return self.homo_left, self.homo_right, self.pano_size
