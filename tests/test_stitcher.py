@@ -133,12 +133,13 @@ def test_calc_feature_mask():
     npt.assert_equal(mask_right, target_mask_right)
 
 
-def test_fb_stitcher_estimate_transform(fb_stitcher, left_img_prep, right_img_prep, not_to_bee):
-    # find transformation
-    assert fb_stitcher.estimate_transform(left_img_prep['img'], right_img_prep['img']) is not None
-
+@pytest.fixture()
+def test_fb_estimate_transform(fb_stitcher, left_img, right_img, not_to_bee):
     # provoke no finding of transformation
-    assert fb_stitcher.estimate_transform(left_img_prep['img'], not_to_bee) is None
+    assert fb_stitcher.estimate_transform(left_img['img'], not_to_bee) is None
+
+    # find transformation
+    assert fb_stitcher.estimate_transform(left_img['img'], right_img['img'], 90, -90) is not None
 
 
 def test_prepare_image(left_img, super_stitcher):
@@ -146,9 +147,9 @@ def test_prepare_image(left_img, super_stitcher):
 
 
 @pytest.mark.slow
-def test_compose_panorama(left_img_prep, right_img_prep, homo_left, homo_right, pano_size, outdir):
-    st = stitcher.Stitcher(homo_left, homo_right, pano_size)
-    pano = st.compose_panorama(left_img_prep['img'], right_img_prep['img'])
+def test_compose_panorama(fb_stitcher, left_img, right_img, outdir):
+    fb_stitcher.estimate_transform(left_img['img'], right_img['img'], 90, -90)
+    pano = fb_stitcher.compose_panorama(left_img['img'], right_img['img'])
     out = os.path.join(outdir, 'panorama.jpg')
     cv2.imwrite(out, pano)
 
@@ -174,7 +175,8 @@ def test_map_points(left_img_prep, config):
         [[2, 3],
          [3, 4],
          [4, 5]])
-    st = stitcher.Stitcher(config, homo_left, homo_right)
+    size = (4000, 3000)
+    st = stitcher.Stitcher(config, homo_left, homo_right, size, size, rectify=False)
     pano_points_left = st.map_left_points(points)
     pano_points_right = st.map_right_points(points)
 
@@ -183,12 +185,12 @@ def test_map_points(left_img_prep, config):
 
 
 @pytest.mark.slow
-def test_overall_fb_stitching(fb_stitcher, left_img_prep, right_img_prep, outdir):
-    assert fb_stitcher.estimate_transform(left_img_prep['img'], right_img_prep['img']) is not None
+def test_overall_fb_stitching(fb_stitcher, left_img, right_img, outdir):
+    assert fb_stitcher.estimate_transform(left_img['img'], right_img['img'], 90, -90) is not None
     pano = fb_stitcher.compose_panorama(
-        left_img_prep['img_w_detections'], right_img_prep['img_w_detections'])
-    detections_left_mapped = fb_stitcher.map_left_points(left_img_prep['detections'])
-    detections_right_mapped = fb_stitcher.map_right_points(right_img_prep['detections'])
+        left_img['img_w_detections'], right_img['img_w_detections'])
+    detections_left_mapped = fb_stitcher.map_left_points(left_img['detections'])
+    detections_right_mapped = fb_stitcher.map_right_points(right_img['detections'])
     pano = draw_marks(pano, detections_left_mapped)
     pano = draw_marks(pano, detections_right_mapped)
 
@@ -221,7 +223,7 @@ def test_rect_stitcher_estimate_transform(left_img_prep, right_img_prep, outdir,
 
 
 @pytest.mark.slow
-def test_overall_rt_stitching(left_img_prep, right_img_prep, outdir, monkeypatch):
+def test_overall_rt_stitching(left_img_prep, right_img_prep, outdir, config, monkeypatch):
     def mockreturn(myself, image_list, all):
         left_points = np.array([
             [88.91666412, 3632.6015625],
@@ -235,7 +237,7 @@ def test_overall_rt_stitching(left_img_prep, right_img_prep, outdir, monkeypatch
             [255.66642761, 431.24780273]], dtype=np.float32)
         return left_points, right_points
     monkeypatch.setattr(bb_stitcher.picking.picker.PointPicker, 'pick', mockreturn)
-    rt_stitcher = stitcher.RectangleStitcher()
+    rt_stitcher = stitcher.RectangleStitcher(config)
     assert rt_stitcher.estimate_transform(left_img_prep['img'], right_img_prep['img']) is not None
     pano = rt_stitcher.compose_panorama(
         left_img_prep['img_w_detections'], right_img_prep['img_w_detections'])

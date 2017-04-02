@@ -10,18 +10,37 @@ import bb_stitcher.prep as prep
 class Stitcher(object):
     """Class to create a 'panorama' from two images."""
 
-    def __init__(self, config, homo_left=None, homo_right=None, pano_size=None):
+    def __init__(self, config, homo_left=None, homo_right=None,
+                 size_left=None, size_right=None, pano_size=None, rectify=True):
         """"Initialize the stitcher."""
         self.homo_left = homo_left
         self.homo_right = homo_right
+        self.size_left = size_left
+        self.size_right = size_right
         self.pano_size = pano_size
         self.config = config
+        self.rectify = rectify
+        if rectify:
+            self.rectificator = prep.Rectificator(self.config)
 
     def _prepare_image(self, image, angle=0):
-        image_alpha = helpers.add_alpha_channel(image)
-        rectificator = prep.Rectificator(self.config)
-        image_rect = rectificator.rectify_image(image_alpha)
-        image_rot, affine = prep.rotate_image(image_rect, angle)
+        """Prepare image for stitching.
+
+        It rotates and rectifies the image. Ff the Stitcher is initialized with ``rectify=False``
+        the image will not be rectified.
+
+        Args:
+            image (ndarray): Image to prepare.
+            angle (int): angle in degree to rotate image.
+
+        Returns:
+            - **image** (ndarray) -- rotated (and rectified) image.
+            - **affine** (ndarray) -- An affine *(3,3)*--matrix for rotation of image or points.
+        """
+        image = helpers.add_alpha_channel(image)
+        if self.rectify:
+            image = self.rectificator.rectify_image(image)
+        image_rot, affine = prep.rotate_image(image, angle)
         return image_rot, affine
 
     def estimate_transform(self, image_left, image_right, angle_left=0, angle_right=0):
@@ -55,6 +74,10 @@ class Stitcher(object):
         image_left = helpers.add_alpha_channel(image_left)
         image_right = helpers.add_alpha_channel(image_right)
 
+        if self.rectify:
+            image_left = self.rectificator.rectify_image(image_left)
+            image_right = self.rectificator.rectify_image(image_right)
+
         image_left = cv2.warpPerspective(image_left, self.homo_left, self.pano_size)
         image_right = cv2.warpPerspective(image_right, self.homo_right, self.pano_size)
 
@@ -81,6 +104,10 @@ class Stitcher(object):
             ndarray: ``points`` mapped to panorama *(N,2)*
         """
         # TODO(gitmirgut): PoC auto convert to float
+        # TODO(gitmirgut): Add exception if size is None
+        if self.rectify:
+            points = self.rectificator.rectify_points(points, self.size_left)
+        print(points)
         points = np.array([points])
         return cv2.perspectiveTransform(points, self.homo_left)[0]
 
@@ -97,6 +124,8 @@ class Stitcher(object):
             ndarray: ``points`` mapped to panorama *(N,2)*
         """
         # TODO(gitmirgut): PoC auto convert to float
+        if self.rectify:
+            points = self.rectificator.rectify_points(points, self.size_right)
         points = np.array([points])
         return cv2.perspectiveTransform(points, self.homo_right)[0]
 
@@ -112,6 +141,7 @@ class FeatureBasedStitcher(Stitcher):
         """
         # TODO(gitmirgut) add autoload config file
         # TODO(gitmirgut) initialize super()
+        super().__init__(config)
         self.overlap = int(config['FeatureBasedStitcher']['OVERLAP'])
         self.border_top = int(config['FeatureBasedStitcher']['BORDER_TOP'])
         self.border_bottom = int(config['FeatureBasedStitcher']['BORDER_BOTTOM'])
@@ -145,7 +175,7 @@ class FeatureBasedStitcher(Stitcher):
 
         return mask_left, mask_right
 
-    def estimate_transform(self, image_left, image_right):
+    def estimate_transform(self, image_left, image_right, angle_left=0, angle_right=0):
         """Estimate transformation for stitching of images based on feature matching.
 
         Args:
@@ -157,12 +187,19 @@ class FeatureBasedStitcher(Stitcher):
             - **homo_right** (ndarray) -- homography *(3,3)* for ``image_right`` to form a panorama.
             - **pano_size** (tuple) -- Size *(width, height)* of the panorama.
         """
-        size_left = image_left.shape[:2][:: - 1]
-        size_right = image_right.shape[:2][:: - 1]
+        self.size_left = image_left.shape[:2][::-1]
+        self.size_right = image_right.shape[:2][::-1]
+
+        # rectify and rotate images
+        image_left, affine_left = self._prepare_image(image_left, angle_left)
+        image_right, affine_right = self._prepare_image(image_right, angle_right)
+
+        rot_size_left = image_left.shape[:2][:: - 1]
+        rot_size_right = image_right.shape[:2][:: - 1]
 
         # calculates the mask which will mark the feature searching area.
         mask_left, mask_right = self._calc_feature_mask(
-            size_left, size_right, self.overlap, self.border_top, self.border_bottom)
+            rot_size_left, rot_size_right, self.overlap, self.border_top, self.border_bottom)
 
         # Initialize the feature detector and descriptor SURF
         # http://www.vision.ee.ethz.ch/~surf/download.html
@@ -208,13 +245,12 @@ class FeatureBasedStitcher(Stitcher):
         homo_right = cv2.invertAffineTransform(homo_right)
         homo_right = np.vstack([homo_right, [0, 0, 1]])
 
-        homo_left = np.float64(
-            [[1, 0, 0],
-             [0, 1, 0],
-             [0, 0, 1]])
+        # include the previous rotation
+        homo_left = affine_left
+        homo_right = homo_right.dot(affine_right)
 
         homo_trans, pano_size = helpers.align_to_display_area(
-            size_left, size_right, homo_left, homo_right)
+            rot_size_left, rot_size_right, homo_left, homo_right)
 
         self.homo_left = homo_trans.dot(homo_left)
         self.homo_right = homo_trans.dot(homo_right)
@@ -228,7 +264,7 @@ class RectangleStitcher(Stitcher):
     The ``RectangleStitcher`` maps selected points to an abstracted rectangle.
     """
 
-    def estimate_transform(self, image_left, image_right):
+    def estimate_transform(self, image_left, image_right, angle_left=0, angle_right=0):
         """Estimate transformation for stitching of images based on 'rectangle' Stitching.
 
         Args:
@@ -241,8 +277,15 @@ class RectangleStitcher(Stitcher):
             - **pano_size** (tuple) -- Size *(width, height)* of the panorama.
         """
         # TODO(gitmirgut) set all to False
-        size_left = image_left.shape[:2][::-1]
-        size_right = image_right.shape[:2][::-1]
+        print(self.rectify)
+        self.size_left = image_left.shape[:2][::-1]
+        self.size_right = image_right.shape[:2][::-1]
+
+        image_left, affine_left = self._prepare_image(image_left, angle_left)
+        image_right, affine_right = self._prepare_image(image_right, angle_right)
+
+        rot_size_left = image_left.shape[:2][::-1]
+        rot_size_right = image_right.shape[:2][::-1]
         pt_picker = picker.PointPicker()
         pts_left, pts_right = pt_picker.pick([image_left, image_right], False)
         assert len(pts_left) == 4 and len(pts_right) == 4
@@ -261,7 +304,7 @@ class RectangleStitcher(Stitcher):
         homo_right, __ = cv2.findHomography(pts_right_srt, target_pts_right)
 
         homo_trans, pano_size = helpers.align_to_display_area(
-            size_left, size_right, homo_left, homo_right)
+            rot_size_left, rot_size_right, homo_left, homo_right)
 
         self.homo_left = homo_trans.dot(homo_left)
         self.homo_right = homo_trans.dot(homo_right)
