@@ -133,7 +133,7 @@ def test_calc_feature_mask():
     npt.assert_equal(mask_right, target_mask_right)
 
 
-def test_estimate_transform(fb_stitcher, left_img_prep, right_img_prep, not_to_bee):
+def test_fb_stitcher_estimate_transform(fb_stitcher, left_img_prep, right_img_prep, not_to_bee):
     # find transformation
     assert fb_stitcher.estimate_transform(left_img_prep['img'], right_img_prep['img']) is not None
 
@@ -179,7 +179,7 @@ def test_map_points(left_img_prep):
 
 
 @pytest.mark.slow
-def test_overall_stitching(fb_stitcher, left_img_prep, right_img_prep, outdir):
+def test_overall_fb_stitching(fb_stitcher, left_img_prep, right_img_prep, outdir):
     assert fb_stitcher.estimate_transform(left_img_prep['img'], right_img_prep['img']) is not None
     pano = fb_stitcher.compose_panorama(
         left_img_prep['img_w_detections'], right_img_prep['img_w_detections'])
@@ -192,7 +192,7 @@ def test_overall_stitching(fb_stitcher, left_img_prep, right_img_prep, outdir):
     cv2.imwrite(out, pano)
 
 
-def test_rectangle_stitcher(left_img_prep, right_img_prep, outdir, monkeypatch):
+def test_rect_stitcher_estimate_transform(left_img_prep, right_img_prep, outdir, monkeypatch):
     def mockreturn(myself, image_list, all):
         left_points = np.array([
             [88.91666412, 3632.6015625],
@@ -215,4 +215,32 @@ def test_rectangle_stitcher(left_img_prep, right_img_prep, outdir, monkeypatch):
     assert pano_size is not None
     pano = rt_stitcher.compose_panorama(left_img_prep['img'], right_img_prep['img'])
     out = os.path.join(outdir, 'panorama_rect_stitch.jpg')
+    cv2.imwrite(out, pano)
+
+
+@pytest.mark.slow
+def test_overall_rt_stitching(left_img_prep, right_img_prep, outdir, monkeypatch):
+    def mockreturn(myself, image_list, all):
+        left_points = np.array([
+            [88.91666412, 3632.6015625],
+            [2760.26855469, 3636.70849609],
+            [2726.26708984, 363.4861145],
+            [93.88884735, 371.98330688]], dtype=np.float32)
+        right_points = np.array([
+            [181.49372864, 3687.71582031],
+            [2903.44042969, 3723.99926758],
+            [2921.27368164, 458.77352905],
+            [255.66642761, 431.24780273]], dtype=np.float32)
+        return left_points, right_points
+    monkeypatch.setattr(bb_stitcher.picking.picker.PointPicker, 'pick', mockreturn)
+    rt_stitcher = stitcher.RectangleStitcher()
+    assert rt_stitcher.estimate_transform(left_img_prep['img'], right_img_prep['img']) is not None
+    pano = rt_stitcher.compose_panorama(
+        left_img_prep['img_w_detections'], right_img_prep['img_w_detections'])
+    detections_left_mapped = rt_stitcher.map_left_points(left_img_prep['detections'])
+    detections_right_mapped = rt_stitcher.map_right_points(right_img_prep['detections'])
+    pano = draw_marks(pano, detections_left_mapped)
+    pano = draw_marks(pano, detections_right_mapped)
+
+    out = os.path.join(outdir, 'panorama_rt_w_detections.jpg')
     cv2.imwrite(out, pano)
