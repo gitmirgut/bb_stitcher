@@ -4,18 +4,27 @@ import numpy as np
 
 import bb_stitcher.helpers as helpers
 import bb_stitcher.picking.picker as picker
+import bb_stitcher.prep as prep
 
 
 class Stitcher(object):
     """Class to create a 'panorama' from two images."""
 
-    def __init__(self, homo_left=None, homo_right=None, pano_size=None):
+    def __init__(self, config, homo_left=None, homo_right=None, pano_size=None):
         """"Initialize the stitcher."""
         self.homo_left = homo_left
         self.homo_right = homo_right
         self.pano_size = pano_size
+        self.config = config
 
-    def estimate_transform(self, image_left, image_right):
+    def _prepare_image(self, image, angle=0):
+        image_alpha = helpers.add_alpha_channel(image)
+        rectificator = prep.Rectificator(self.config)
+        image_rect = rectificator.rectify_image(image_alpha)
+        image_rot, affine = prep.rotate_image(image_rect, angle)
+        return image_rot, affine
+
+    def estimate_transform(self, image_left, image_right, angle_left=0, angle_right=0):
         """Estimate transformation/homography of the left and right images/data to form a panorama.
 
         Return the transformation matrix for the left and right image.

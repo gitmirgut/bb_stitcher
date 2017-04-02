@@ -23,8 +23,8 @@ def draw_marks(img, pts, color=(0, 0, 255), marker_types=cv2.MARKER_CROSS):
 
 
 @pytest.fixture
-def super_stitcher():
-    st = stitcher.Stitcher()
+def super_stitcher(config):
+    st = stitcher.Stitcher(config)
     return st
 
 
@@ -141,6 +141,10 @@ def test_fb_stitcher_estimate_transform(fb_stitcher, left_img_prep, right_img_pr
     assert fb_stitcher.estimate_transform(left_img_prep['img'], not_to_bee) is None
 
 
+def test_prepare_image(left_img, super_stitcher):
+    super_stitcher._prepare_image(left_img['img'])
+
+
 @pytest.mark.slow
 def test_compose_panorama(left_img_prep, right_img_prep, homo_left, homo_right, pano_size, outdir):
     st = stitcher.Stitcher(homo_left, homo_right, pano_size)
@@ -149,7 +153,7 @@ def test_compose_panorama(left_img_prep, right_img_prep, homo_left, homo_right, 
     cv2.imwrite(out, pano)
 
 
-def test_map_points(left_img_prep):
+def test_map_points(left_img_prep, config):
     homo_left = np.array(
         [[1, 0, 2],
          [0, 1, 1],
@@ -170,7 +174,7 @@ def test_map_points(left_img_prep):
         [[2, 3],
          [3, 4],
          [4, 5]])
-    st = stitcher.Stitcher(homo_left, homo_right)
+    st = stitcher.Stitcher(config, homo_left, homo_right)
     pano_points_left = st.map_left_points(points)
     pano_points_right = st.map_right_points(points)
 
@@ -192,7 +196,8 @@ def test_overall_fb_stitching(fb_stitcher, left_img_prep, right_img_prep, outdir
     cv2.imwrite(out, pano)
 
 
-def test_rect_stitcher_estimate_transform(left_img_prep, right_img_prep, outdir, monkeypatch):
+def test_rect_stitcher_estimate_transform(left_img_prep, right_img_prep, outdir, config,
+                                          monkeypatch):
     def mockreturn(myself, image_list, all):
         left_points = np.array([
             [88.91666412, 3632.6015625],
@@ -207,7 +212,7 @@ def test_rect_stitcher_estimate_transform(left_img_prep, right_img_prep, outdir,
         return left_points, right_points
     monkeypatch.setattr(bb_stitcher.picking.picker.PointPicker, 'pick', mockreturn)
     # print(left_points)
-    rt_stitcher = stitcher.RectangleStitcher()
+    rt_stitcher = stitcher.RectangleStitcher(config)
     homo_left, homo_right, pano_size = rt_stitcher.estimate_transform(
         left_img_prep['img'], right_img_prep['img'])
     assert homo_left is not None
