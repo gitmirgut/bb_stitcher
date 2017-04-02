@@ -213,9 +213,6 @@ def test_rect_stitcher_estimate_transform(left_img_prep, right_img_prep, outdir,
     assert homo_left is not None
     assert homo_right is not None
     assert pano_size is not None
-    pano = rt_stitcher.compose_panorama(left_img_prep['img'], right_img_prep['img'])
-    out = os.path.join(outdir, 'panorama_rect_stitch.jpg')
-    cv2.imwrite(out, pano)
 
 
 @pytest.mark.slow
