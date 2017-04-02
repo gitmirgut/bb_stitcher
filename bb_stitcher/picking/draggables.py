@@ -201,18 +201,18 @@ class DraggableMarkList(list):
         """Initialize a list which holds DraggableMarks."""
         list.__init__(self, *args)
 
-    def get_points(self, all=True):
+    def get_points(self, all_pts=True):
         """Convert the list of DraggableMarks to a ndarray holding just coordinates.
 
         Args:
-            all (bool): if ``True`` function returns all coordinate. If ``False`` function return \
-            just coordinates form DraggableMarks marked as selected.
+            all_pts (bool): if ``True`` function returns all coordinate. If ``False`` function \
+            return just coordinates form DraggableMarks marked as selected.
 
         Returns:
             ndarray: array that contains just the coordinates of the DraggableMarks of the list.
         """
         dms = []
-        if all:
+        if all_pts:
             dms = self
         else:
             for i, dm in enumerate(self):

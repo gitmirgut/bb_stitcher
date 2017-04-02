@@ -32,7 +32,7 @@ class PointPicker(object):
         mpl.rcParams['keymap.save'] = ['ctrl+s']
         mpl.rcParams['keymap.zoom'] = ['o', 'z']
 
-    def pick(self, images, all=True):
+    def pick(self, images, all_pts=True):
         """Initialise a GUI to pick points on multiple images.
 
         A matplot GUI will be initialised, where the user can pick multiple points
@@ -41,8 +41,8 @@ class PointPicker(object):
 
         Args:
             images (list(ndarray)): List of images (ndarray)
-            all: If ``True`` all points will be returned and else just 'selected' points will be \
-            returned.
+            all_pts (bool): If ``True`` all points will be returned and else just 'selected' \
+            points will be returned.
 
         Returns:
             list(ndarray): Returns a List of length **N**, where each cell contains a ndarray \
@@ -50,7 +50,7 @@ class PointPicker(object):
         """
         imgs_a = []
         for img in images:
-            imgs_a.append(helpers.add_alpha_channel((img)))
+            imgs_a.append(helpers.add_alpha_channel(img))
         count_images = len(imgs_a)
         # creating one list per image, which will hold the draggable markers
         # e.g. for 2 images:
@@ -90,6 +90,6 @@ class PointPicker(object):
         plt.show()
         points = []
         for i, dms in enumerate(dms_per_image):
-            points_per_image = dms.get_points(all=all)
+            points_per_image = dms.get_points(all_pts=all_pts)
             points.append(points_per_image)
         return points

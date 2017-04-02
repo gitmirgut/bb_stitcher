@@ -51,6 +51,8 @@ class Stitcher(object):
         Args:
             image_left (ndarray): Input left image.
             image_right (ndarray): Input right image.
+            angle_left (int): Angle in degree to rotate left image.
+            angle_right (int): Angle in degree to rotate right image.
 
         Warning:
             This must be overridden by a sublcass to customize stitching.
@@ -181,6 +183,8 @@ class FeatureBasedStitcher(Stitcher):
         Args:
             image_left (ndarray): Input left image.
             image_right (ndarray): Input right image.
+            angle_left (int): Angle in degree to rotate left image.
+            angle_right (int): Angle in degree to rotate right image.
 
         Returns:
             - **homo_left** (ndarray) -- homography *(3,3)* for ``image_left`` to form a panorama.
@@ -270,6 +274,8 @@ class RectangleStitcher(Stitcher):
         Args:
             image_left (ndarray): Input left image.
             image_right (ndarray): Input right image.
+            angle_left (int): Angle in degree to rotate left image.
+            angle_right (int): Angle in degree to rotate right image.
 
         Returns:
             - **homo_left** (ndarray) -- homography *(3,3)* for ``image_left`` to form a panorama.
@@ -277,7 +283,6 @@ class RectangleStitcher(Stitcher):
             - **pano_size** (tuple) -- Size *(width, height)* of the panorama.
         """
         # TODO(gitmirgut) set all to False
-        print(self.rectify)
         self.size_left = image_left.shape[:2][::-1]
         self.size_right = image_right.shape[:2][::-1]
 
@@ -302,6 +307,10 @@ class RectangleStitcher(Stitcher):
         target_pts_right[:, 0] = target_pts_right[:, 0] + shift_right
         homo_left, __ = cv2.findHomography(pts_left_srt, target_pts_left)
         homo_right, __ = cv2.findHomography(pts_right_srt, target_pts_right)
+
+        # calculate the overall homography including the previous rotation
+        homo_left = homo_left.dot(affine_left)
+        homo_right = homo_right.dot(affine_right)
 
         homo_trans, pano_size = helpers.align_to_display_area(
             rot_size_left, rot_size_right, homo_left, homo_right)

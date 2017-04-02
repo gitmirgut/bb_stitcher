@@ -154,7 +154,7 @@ def test_compose_panorama(fb_stitcher, left_img, right_img, outdir):
     cv2.imwrite(out, pano)
 
 
-def test_map_points(left_img_prep, config):
+def test_map_points(config):
     homo_left = np.array(
         [[1, 0, 2],
          [0, 1, 1],
@@ -198,7 +198,7 @@ def test_overall_fb_stitching(fb_stitcher, left_img, right_img, outdir):
     cv2.imwrite(out, pano)
 
 
-def test_rect_stitcher_estimate_transform(left_img_prep, right_img_prep, outdir, config,
+def test_rect_stitcher_estimate_transform(left_img, right_img, outdir, config,
                                           monkeypatch):
     def mockreturn(myself, image_list, all):
         left_points = np.array([
@@ -216,14 +216,14 @@ def test_rect_stitcher_estimate_transform(left_img_prep, right_img_prep, outdir,
     # print(left_points)
     rt_stitcher = stitcher.RectangleStitcher(config)
     homo_left, homo_right, pano_size = rt_stitcher.estimate_transform(
-        left_img_prep['img'], right_img_prep['img'])
+        left_img['img'], right_img['img'], 90, -90)
     assert homo_left is not None
     assert homo_right is not None
     assert pano_size is not None
 
 
 @pytest.mark.slow
-def test_overall_rt_stitching(left_img_prep, right_img_prep, outdir, config, monkeypatch):
+def test_overall_rt_stitching(left_img, right_img, outdir, config, monkeypatch):
     def mockreturn(myself, image_list, all):
         left_points = np.array([
             [88.91666412, 3632.6015625],
@@ -238,11 +238,11 @@ def test_overall_rt_stitching(left_img_prep, right_img_prep, outdir, config, mon
         return left_points, right_points
     monkeypatch.setattr(bb_stitcher.picking.picker.PointPicker, 'pick', mockreturn)
     rt_stitcher = stitcher.RectangleStitcher(config)
-    assert rt_stitcher.estimate_transform(left_img_prep['img'], right_img_prep['img']) is not None
+    assert rt_stitcher.estimate_transform(left_img['img'], right_img['img'], 90, -90) is not None
     pano = rt_stitcher.compose_panorama(
-        left_img_prep['img_w_detections'], right_img_prep['img_w_detections'])
-    detections_left_mapped = rt_stitcher.map_left_points(left_img_prep['detections'])
-    detections_right_mapped = rt_stitcher.map_right_points(right_img_prep['detections'])
+        left_img['img_w_detections'], right_img['img_w_detections'])
+    detections_left_mapped = rt_stitcher.map_left_points(left_img['detections'])
+    detections_right_mapped = rt_stitcher.map_right_points(right_img['detections'])
     pano = draw_marks(pano, detections_left_mapped)
     pano = draw_marks(pano, detections_right_mapped)
 
