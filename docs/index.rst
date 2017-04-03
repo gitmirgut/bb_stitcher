@@ -13,8 +13,7 @@ Welcome to bb_stitcher's documentation!
    api/stitcher
    api/helpers
    api/picking
-#   intro
-#   tutorial
+   api/visualisation
 
 
 
@@ -24,4 +23,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
