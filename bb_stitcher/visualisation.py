@@ -28,7 +28,7 @@ def draw_circles(img, centres, radius=32, color=(0, 0, 255), line_width=6):
 
     Args:
         img (ndarray): Image (min. 3 channel) to draw on.
-        centres (ndarray): The centers of the circles. *(N,2)*
+        centres (ndarray): The centres of the circles. *(N,2)*
         radius: Radius of the circles.
     """
     for center in centres:
