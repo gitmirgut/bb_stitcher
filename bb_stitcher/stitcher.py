@@ -83,10 +83,9 @@ class Stitcher(object):
         image_left = cv2.warpPerspective(image_left, self.homo_left, self.pano_size)
         image_right = cv2.warpPerspective(image_right, self.homo_right, self.pano_size)
 
-        for y in range(image_left.shape[0]):
-            for x in range(image_left.shape[1]):
-                if image_left[y][x][3] == 0 and image_right[y][x][3] != 0:
-                    image_left[y][x] = image_right[y][x]
+        alpha = 0.5
+        cv2.addWeighted(image_left, alpha, image_right, 1 - alpha, 0, image_left)
+
         return image_left
 
     def stitch(self, image_left, image_right):
