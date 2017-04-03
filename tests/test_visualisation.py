@@ -36,7 +36,7 @@ def test_draw_marks(sample, outdir):
     cv2.imwrite(out, sample)
 
 
-def test_draw_complex_marks(sample, outdir):
+def test_draw_complex_marks(outdir):
     image = np.ones((900, 900, 3), dtype=np.uint8) * 255
     positions = np.array([
         [150, 150],
