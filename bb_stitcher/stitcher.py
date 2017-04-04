@@ -108,7 +108,6 @@ class Stitcher(object):
         # TODO(gitmirgut): Add exception if size is None
         if self.rectify:
             points = self.rectificator.rectify_points(points, self.size_left)
-        print(points)
         points = np.array([points])
         return cv2.perspectiveTransform(points, self.homo_left)[0]
 
