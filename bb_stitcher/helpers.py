@@ -291,3 +291,41 @@ def harmonize_rects(rect_a, rect_b):
         harm_hori_a = ratio * hori_a
         harm_rect_a = form_rectangle(harm_hori_a, harm_vert_a)
         return harm_rect_a, rect_b
+
+
+def angles_to_points(angle_centers, angles, distance=150):
+    u"""Calculate point representations of angles.
+
+    The angle points ``points_reprs`` are calculated in  dependency of the ``angle_center`` and the
+    ray starting from this center, which is perpendicular to the right border.
+    Positive angles will be interpreted as clockwise rotation.
+
+    Example:
+        .. code::
+            angle_center
+                  *--------x-Axis------>
+                   \         |
+                    \ angle /
+                     \     /
+                      \ --´
+                       \
+            points_repr *
+                         \
+                          v
+
+    Args:
+        angle_centers (ndarray):The centers of the ``angles``. *(N,2)*
+        angles (ndarray): Angles in rad (length *(N,)*).
+        distance (int): The distance between the ``angle_centers`` and the point representations.
+
+    Returns:
+        ndarray: Angles represented by points. *(N,2)*
+    """
+    assert len(angle_centers) == len(angles)
+    points_repr = np.zeros((len(angle_centers), 2), dtype=np.float32)
+    for i, center in enumerate(angle_centers):
+        z_rotation = np.array(angles[i])
+        # remove round
+        points_repr[i, 0] = center[0] + distance * np.cos(z_rotation)
+        points_repr[i, 1] = center[1] + distance * np.sin(z_rotation)
+    return points_repr

@@ -22,7 +22,6 @@ def sample():
 def test_draw_arrows(sample, outdir):
     positions = np.ones((8, 2)) * 155
     angles = np.ones((8,))
-    print(angles.shape)
     for i in range(- 4, 5):
         angles[i] = i * np.pi / 4
     visualisation.draw_arrows(sample, positions, angles)

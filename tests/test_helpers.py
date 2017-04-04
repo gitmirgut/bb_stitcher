@@ -127,3 +127,31 @@ def test_harmonize_rects():
     new_rect_b, new_rect_a = helpers.harmonize_rects(rect_b, rect_a)
     npt.assert_equal(new_rect_a, target_rect_a)
     npt.assert_equal(new_rect_b, rect_b)
+
+
+def test_angles_to_points():
+    angles = np.ones((5,))
+    for i, val in enumerate(range(- 2, 3)):
+        angles[i] = val * np.pi / 2
+
+    points = np.zeros((5, 2), dtype=np.uint16)
+    target = np.array([
+        [-10, 0],
+        [0, -10],
+        [10, 0],
+        [0, 10],
+        [-10, 0]
+    ])
+    result = helpers.angles_to_points(points, angles, 10)
+    npt.assert_almost_equal(result, target)
+
+    points = np.ones((5, 2), dtype=np.uint16) * 10
+    target = np.array([
+        [0, 10],
+        [10, 0],
+        [20, 10],
+        [10, 20],
+        [0, 10]
+    ])
+    result = helpers.angles_to_points(points, angles, 10)
+    npt.assert_almost_equal(result, target)
