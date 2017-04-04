@@ -20,10 +20,10 @@ def sample():
 
 
 def test_draw_arrows(sample, outdir):
-    positions = np.ones((8, 2)) * 155
-    angles = np.ones((8,))
-    for i in range(- 4, 5):
-        angles[i] = i * np.pi / 4
+    positions = np.ones((9, 2)) * 155
+    angles = np.ones((9,))
+    for i, val in enumerate(range(- 4, 5)):
+        angles[i] = val * np.pi / 4
     visualisation.draw_arrows(sample, positions, angles)
     out = os.path.join(outdir, 'draw_arrows.jpg')
     cv2.imwrite(out, sample)
@@ -50,14 +50,15 @@ def test_draw_complex_marks(outdir):
         [450, 150],
         [750, 150],
         [150, 450],
+        [450, 450],
         [750, 450],
         [150, 750],
         [450, 750],
         [750, 750],
     ])
-    angles = np.ones((8,))
-    for i in range(-4, 5):
-        angles[i] = i * np.pi / 4
+    angles = np.ones((9,))
+    for i, val in enumerate(range(-4, 5)):
+        angles[i] = val * np.pi / 4
     visualisation.draw_complex_marks(image, positions, angles)
     out = os.path.join(outdir, 'draw_complex.jpg')
     cv2.imwrite(out, image)
