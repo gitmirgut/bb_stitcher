@@ -65,4 +65,4 @@ def draw_complex_marks(img, centres, angles, color=(0, 0, 255), marker_types=cv2
         cv2.arrowedLine(img, tuple(center), (x_to, y_to), color, thickness=6, line_type=cv2.LINE_AA)
         cv2.circle(img, tuple(center), radius=32, color=color, thickness=6)
         cv2.drawMarker(img, tuple(center), color, markerType=marker_types,
-                       markerSize=40, thickness=5)
+                       markerSize=40, thickness=3)
