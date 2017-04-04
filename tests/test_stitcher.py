@@ -11,6 +11,14 @@ import bb_stitcher.prep as prep
 import bb_stitcher.stitcher as stitcher
 
 
+@pytest.fixture
+def outdir(main_outdir):
+    out_path = os.path.join(main_outdir, str(__name__))
+    if not os.path.exists(out_path):
+        os.makedirs(out_path)
+    return out_path
+
+
 def draw_marks(img, pts, color=(0, 0, 255), marker_types=cv2.MARKER_CROSS):
     img_m = np.copy(img)
     if len(img_m.shape) == 2:

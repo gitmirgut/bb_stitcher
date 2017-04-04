@@ -7,6 +7,14 @@ import bb_stitcher.visualisation as visualisation
 
 
 @pytest.fixture
+def outdir(main_outdir):
+    out_path = os.path.join(main_outdir, str(__name__))
+    if not os.path.exists(out_path):
+        os.makedirs(out_path)
+    return out_path
+
+
+@pytest.fixture
 def sample():
     return np.ones((310, 310, 3), dtype=np.uint8) * 255
 

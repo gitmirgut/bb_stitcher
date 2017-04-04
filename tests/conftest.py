@@ -37,11 +37,7 @@ def fname(path):
     return os.path.basename(os.path.splitext(path)[0])
 
 
-@pytest.fixture
-def left_img():
-    img_path = 'data/Cam_0_2016-09-01T12:56:50.801920Z.jpg'
-    img_with_detections = 'data/Cam_0_2016-09-01T12:56:50.801920Z_detections.jpg'
-    detections_path = 'data/Cam_0_2016-09-01T12:56:50.801920Z_detections.npy'
+def create_image_dict(img_path, img_with_detections, detections_path):
     d = dict()
     d['path'] = get_test_fname(img_path)
     d['name'] = os.path.basename(os.path.splitext(d['path'])[0])
@@ -50,25 +46,25 @@ def left_img():
     d['color'] = cv2.imread(d['path'], 1)
     d['height'], d['width'] = d['img'].shape[:2]
     d['size'] = d['width'], d['height']
-    d['detections'] = np.load(get_test_fname(detections_path))
+    d['detections'] = np.load(get_test_fname(detections_path))['detections']
     d['img_w_detections'] = cv2.imread(get_test_fname(img_with_detections), -1)
     return d
 
 
 @pytest.fixture
+def left_img():
+    img_path = 'data/Cam_0_2016-09-01T12:56:50.801920Z.jpg'
+    img_with_detections = 'data/Cam_0_2016-09-01T12:56:50.801920Z_det_yaws.jpg'
+    detections_path = 'data/Cam_0_2016-09-01T12:56:50.801920Z_det_yaws.npz'
+    return create_image_dict(img_path, img_with_detections, detections_path)
+
+
+@pytest.fixture
 def right_img():
     img_path = 'data/Cam_1_2016-09-01T12:56:50.801926Z.jpg'
-    img_with_detections = 'data/Cam_1_2016-09-01T12:56:50.801926Z_detections.jpg'
-    detections_path = 'data/Cam_1_2016-09-01T12:56:50.801926Z_detections.npy'
-    d = dict()
-    d['path'] = get_test_fname(img_path)
-    d['name'] = os.path.basename(os.path.splitext(d['path'])[0])
-    d['img'] = cv2.imread(d['path'], -1)
-    d['height'], d['width'] = d['img'].shape[:2]
-    d['size'] = d['width'], d['height']
-    d['detections'] = np.load(get_test_fname(detections_path))
-    d['img_w_detections'] = cv2.imread(get_test_fname(img_with_detections), -1)
-    return d
+    img_with_detections = 'data/Cam_1_2016-09-01T12:56:50.801926Z_det_yaws.jpg'
+    detections_path = 'data/Cam_1_2016-09-01T12:56:50.801926Z_det_yaws.npz'
+    return create_image_dict(img_path, img_with_detections, detections_path)
 
 
 @pytest.fixture
@@ -86,12 +82,8 @@ def config():
 
 
 @pytest.fixture
-def outdir():
+def main_outdir():
     out_path = os.path.join(test_dir, 'out')
     if not os.path.exists(out_path):
         os.makedirs(out_path)
     return out_path
-
-
-def out(filename):
-    return os.path.join(outdir, filename)

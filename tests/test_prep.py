@@ -3,11 +3,20 @@ import os.path
 import cv2
 import numpy as np
 import numpy.testing as npt
+import pytest
 
 import bb_stitcher.prep as prep
 
 
-def draw_marks(img, pts, color=(0, 0, 255), marker_types=cv2.MARKER_CROSS):
+@pytest.fixture
+def outdir(main_outdir):
+    out_path = os.path.join(main_outdir, str(__name__))
+    if not os.path.exists(out_path):
+        os.makedirs(out_path)
+    return out_path
+
+
+def draw_marks(img, pts, color=(0, 0, 255), marker_types=cv2.MARKER_TILTED_CROSS):
     img_m = np.copy(img)
     if len(img_m.shape) == 2:
         img_m = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
