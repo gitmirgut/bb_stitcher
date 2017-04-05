@@ -49,6 +49,7 @@ def right_img_prep(right_img, config):
 
 @pytest.mark.slow
 def test_gui(left_img_prep, right_img_prep):
+    # TODO(gitmirgut): better gui test...
     pt = gui.PointPicker()
     print(pt)
     # points = pt.pick([left_img_prep['img'], right_img_prep['img']])
