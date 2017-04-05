@@ -293,7 +293,7 @@ def harmonize_rects(rect_a, rect_b):
         return harm_rect_a, rect_b
 
 
-def angles_to_points(angle_centers, angles, distance=150):
+def angles_to_points(angle_centers, angles, distance=22):
     r"""Calculate point representations of angles.
 
     The angle points ``points_reprs`` are calculated in  dependency of the ``angle_center`` and the
