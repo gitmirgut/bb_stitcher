@@ -378,7 +378,9 @@ def points_to_angles(angle_centers, points_repr):
         d = np.linalg.norm(ray_pt - point_repr)
         p = ray_pt_dis
         r = np.linalg.norm(angle_center - point_repr)
-
+        if r == 0:
+            raise Exception('Angle center point {} and angle point representation {}'
+                            ' seams to be the same.'.format(angle_center, point_repr))
         cos_angle = (p ** 2 + r ** 2 - d ** 2) / (2 * r * p)
         angle = np.arccos(cos_angle)
 

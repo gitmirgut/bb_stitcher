@@ -171,3 +171,9 @@ def test_points_to_angles():
         target[i] = val * np.pi / 2
     result = helpers.points_to_angles(angle_centers, points_repr)
     npt.assert_almost_equal(result, target, decimal=7)
+
+    angle_centers = np.ones((1, 2))
+    points_repr = np.ones((1,2))
+    with pytest.raises(Exception):
+        helpers.points_to_angles(angle_centers, points_repr)
+
