@@ -47,6 +47,7 @@ def create_image_dict(img_path, img_with_detections, detections_path):
     d['height'], d['width'] = d['img'].shape[:2]
     d['size'] = d['width'], d['height']
     d['detections'] = np.load(get_test_fname(detections_path))['detections']
+    d['yaw_angles'] = np.load(get_test_fname(detections_path))['yaw_angles']
     d['img_w_detections'] = cv2.imread(get_test_fname(img_with_detections), -1)
     return d
 

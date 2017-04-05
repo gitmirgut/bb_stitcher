@@ -6,6 +6,7 @@ import numpy.testing as npt
 import pytest
 
 import bb_stitcher.prep as prep
+import bb_stitcher.visualisation as vis
 
 
 @pytest.fixture
@@ -69,6 +70,17 @@ def test_Rectificator(left_img, right_img, config, outdir):
     name_out = ''.join([right_img['name'], '_detections_rectified.jpg'])
     out = os.path.join(outdir, name_out)
     cv2.imwrite(out, marked_img)
+
+    corr_detect, corr_angles = rectificator.rectify_points_angles(
+        left_img['detections'], left_img['yaw_angles'], left_img['size'])
+    assert len(corr_angles) == len(left_img['yaw_angles'])
+
+    # for visual see /out
+    rect_img = rectificator.rectify_image(left_img['img_w_detections'])
+    vis.draw_complex_marks(rect_img, corr_detect, corr_angles)
+    name_out = ''.join([left_img['name'], '_detect_angles_rectified.jpg'])
+    out = os.path.join(outdir, name_out)
+    cv2.imwrite(out, rect_img)
 
 
 def test_rotate_image():

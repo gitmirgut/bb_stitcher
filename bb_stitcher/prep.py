@@ -17,6 +17,8 @@ from logging import getLogger
 import cv2
 import numpy as np
 
+import bb_stitcher.helpers as helpers
+
 log = getLogger(__name__)
 
 
@@ -60,7 +62,7 @@ class Rectificator(object):
     def rectify_points(self, points, size):
         """Remove lens distortion from points.
 
-        Map points determined from distorted image to its position in an undistorted img.
+        Map points determined from distorted image to its position in an undistorted image.
 
         Args:
             points (ndarray): List of (distorted) points *(N,2)*.
@@ -85,6 +87,32 @@ class Rectificator(object):
         log.debug('new_camera_mat = \n{}'.format(self.cached_new_cam_mat))
         return cv2.undistortPoints(
             points, self.intr_m, self.dist_c, None, self.cached_new_cam_mat)[0]
+
+    def rectify_points_angles(self, points, angles, size):
+        """Remove lens distortion from angles.
+
+        Map angles determined from distorted image to its angles in an undistorted image.
+
+        Args:
+            points(ndarray): List of (distorted) points *(N,2)*.
+            angles (ndarray): List of Angles in rad (length *(N,)*).
+            size (tuple): Size *(width, height)* of the image, which was used for determine the
+                                points.
+
+        Returns:
+            - **rect_points** (ndarray) -- List of corrected ``points``
+            - **rect_angles** (ndarray) -- List of corrected ``angles``
+        """
+        angle_pt_repr = helpers.angles_to_points(points, angles)
+        # points = np.array([points])
+        # angle_pt_repr = np.array([angle_pt_repr])
+
+        rect_points = self.rectify_points(points, size)
+        rect_angle_pt_reprs = self.rectify_points(angle_pt_repr, size)
+
+        rect_angles = helpers.points_to_angles(rect_points, rect_angle_pt_reprs)
+
+        return rect_points, rect_angles
 
 
 @functools.lru_cache(maxsize=16)
