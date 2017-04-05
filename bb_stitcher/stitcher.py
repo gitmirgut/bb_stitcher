@@ -111,6 +111,31 @@ class Stitcher(object):
         points = np.array([points])
         return cv2.perspectiveTransform(points, self.homo_left)[0]
 
+    def map_left_points_angles(self, points, angles):
+        """Map points and angles from the left image to the panorama.
+
+        This happens under the assumption that the image transformations were estimated or loaded
+        before.
+
+        Args:
+            points (ndarray(float)): List of points from left image *(N,2)*.
+            angles (ndarray): Angles in rad (length *(N,)*).
+
+        Returns:
+            - **points_mapped** (ndarray) -- ``points`` mapped to panorama *(N,2)*
+            - **angles_mapped** (ndarray) -- ``angles`` mapped to panorama *(N,)*
+        """
+        angle_pt_repr = helpers.angles_to_points(points, angles)
+        if self.rectify:
+            points = self.rectificator.rectify_points(points, self.size_left)
+            angle_pt_repr = self.rectificator.rectify_points(angle_pt_repr, self.size_left)
+        points = np.array([points])
+        angle_pt_repr = np.array([angle_pt_repr])
+        points_mapped = cv2.perspectiveTransform(points, self.homo_left)[0]
+        angle_pt_repr_mapped = cv2.perspectiveTransform(angle_pt_repr, self.homo_left)[0]
+        angles_mapped = helpers.points_to_angles(points_mapped, angle_pt_repr_mapped)
+        return points_mapped, angles_mapped
+
     def map_right_points(self, points):
         """Map points from the right image to the panorama.
 
@@ -128,6 +153,31 @@ class Stitcher(object):
             points = self.rectificator.rectify_points(points, self.size_right)
         points = np.array([points])
         return cv2.perspectiveTransform(points, self.homo_right)[0]
+
+    def map_right_points_angles(self, points, angles):
+        """Map points and angles from the right image to the panorama.
+
+        This happens under the assumption that the image transformations were estimated or loaded
+        before.
+
+        Args:
+            points (ndarray(float)): List of points from right image *(N,2)*.
+            angles (ndarray): Angles in rad (length *(N,)*).
+
+        Returns:
+            - **points_mapped** (ndarray) -- ``points`` mapped to panorama *(N,2)*
+            - **angles_mapped** (ndarray) -- ``angles`` mapped to panorama *(N,)*
+        """
+        angle_pt_repr = helpers.angles_to_points(points, angles)
+        if self.rectify:
+            points = self.rectificator.rectify_points(points, self.size_right)
+            angle_pt_repr = self.rectificator.rectify_points(angle_pt_repr, self.size_right)
+        points = np.array([points])
+        angle_pt_repr = np.array([angle_pt_repr])
+        points_mapped = cv2.perspectiveTransform(points, self.homo_right)[0]
+        angle_pt_repr_mapped = cv2.perspectiveTransform(angle_pt_repr, self.homo_right)[0]
+        angles_mapped = helpers.points_to_angles(points_mapped, angle_pt_repr_mapped)
+        return points_mapped, angles_mapped
 
 
 class FeatureBasedStitcher(Stitcher):

@@ -9,6 +9,7 @@ import bb_stitcher.helpers as helpers
 import bb_stitcher.picking.picker
 import bb_stitcher.prep as prep
 import bb_stitcher.stitcher as stitcher
+import visualisation as vis
 
 
 @pytest.fixture
@@ -255,4 +256,32 @@ def test_overall_rt_stitching(left_img, right_img, outdir, config, monkeypatch):
     pano = draw_marks(pano, detections_right_mapped)
 
     out = os.path.join(outdir, 'panorama_rt_w_detections.jpg')
+    cv2.imwrite(out, pano)
+
+
+def test_map_points_angles(left_img, right_img, outdir, config, monkeypatch):
+    def mockreturn(myself, image_list, all):
+        left_points = np.array([
+            [88.91666412, 3632.6015625],
+            [2760.26855469, 3636.70849609],
+            [2726.26708984, 363.4861145],
+            [93.88884735, 371.98330688]], dtype=np.float32)
+        right_points = np.array([
+            [181.49372864, 3687.71582031],
+            [2903.44042969, 3723.99926758],
+            [2921.27368164, 458.77352905],
+            [255.66642761, 431.24780273]], dtype=np.float32)
+        return left_points, right_points
+    monkeypatch.setattr(bb_stitcher.picking.picker.PointPicker, 'pick', mockreturn)
+    rt_stitcher = stitcher.RectangleStitcher(config)
+    assert rt_stitcher.estimate_transform(left_img['img'], right_img['img'], 90, -90) is not None
+    pano = rt_stitcher.compose_panorama(
+        left_img['img_w_detections'], right_img['img_w_detections'])
+    detections_left_mapped, yaw_angles_left_mapped = rt_stitcher.map_left_points_angles(
+        left_img['detections'], left_img['yaw_angles'])
+    detections_right_mapped, yaw_angles_right_mapped = rt_stitcher.map_right_points_angles(
+        right_img['detections'], right_img['yaw_angles'])
+    vis.draw_complex_marks(pano, detections_left_mapped, yaw_angles_left_mapped)
+    vis.draw_complex_marks(pano, detections_right_mapped, yaw_angles_right_mapped)
+    out = os.path.join(outdir, 'panorama_rt_w_detections_angles.jpg')
     cv2.imwrite(out, pano)
