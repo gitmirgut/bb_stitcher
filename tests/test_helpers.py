@@ -155,3 +155,19 @@ def test_angles_to_points():
     ])
     result = helpers.angles_to_points(points, angles, 10)
     npt.assert_almost_equal(result, target)
+
+
+def test_points_to_angles():
+    angle_centers = np.zeros((5, 2), dtype=np.uint16)
+    points_repr = np.array([
+        [-10, - 0.00000001],  # if it would be zero it will be pi
+        [0, -10],
+        [10, 0],
+        [0, 10],
+        [-10, 0]
+    ])
+    target = np.ones((5,))
+    for i, val in enumerate(range(- 2, 3)):
+        target[i] = val * np.pi / 2
+    result = helpers.points_to_angles(angle_centers, points_repr)
+    npt.assert_almost_equal(result, target, decimal=7)

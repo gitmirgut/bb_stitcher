@@ -296,9 +296,9 @@ def harmonize_rects(rect_a, rect_b):
 def angles_to_points(angle_centers, angles, distance=22):
     r"""Calculate point representations of angles.
 
-    The angle points ``points_reprs`` are calculated in  dependency of the ``angle_center`` and the
-    ray starting from this center, which is perpendicular to the right border.
-    Positive angles will be interpreted as clockwise rotation.
+    The angle point representations ``points_reprs`` are calculated in  dependency of the
+    ``angle_center`` and the ray starting from this center, which is perpendicular to the right
+    border. Positive angles will be interpreted as clockwise rotation.
 
     Example:
         .. code::
@@ -315,12 +315,12 @@ def angles_to_points(angle_centers, angles, distance=22):
                           v
 
     Args:
-        angle_centers (ndarray):The centers of the ``angles``. *(N,2)*
+        angle_centers (ndarray): The centers of the ``angles``. *(N,2)*
         angles (ndarray): Angles in rad (length *(N,)*).
         distance (int): The distance between the ``angle_centers`` and the point representations.
 
     Returns:
-        ndarray: Angles represented by points. *(N,2)*
+        - **points_repr** (ndarray) -- Angles represented by points. *(N,2)*
     """
     assert len(angle_centers) == len(angles)
     points_repr = np.zeros((len(angle_centers), 2), dtype=np.float32)
@@ -330,3 +330,61 @@ def angles_to_points(angle_centers, angles, distance=22):
         points_repr[i, 0] = center[0] + distance * np.cos(z_rotation)
         points_repr[i, 1] = center[1] + distance * np.sin(z_rotation)
     return points_repr
+
+
+def points_to_angles(angle_centers, points_repr):
+    """Convert angle point representation back to normal angle.
+
+    This function is the inverted version of ``angles_to_points``.
+
+    Args:
+        angle_centers (ndarray): The centers of the ``angles``. *(N,2)*
+        points_repr (ndarray): Angles represented by points. *(N,2)*
+
+    Returns:
+        ndarray: Angles in rad *(N,)*
+
+    """
+    """Calculate angle between vertical line passing through angle_centers and line AB."""
+    # https://de.wikipedia.org/wiki/Roll-Nick-Gier-Winkel#/media/File:RPY_angles_of_spaceships_(local_frame).png
+    # TODO(zeor_angle) variablen Nullwinkel einbauen, momentan ist entspricht dieser der x-Achse
+    assert len(angle_centers) == len(points_repr)
+
+    angles = np.zeros(len(angle_centers), dtype=np.float32)
+    for i, angle_center in enumerate(angle_centers):
+        point_repr = points_repr[i]
+        angle_center_x, angle_center_y = angle_center
+        point_repr_x, point_repr_y = point_repr
+
+        # the 0-angle has to be a ray from the center, which is perpendicular to the right border
+        # we abstract this ray as a point ``ray_pt`` which always lies on the right side of the
+        # center, so ``ray_pt_dis`` has to be just greater 0, we take 10
+        ray_pt_dis = 10
+        ray_pt = np.array([angle_center_x + ray_pt_dis, angle_center_y])
+
+        """
+        angle_center      p       ray_pt
+                  *---------------*
+                   \         |   /
+                    \ angle /   /
+                 r   \     /   /  d
+                      \ --´   /
+                       \     /
+                        \   /
+                         \ /
+               point_repr *
+        """
+
+        d = np.linalg.norm(ray_pt - point_repr)
+        p = ray_pt_dis
+        r = np.linalg.norm(angle_center - point_repr)
+
+        cos_angle = (p ** 2 + r ** 2 - d ** 2) / (2 * r * p)
+        angle = np.arccos(cos_angle)
+
+        if angle_center_y > point_repr_y:
+            angle = -angle
+
+        angles[i] = angle
+
+    return angles
