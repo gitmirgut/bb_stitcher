@@ -104,8 +104,6 @@ class Rectificator(object):
             - **rect_angles** (ndarray) -- List of corrected ``angles``
         """
         angle_pt_repr = helpers.angles_to_points(points, angles)
-        # points = np.array([points])
-        # angle_pt_repr = np.array([angle_pt_repr])
 
         rect_points = self.rectify_points(points, size)
         rect_angle_pt_reprs = self.rectify_points(angle_pt_repr, size)
