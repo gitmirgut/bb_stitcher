@@ -1,5 +1,5 @@
 Visualisation
-============
+=============
 
 
 .. automodule:: bb_stitcher.visualisation

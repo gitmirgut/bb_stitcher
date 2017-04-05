@@ -294,7 +294,7 @@ def harmonize_rects(rect_a, rect_b):
 
 
 def angles_to_points(angle_centers, angles, distance=150):
-    u"""Calculate point representations of angles.
+    r"""Calculate point representations of angles.
 
     The angle points ``points_reprs`` are calculated in  dependency of the ``angle_center`` and the
     ray starting from this center, which is perpendicular to the right border.
@@ -302,6 +302,7 @@ def angles_to_points(angle_centers, angles, distance=150):
 
     Example:
         .. code::
+
             angle_center
                   *--------x-Axis------>
                    \         |
