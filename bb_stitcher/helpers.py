@@ -227,7 +227,7 @@ def raw_estimate_rect(points):
 
 
 def harmonize_rects(rect_a, rect_b):
-    """Harmonize two rectangles in there vertical dimension.
+    """Harmonize two rectangles in their vertical dimension.
 
     Example:
         .. code::
