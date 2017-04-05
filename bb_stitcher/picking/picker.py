@@ -74,6 +74,9 @@ class PointPicker(object):
 
         fig, axes = plt.subplots(
             nrows=1, ncols=count_images, tight_layout=False)
+        fig.canvas.mpl_connect('button_press_event', _on_click)
+        fig.canvas.set_window_title('Point Picker | r-refine point | s-select point | z-zoom | '
+                                    'p-pan | q-quit/finish')
 
         # if the nrows == 1 and ncols == 1 the function of plt.subplots returns a single
         # class 'matplotlib.axes._subplots.AxesSubplot' but we want always an array
@@ -86,7 +89,6 @@ class PointPicker(object):
                 plt.setp(axes[i].get_yticklabels(), visible=False)
             axes[i].imshow(image)
 
-        fig.canvas.mpl_connect('button_press_event', _on_click)
         plt.show()
         points = []
         for i, dms in enumerate(dms_per_image):
