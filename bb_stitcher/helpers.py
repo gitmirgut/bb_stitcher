@@ -390,3 +390,24 @@ def points_to_angles(angle_centers, points_repr):
         angles[i] = angle
 
     return angles
+
+
+def get_ratio_px_to_mm(start_point, end_point, distance_mm):
+    """Return ratio between pixel and millimetre.
+    
+    The function derives the distance of two points (``start_point``, ``end_point``) in pixels and 
+    then calculates ratio using the distance in pixels and the distance in mm ``distance_mm`` the
+    ratio between pixel and millimetre
+    
+    Args:
+        start_point (ndarray): Start point of the reference Line Segment *(2,)*
+        end_point (ndarray): End point of the reference Line Segment *(2,0)*
+        distance_mm (float): The distance between the ``start_point`` and ``end_point`` of the \
+        line segment in real world in mm.
+
+    Returns:
+        float: The ratio between px and mm (the length of 1px in mm).
+
+    """
+    distance_px = np.linalg.norm(end_point - start_point)
+    return distance_mm / distance_px

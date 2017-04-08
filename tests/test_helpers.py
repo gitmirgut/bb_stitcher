@@ -176,3 +176,11 @@ def test_points_to_angles():
     points_repr = np.ones((1, 2))
     with pytest.raises(Exception):
         helpers.points_to_angles(angle_centers, points_repr)
+
+
+def test_get_ratio_px_to_mm():
+    start_point = np.array([0, 0])
+    end_point = np.array([30, 40])
+    distance_mm = 25
+    px_to_mm = helpers.get_ratio_px_to_mm(start_point, end_point, distance_mm)
+    assert px_to_mm == 0.5
