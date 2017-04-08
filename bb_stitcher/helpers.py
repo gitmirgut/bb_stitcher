@@ -401,7 +401,7 @@ def get_ratio_px_to_mm(start_point, end_point, distance_mm):
 
     Args:
         start_point (ndarray): Start point of the reference Line Segment *(2,)*
-        end_point (ndarray): End point of the reference Line Segment *(2,0)*
+        end_point (ndarray): End point of the reference Line Segment *(2,)*
         distance_mm (float): The distance between the ``start_point`` and ``end_point`` of the \
         line segment in real world in mm.
 
