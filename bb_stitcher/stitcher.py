@@ -43,6 +43,23 @@ class Stitcher(object):
         image_rot, affine = prep.rotate_image(image, angle)
         return image_rot, affine
 
+    def load_parameter(self, homo_left, homo_right, size_left, size_right, pano_size):
+        """Load needed parameters for stitching points, angles and images.
+
+         This function becomes handy if you calculate the parameters in an earlier stitching
+         process and did not want to calculate the parameters again and just want to map points,
+         angles or images which were made under the same camera setup as the earlier stitching
+         process.
+
+        Args:
+            homo_left (ndarray): homography *(3,3)* for data from the left side to form a panorama.
+            homo_right (ndarray): homography *(3,3)* for data from the left side to form a panorama.
+            size_left (tuple): Size of the left image, which was used to calculate homography.
+            size_right (tuple): Size of the right image, which was used to calculate homography.
+            pano_size: Size of the panorama.
+        """
+        pass
+
     def estimate_transform(self, image_left, image_right, angle_left=0, angle_right=0):
         """Estimate transformation/homography of the left and right images/data to form a panorama.
 
