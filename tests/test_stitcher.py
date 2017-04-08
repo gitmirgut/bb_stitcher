@@ -9,7 +9,7 @@ import bb_stitcher.helpers as helpers
 import bb_stitcher.picking.picker
 import bb_stitcher.prep as prep
 import bb_stitcher.stitcher as stitcher
-import visualisation as vis
+import bb_stitcher.visualisation as vis
 
 
 @pytest.fixture
