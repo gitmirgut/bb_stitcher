@@ -1,7 +1,7 @@
 import bb_stitcher.core as core
 
 
-def test_auto_config():
+def test_get_default_config():
     config = core.get_default_config()
 
     config_set = {
@@ -10,3 +10,8 @@ def test_auto_config():
         'SURF',
         'FeatureMatcher'}
     assert set(config.sections()) == config_set
+
+
+def test_get_default_debug_config():
+    deb_config = core.get_default_debug_config()
+    assert 'loggers' in deb_config
