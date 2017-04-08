@@ -1,4 +1,3 @@
-import configparser
 import os
 import os.path
 
@@ -77,9 +76,7 @@ def not_to_bee():
 
 @pytest.fixture
 def config():
-    default_config = configparser.ConfigParser()
-    default_config.read(core.get_default_config())
-    return default_config
+    return core.get_default_config()
 
 
 @pytest.fixture
@@ -88,3 +85,10 @@ def main_outdir():
     if not os.path.exists(out_path):
         os.makedirs(out_path)
     return out_path
+
+
+@pytest.fixture
+def panorma():
+    img_path = get_test_fname('data/panorama.jpg')
+    img = cv2.imread(img_path, -1)
+    return img
