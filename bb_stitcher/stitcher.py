@@ -214,17 +214,18 @@ class Stitcher(object):
         angles_mapped = helpers.points_to_angles(points_mapped, angle_pt_repr_mapped)
         return points_mapped, angles_mapped
 
-    def _calc_image_to_world_mat(self, panorama):
+    @staticmethod
+    def _calc_image_to_world_mat(panorama):
         """
         Determine the matrix to convert image coordinates to world coordinates. The user must
-        select to points on the image. The first point will be the origin and the distance between
+        select two points on the image. The first point will be the origin and the distance between
         the first and the second point, will be used to determine the ratio between px and mm.
-        
+
         Returns:
-             ndarray: homography *(3,3)* to transform image image points to world points.
+             ndarray: homography *(3,3)* to transform image points to world points.
         """
 
-        pt = pt_picker = picker.PointPicker()
+        pt_picker = picker.PointPicker()
         points = pt_picker.pick([panorama], False)
         start_point, end_point = points[0]
         distance_mm = float(input('Distance in mm of the two selected points: '))
@@ -235,3 +236,5 @@ class Stitcher(object):
             [ratio, 0, start_point[0]],
             [0, ratio, end_point[1]],
             [0, 0, 1]], dtype=np.float32)
+
+        return homo_to_world
