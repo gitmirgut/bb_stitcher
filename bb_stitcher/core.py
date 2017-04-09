@@ -28,7 +28,7 @@ def get_default_debug_config():
 class FeatureBasedStitcher(Stitcher):
     """Class to create a feature based stitcher."""
 
-    def __init__(self, config):
+    def __init__(self, config, rectify=True):
         """Initialize a feature based stitcher.
 
         Args:
@@ -36,7 +36,7 @@ class FeatureBasedStitcher(Stitcher):
         """
         # TODO(gitmirgut) add autoload config file
         # TODO(gitmirgut) initialize super()
-        super().__init__(config)
+        super().__init__(config, rectify)
         self.overlap = int(config['FeatureBasedStitcher']['OVERLAP'])
         self.border_top = int(config['FeatureBasedStitcher']['BORDER_TOP'])
         self.border_bottom = int(config['FeatureBasedStitcher']['BORDER_BOTTOM'])

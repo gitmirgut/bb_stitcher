@@ -9,18 +9,17 @@ import bb_stitcher.prep as prep
 class Stitcher(object):
     """Class to create a 'panorama' from two images."""
 
-    def __init__(self, config, homo_left=None, homo_right=None,
-                 size_left=None, size_right=None, pano_size=None, rectify=True):
+    def __init__(self, config, rectify=True):
         """"Initialize the stitcher."""
-        self.homo_left = homo_left
-        self.homo_right = homo_right
-        self.size_left = size_left
-        self.size_right = size_right
-        self.pano_size = pano_size
         self.config = config
         self.rectify = rectify
         if rectify:
             self.rectificator = prep.Rectificator(self.config)
+        self.homo_left = None
+        self.homo_right = None
+        self.size_left = None
+        self.size_right = None
+        self.pano_size = None
 
     def _prepare_image(self, image, angle=0):
         """Prepare image for stitching.
@@ -42,7 +41,8 @@ class Stitcher(object):
         image_rot, affine = prep.rotate_image(image, angle)
         return image_rot, affine
 
-    def load_parameter(self, homo_left, homo_right, size_left, size_right, pano_size):
+    def load_parameters(self, homo_left=None, homo_right=None, size_left=None, size_right=None,
+                        pano_size=None):
         """Load needed parameters for stitching points, angles and images.
 
          This function becomes handy if you calculate the parameters in an earlier stitching
@@ -52,12 +52,27 @@ class Stitcher(object):
 
         Args:
             homo_left (ndarray): homography *(3,3)* for data from the left side to form a panorama.
-            homo_right (ndarray): homography *(3,3)* for data from the left side to form a panorama.
+            homo_right (ndarray): homography *(3,3)* for data from the right side to form a \
+            panorama.
             size_left (tuple): Size of the left image, which was used to calculate homography.
             size_right (tuple): Size of the right image, which was used to calculate homography.
-            pano_size: Size of the panorama.
+            pano_size (tuple): Size of the panorama.
         """
-        pass
+        self.homo_left = homo_left
+        self.homo_right = homo_right
+        self.size_left = size_left
+        self.size_right = size_right
+        self.pano_size = pano_size
+
+    def get_parameters(self):
+        """Returns the estimated or loaded parameters of the stitcher needed for later stitching.
+
+        With this function you could save the stitching parameters and load them later for further
+        stitching of points and angles (see ``load_parameters``).
+
+        Use this function if you estimated the transform and did not want to estimate the parameters
+        """
+        return self.homo_left, self.homo_right, self.size_left, self.size_right, self.pano_size
 
     def estimate_transform(self, image_left, image_right, angle_left=0, angle_right=0):
         """Estimate transformation/homography of the left and right images/data to form a panorama.
