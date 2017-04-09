@@ -3,8 +3,8 @@ import cv2
 import numpy as np
 
 import bb_stitcher.helpers as helpers
-import bb_stitcher.prep as prep
 import bb_stitcher.picking.picker as picker
+import bb_stitcher.prep as prep
 
 
 class Stitcher(object):
@@ -216,15 +216,15 @@ class Stitcher(object):
 
     @staticmethod
     def _calc_image_to_world_mat(panorama):
-        """
-        Determine the matrix to convert image coordinates to world coordinates. The user must
-        select two points on the image. The first point will be the origin and the distance between
-        the first and the second point, will be used to determine the ratio between px and mm.
+        """Determine the matrix to convert image coordinates to world coordinates.
+
+        The user must select two points on the image. The first point will be the origin and the
+        distance between the first and the second point, will be used to determine the ratio
+        between px and mm.
 
         Returns:
              ndarray: homography *(3,3)* to transform image points to world points.
         """
-
         pt_picker = picker.PointPicker()
         points = pt_picker.pick([panorama], False)
         start_point, end_point = points[0]
