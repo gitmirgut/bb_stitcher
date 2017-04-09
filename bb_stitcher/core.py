@@ -136,7 +136,6 @@ class FeatureBasedStitcher(Stitcher):
         self.homo_left = homo_trans.dot(homo_left)
         self.homo_right = homo_trans.dot(homo_right)
         self.pano_size = pano_size
-        return self.homo_left, self.homo_right, self.pano_size
 
 
 class RectangleStitcher(Stitcher):
@@ -199,5 +198,3 @@ class RectangleStitcher(Stitcher):
         # set origin/start and end point for convert measures from px to mm
         self.origin = self.map_left_points(np.array([pts_left_srt[0]]))
         self.end_point = self.map_right_points(np.array([pts_right_srt[1]]))
-
-        return self.homo_left, self.homo_right, self.pano_size

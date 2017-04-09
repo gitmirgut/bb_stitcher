@@ -85,15 +85,18 @@ def test_calc_feature_mask():
 
 def test_fb_estimate_transform(fb_stitcher, left_img, right_img, not_to_bee):
     # provoke no finding of transformation
-    assert fb_stitcher.estimate_transform(left_img['img'], not_to_bee) is None
+    fb_stitcher.estimate_transform(left_img['img'], not_to_bee)
+    assert fb_stitcher.homo_left is None and fb_stitcher.homo_right is None
 
     # find transformation
-    assert fb_stitcher.estimate_transform(left_img['img'], right_img['img'], 90, -90) is not None
+    fb_stitcher.estimate_transform(left_img['img'], right_img['img'], 90, -90)
+    assert fb_stitcher.homo_left is not None and fb_stitcher.homo_right is not None
 
 
 @pytest.mark.slow
 def test_overall_fb_stitching(fb_stitcher, left_img, right_img, outdir):
-    assert fb_stitcher.estimate_transform(left_img['img'], right_img['img'], 90, -90) is not None
+    fb_stitcher.estimate_transform(left_img['img'], right_img['img'], 90, -90)
+    assert fb_stitcher.homo_left is not None and fb_stitcher.homo_right is not None
     pano = fb_stitcher.compose_panorama(
         left_img['img_w_detections'], right_img['img_w_detections'])
     detections_left_mapped = fb_stitcher.map_left_points(left_img['detections'])
@@ -127,11 +130,11 @@ def test_rect_stitcher_estimate_transform(left_img, right_img, outdir, config,
     monkeypatch.setattr(bb_stitcher.picking.picker.PointPicker, 'pick', mockreturn)
     # print(left_points)
     rt_stitcher = core.RectangleStitcher(config)
-    homo_left, homo_right, pano_size = rt_stitcher.estimate_transform(
+    rt_stitcher.estimate_transform(
         left_img['img'], right_img['img'], 90, -90)
-    assert homo_left is not None
-    assert homo_right is not None
-    assert pano_size is not None
+    assert rt_stitcher.homo_left is not None
+    assert rt_stitcher.homo_right is not None
+    assert rt_stitcher.pano_size is not None
 
 
 @pytest.mark.slow
@@ -150,7 +153,10 @@ def test_overall_rt_stitching(left_img, right_img, outdir, config, monkeypatch):
         return left_points, right_points
     monkeypatch.setattr(bb_stitcher.picking.picker.PointPicker, 'pick', mockreturn)
     rt_stitcher = core.RectangleStitcher(config)
-    assert rt_stitcher.estimate_transform(left_img['img'], right_img['img'], 90, -90) is not None
+    rt_stitcher.estimate_transform(left_img['img'], right_img['img'], 90, -90)
+    assert rt_stitcher.homo_left is not None
+    assert rt_stitcher.homo_right is not None
+    assert rt_stitcher.pano_size is not None
     pano = rt_stitcher.compose_panorama(
         left_img['img_w_detections'], right_img['img_w_detections'])
     detections_left_mapped = rt_stitcher.map_left_points(left_img['detections'])

@@ -166,7 +166,10 @@ def test_map_points_angles(left_img, right_img, outdir, config, monkeypatch):
         return left_points, right_points
     monkeypatch.setattr(bb_stitcher.picking.picker.PointPicker, 'pick', mockreturn)
     rt_stitcher = core.RectangleStitcher(config)
-    assert rt_stitcher.estimate_transform(left_img['img'], right_img['img'], 90, -90) is not None
+    rt_stitcher.estimate_transform(left_img['img'], right_img['img'], 90, -90)
+    assert rt_stitcher.homo_left is not None
+    assert rt_stitcher.homo_right is not None
+    assert rt_stitcher.pano_size is not None
     pano = rt_stitcher.compose_panorama(
         left_img['img_w_detections'], right_img['img_w_detections'])
     detections_left_mapped, yaw_angles_left_mapped = rt_stitcher.map_left_points_angles(
