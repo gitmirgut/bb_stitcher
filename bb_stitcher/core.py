@@ -1,28 +1,9 @@
-import configparser
-import os
-
 import cv2
 import numpy as np
 
 import bb_stitcher.helpers as helpers
 import bb_stitcher.picking.picker as picker
 from bb_stitcher.stitcher import Stitcher
-
-
-def get_default_config():
-    """Return the default config."""
-    default_config = configparser.ConfigParser()
-    path_config = os.path.join(os.path.dirname(__file__), 'default_config.ini')
-    default_config.read(path_config)
-    return default_config
-
-
-def get_default_debug_config():
-    """Return the default logging config file."""
-    default_config = configparser.ConfigParser()
-    path_config = os.path.join(os.path.dirname(__file__), 'logging_config.ini')
-    default_config.read(path_config)
-    return default_config
 
 
 class FeatureBasedStitcher(Stitcher):

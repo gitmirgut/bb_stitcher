@@ -7,6 +7,7 @@ from numpy import testing as npt
 
 import bb_stitcher.core as core
 import bb_stitcher.picking.picker
+import bb_stitcher.helpers as helpers
 
 
 def draw_marks(img, pts, color=(0, 0, 255), marker_types=cv2.MARKER_CROSS):
@@ -35,7 +36,7 @@ def fb_stitcher(config):
 
 
 def test_get_default_config():
-    config = core.get_default_config()
+    config = helpers.get_default_config()
 
     config_set = {
         'Rectificator',
@@ -46,7 +47,7 @@ def test_get_default_config():
 
 
 def test_get_default_debug_config():
-    deb_config = core.get_default_debug_config()
+    deb_config = helpers.get_default_debug_config()
     assert 'loggers' in deb_config
 
 

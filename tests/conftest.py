@@ -5,11 +5,13 @@ import cv2
 import numpy as np
 import pytest
 
-import bb_stitcher.core as core
+import bb_stitcher.helpers as helpers
 
 
 # add marker for incremental testing
 # http://doc.pytest.org/en/latest/example/simple.html#incremental-testing-test-steps
+
+
 def pytest_runtest_makereport(item, call):
     if "incremental" in item.keywords:
         if call.excinfo is not None:
@@ -76,7 +78,7 @@ def not_to_bee():
 
 @pytest.fixture
 def config():
-    return core.get_default_config()
+    return helpers.get_default_config()
 
 
 @pytest.fixture

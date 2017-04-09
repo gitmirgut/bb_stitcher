@@ -10,13 +10,31 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 """This module provides various helper functions."""
+import configparser
 from logging import getLogger
 import math
+import os
 
 import cv2
 import numpy as np
 
 log = getLogger(__name__)
+
+
+def get_default_config():
+    """Return the default config."""
+    default_config = configparser.ConfigParser()
+    path_config = os.path.join(os.path.dirname(__file__), 'default_config.ini')
+    default_config.read(path_config)
+    return default_config
+
+
+def get_default_debug_config():
+    """Return the default logging config file."""
+    default_config = configparser.ConfigParser()
+    path_config = os.path.join(os.path.dirname(__file__), 'logging_config.ini')
+    default_config.read(path_config)
+    return default_config
 
 
 def align_to_display_area(size_left, size_right, homo_left, homo_right):
