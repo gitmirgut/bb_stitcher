@@ -9,6 +9,7 @@ Welcome to bb_stitcher's documentation!
 .. toctree::
    :maxdepth: 2
 
+   api/core
    api/preparation
    api/stitcher
    api/helpers
