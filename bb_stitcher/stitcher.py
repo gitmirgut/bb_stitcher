@@ -4,6 +4,7 @@ import numpy as np
 
 import bb_stitcher.helpers as helpers
 import bb_stitcher.prep as prep
+import bb_stitcher.picking.picker as picker
 
 
 class Stitcher(object):
@@ -212,3 +213,25 @@ class Stitcher(object):
         angle_pt_repr_mapped = cv2.perspectiveTransform(angle_pt_repr, self.homo_right)[0]
         angles_mapped = helpers.points_to_angles(points_mapped, angle_pt_repr_mapped)
         return points_mapped, angles_mapped
+
+    def _calc_image_to_world_mat(self, panorama):
+        """
+        Determine the matrix to convert image coordinates to world coordinates. The user must
+        select to points on the image. The first point will be the origin and the distance between
+        the first and the second point, will be used to determine the ratio between px and mm.
+        
+        Returns:
+             ndarray: homography *(3,3)* to transform image image points to world points.
+        """
+
+        pt = pt_picker = picker.PointPicker()
+        points = pt_picker.pick([panorama], False)
+        start_point, end_point = points[0]
+        distance_mm = float(input('Distance in mm of the two selected points: '))
+        ratio = helpers.get_ratio_px_to_mm(start_point, end_point, distance_mm)
+
+        # define matrix to convert image coordinates to world coordinates
+        homo_to_world = np.array([
+            [ratio, 0, start_point[0]],
+            [0, ratio, end_point[1]],
+            [0, 0, 1]], dtype=np.float32)
