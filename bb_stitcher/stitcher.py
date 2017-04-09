@@ -9,9 +9,12 @@ import bb_stitcher.prep as prep
 class Stitcher(object):
     """Class to create a 'panorama' from two images."""
 
-    def __init__(self, config, rectify=True):
+    def __init__(self, config=None, rectify=True):
         """"Initialize the stitcher."""
-        self.config = config
+        if config is None:
+            self.config = helpers.get_default_config()
+        else:
+            self.config = config
         self.rectify = rectify
         if rectify:
             self.rectificator = prep.Rectificator(self.config)

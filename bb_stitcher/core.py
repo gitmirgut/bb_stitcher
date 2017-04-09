@@ -9,22 +9,25 @@ from bb_stitcher.stitcher import Stitcher
 class FeatureBasedStitcher(Stitcher):
     """Class to create a feature based stitcher."""
 
-    def __init__(self, config, rectify=True):
+    def __init__(self, config=None, rectify=True):
         """Initialize a feature based stitcher.
 
         Args:
             config: config file which holds the basic stitching parameters.
         """
-        # TODO(gitmirgut) add autoload config file
         # TODO(gitmirgut) initialize super()
-        super().__init__(config, rectify)
-        self.overlap = int(config['FeatureBasedStitcher']['OVERLAP'])
-        self.border_top = int(config['FeatureBasedStitcher']['BORDER_TOP'])
-        self.border_bottom = int(config['FeatureBasedStitcher']['BORDER_BOTTOM'])
-        self.transform = config['FeatureBasedStitcher']['TRANSFORM']
-        self.hessianThreshold = float(config['SURF']['HESSIANTHRESHOLD'])
-        self.nOctaves = int(config['SURF']['N_OCTAVES'])
-        self.max_shift_y = int(config['FeatureMatcher']['MAX_SCHIFT_Y'])
+        if config is None:
+            self.config = helpers.get_default_config()
+        else:
+            self.config = config
+        super().__init__(self.config, rectify)
+        self.overlap = int(self.config['FeatureBasedStitcher']['OVERLAP'])
+        self.border_top = int(self.config['FeatureBasedStitcher']['BORDER_TOP'])
+        self.border_bottom = int(self.config['FeatureBasedStitcher']['BORDER_BOTTOM'])
+        self.transform = self.config['FeatureBasedStitcher']['TRANSFORM']
+        self.hessianThreshold = float(self.config['SURF']['HESSIANTHRESHOLD'])
+        self.nOctaves = int(self.config['SURF']['N_OCTAVES'])
+        self.max_shift_y = int(self.config['FeatureMatcher']['MAX_SCHIFT_Y'])
 
     @staticmethod
     def _calc_feature_mask(size_left, size_right, overlap, border_top, border_bottom):
