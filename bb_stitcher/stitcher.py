@@ -65,7 +65,7 @@ class Stitcher(object):
         self.pano_size = pano_size
 
     def get_parameters(self):
-        """Returns the estimated or loaded parameters of the stitcher needed for later stitching.
+        """Return the estimated or loaded parameters of the stitcher needed for later stitching.
 
         With this function you could save the stitching parameters and load them later for further
         stitching of points and angles (see ``load_parameters``).
