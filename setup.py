@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
     name='bb_stitcher',
-    version='0.0.0.dev1',
+    version='0.0.0.dev2',
     description='Stitch images from different cam positions,'
                 'with an affine transformation',
     long_description='',
