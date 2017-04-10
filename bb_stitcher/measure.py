@@ -1,16 +1,14 @@
-"""
-This module is used to measure nearly planar objects on a surface, which is parallel to the image
-plane.
-"""
-import numpy as np
+"""This module is used to measure nearly planar objects on a surface.
 
+The surface must be parallel to the image plane.
+"""
 import bb_stitcher.helpers as helpers
 import bb_stitcher.picking.picker as picker
 
 
 def calc_ratio(image):
     """Determine the ratio to convert from pixel to mm.
-    
+
     The user must select two points on the image. The selected points, will be used to determine the
     ratio between px and mm.
     Args:

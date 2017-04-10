@@ -4,6 +4,7 @@ import numpy.testing as npt
 import bb_stitcher.picking.picker
 import bb_stitcher.measure as measure
 
+
 def test_calc_ratio(panorma, monkeypatch):
     def mockreturn(myself, image_list, all):
         points = [np.array([
