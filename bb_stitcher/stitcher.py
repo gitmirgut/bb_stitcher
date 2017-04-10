@@ -1,10 +1,18 @@
 """This module contains various image stitchers especially designed for the BeesBook Project."""
+from enum import Enum
+
 import cv2
 import numpy as np
 
 import bb_stitcher.helpers as helpers
 import bb_stitcher.picking.picker as picker
 import bb_stitcher.prep as prep
+
+
+class ESTIMATION_STITCHERS(Enum):
+    """Enumeration to define the possible stitchers for estimation of transformation."""
+    FEATUREBASED = 0
+    RECTANGLE = 1
 
 
 class Stitcher(object):
