@@ -5,7 +5,7 @@ import bb_stitcher.picking.picker
 import bb_stitcher.measure as measure
 
 
-def test_calc_ratio(panorma, monkeypatch):
+def test_get_ratio(panorma, monkeypatch):
     def mockreturn(myself, image_list, all):
         points = [np.array([
             [94.43029022, 471.89901733],
@@ -14,6 +14,17 @@ def test_calc_ratio(panorma, monkeypatch):
         return points
     monkeypatch.setattr(bb_stitcher.picking.picker.PointPicker, 'pick', mockreturn)
     monkeypatch.setitem(__builtins__, 'input', lambda x: "348")
-    ratio = measure.calc_ratio(panorma)
+    ratio = measure.get_ratio(panorma)
     target = 348 / 5400
     npt.assert_almost_equal(ratio, target, decimal=4)
+
+
+def test_get_origin(panorma, monkeypatch):
+    def mockreturn(myself, image_list, all):
+        points = [np.array([
+            [94.43029022, 471.89901733]
+        ], dtype=np.float32)]
+        return points
+    monkeypatch.setattr(bb_stitcher.picking.picker.PointPicker, 'pick', mockreturn)
+    point = measure.get_origin(panorma)
+    assert point is not None
