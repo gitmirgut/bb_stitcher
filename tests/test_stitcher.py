@@ -5,7 +5,6 @@ import numpy as np
 import numpy.testing as npt
 import pytest
 
-import bb_stitcher.core as core
 import bb_stitcher.helpers as helpers
 import bb_stitcher.picking.picker
 import bb_stitcher.prep as prep
@@ -23,7 +22,7 @@ def outdir(main_outdir):
 
 @pytest.fixture
 def fb_stitcher(config):
-    fbs = core.FeatureBasedStitcher(config)
+    fbs = stitcher.FeatureBasedStitcher(config)
     return fbs
 
 
@@ -165,7 +164,7 @@ def test_map_points_angles(left_img, right_img, outdir, config, monkeypatch):
             [255.66642761, 431.24780273]], dtype=np.float32)
         return left_points, right_points
     monkeypatch.setattr(bb_stitcher.picking.picker.PointPicker, 'pick', mockreturn)
-    rt_stitcher = core.RectangleStitcher(config)
+    rt_stitcher = stitcher.RectangleStitcher(config)
     rt_stitcher.estimate_transform(left_img['img'], right_img['img'], 90, -90)
     assert rt_stitcher.homo_left is not None
     assert rt_stitcher.homo_right is not None

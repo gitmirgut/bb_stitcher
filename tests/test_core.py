@@ -5,9 +5,9 @@ import numpy as np
 import pytest
 from numpy import testing as npt
 
-import bb_stitcher.core as core
 import bb_stitcher.picking.picker
 import bb_stitcher.helpers as helpers
+import bb_stitcher.stitcher as stitcher
 
 
 def draw_marks(img, pts, color=(0, 0, 255), marker_types=cv2.MARKER_CROSS):
@@ -31,7 +31,7 @@ def outdir(main_outdir):
 
 @pytest.fixture
 def fb_stitcher(config):
-    fbs = core.FeatureBasedStitcher(config)
+    fbs = stitcher.FeatureBasedStitcher(config)
     return fbs
 
 
@@ -77,7 +77,7 @@ def test_calc_feature_mask():
          [255, 255, 0],
          [0, 0, 0],
          ], np.uint8)
-    mask_left, mask_right = core.FeatureBasedStitcher._calc_feature_mask(
+    mask_left, mask_right = stitcher.FeatureBasedStitcher._calc_feature_mask(
         (3, 8), (3, 8), 2, 3, 1)
     npt.assert_equal(mask_left, target_mask_left)
     npt.assert_equal(mask_right, target_mask_right)
@@ -129,7 +129,7 @@ def test_rect_stitcher_estimate_transform(left_img, right_img, outdir, config,
         return left_points, right_points
     monkeypatch.setattr(bb_stitcher.picking.picker.PointPicker, 'pick', mockreturn)
     # print(left_points)
-    rt_stitcher = core.RectangleStitcher(config)
+    rt_stitcher = stitcher.RectangleStitcher(config)
     rt_stitcher.estimate_transform(
         left_img['img'], right_img['img'], 90, -90)
     assert rt_stitcher.homo_left is not None
@@ -152,7 +152,7 @@ def test_overall_rt_stitching(left_img, right_img, outdir, config, monkeypatch):
             [255.66642761, 431.24780273]], dtype=np.float32)
         return left_points, right_points
     monkeypatch.setattr(bb_stitcher.picking.picker.PointPicker, 'pick', mockreturn)
-    rt_stitcher = core.RectangleStitcher(config)
+    rt_stitcher = stitcher.RectangleStitcher(config)
     rt_stitcher.estimate_transform(left_img['img'], right_img['img'], 90, -90)
     assert rt_stitcher.homo_left is not None
     assert rt_stitcher.homo_right is not None
