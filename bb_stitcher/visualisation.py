@@ -66,3 +66,41 @@ def draw_complex_marks(img, centres, angles, color=(0, 0, 255), marker_types=cv2
         cv2.circle(img, tuple(center), radius=32, color=color, thickness=6)
         cv2.drawMarker(img, tuple(center), color, markerType=marker_types,
                        markerSize=40, thickness=1)
+
+
+def draw_grid(image, origin, ratio_px_mm, step_size_mm=8):
+    """Draw a grid with axes in mm on the image.
+
+    Args:
+        image (ndarray): Image to draw on.
+        origin (ndarray): The orgin of the grid / axes.
+        ratio_px_mm: Ratio to convert pixel to mm.
+        step_size_mm: The (step) distance between the grid lines.
+    """
+    w, h = image.shape[:2][::-1]
+    x, y = origin
+    step_size_px = step_size_mm / ratio_px_mm
+
+    # draw vertical lines in mm
+    max_lines_vert = int((w - x) / step_size_px)
+    for i in range(max_lines_vert):
+        pt1_v = np.zeros((2,), dtype=np.uint16)
+        pt1_v[0] = x + i * step_size_px
+        pt1_v[1] = y
+        pt1_v = tuple(pt1_v)
+        pt2_v = (int(pt1_v[0]), h)
+        cv2.line(image, pt1_v, pt2_v, color=(255, 0, 0), thickness=4)
+        cv2.putText(image, str(i * step_size_mm), pt1_v, cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255),
+                    thickness=4)
+
+    # draw horizontal lines and distance in mm
+    max_lines_hori = int((h - y) / step_size_px)
+    for i in range(max_lines_hori):
+        pt1_h = np.zeros((2,), dtype=np.uint16)
+        pt1_h[0] = x
+        pt1_h[1] = y + i * step_size_px
+        pt1_h = tuple(np.uint16(pt1_h))
+        pt2_h = (w, int(pt1_h[1]))
+        cv2.line(image, pt1_h, pt2_h, color=(255, 0, 0), thickness=4)
+        cv2.putText(image, str(i * step_size_mm), pt1_h, cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255),
+                    thickness=4)

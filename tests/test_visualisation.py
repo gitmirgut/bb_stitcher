@@ -62,3 +62,11 @@ def test_draw_complex_marks(outdir):
     visualisation.draw_complex_marks(image, positions, angles)
     out = os.path.join(outdir, 'draw_complex.jpg')
     cv2.imwrite(out, image)
+
+
+def test_draw_grid(panorma, outdir):
+    origin = np.array([94.43029022, 471.89901733], dtype=np.float32)
+    ratio = 0.0644410123918
+    visualisation.draw_grid(panorma, origin, ratio, step_size_mm=8)
+    out = os.path.join(outdir, 'draw_grid.jpg')
+    cv2.imwrite(out, panorma)
