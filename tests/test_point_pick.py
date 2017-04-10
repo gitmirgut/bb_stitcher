@@ -57,7 +57,7 @@ def test_gui(left_img_prep, right_img_prep):
     # print(points)
 
 
-def test_pick_length(panorma, monkeypatch):
+def test_pick_length(panorama, monkeypatch):
     def mockreturn(myself, image_list, all):
         points = np.array([
             [94.43035126, 471.89889526],
@@ -65,7 +65,7 @@ def test_pick_length(panorma, monkeypatch):
         return points
     monkeypatch.setattr(picker.PointPicker, 'pick', mockreturn)
     pt = picker.PointPicker()
-    points = pt.pick([panorma], False)
+    points = pt.pick([panorama], False)
     assert len(points) == 2
     start_point, end_point = points
     print(start_point.shape)

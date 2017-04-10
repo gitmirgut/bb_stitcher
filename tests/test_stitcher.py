@@ -190,7 +190,7 @@ def test_compose_panorama(fb_stitcher, left_img, right_img, outdir):
     cv2.imwrite(out, pano)
 
 
-def test_calc_image_to_world_mat(super_stitcher, panorma, monkeypatch):
+def test_calc_image_to_world_mat(super_stitcher, panorama, monkeypatch):
     def mockreturn(myself, image_list, all):
         points = [np.array([
             [94.43029022, 471.89901733],
@@ -199,4 +199,4 @@ def test_calc_image_to_world_mat(super_stitcher, panorma, monkeypatch):
         return points
     monkeypatch.setattr(bb_stitcher.picking.picker.PointPicker, 'pick', mockreturn)
     monkeypatch.setitem(__builtins__, 'input', lambda x: "348")
-    super_stitcher._calc_image_to_world_mat(panorma)
+    super_stitcher._calc_image_to_world_mat(panorama)

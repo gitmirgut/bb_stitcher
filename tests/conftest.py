@@ -90,7 +90,7 @@ def main_outdir():
 
 
 @pytest.fixture
-def panorma():
+def panorama():
     img_path = get_test_fname('data/panorama.jpg')
     img = cv2.imread(img_path, -1)
     return img
