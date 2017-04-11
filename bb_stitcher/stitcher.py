@@ -1,4 +1,5 @@
 """This module contains various image stitchers especially designed for the BeesBook Project."""
+import collections
 from enum import Enum
 
 import cv2
@@ -85,7 +86,13 @@ class Stitcher(object):
 
         Use this function if you estimated the transform and did not want to estimate the parameters
         """
-        return self.homo_left, self.homo_right, self.size_left, self.size_right, self.pano_size
+        StitchingParams = collections.namedtuple('StichingParams', ['homo_left', 'homo_right',
+                                                                    'size_left', 'size_right',
+                                                                    'pano_size'])
+        result = StitchingParams(self.homo_left, self.homo_right,
+                                 self.size_left, self.size_right,
+                                 self.pano_size)
+        return result
 
     def estimate_transform(self, image_left, image_right, angle_left=0, angle_right=0):
         """Estimate transformation/homography of the left and right images/data to form a panorama.
