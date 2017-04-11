@@ -15,7 +15,8 @@ class Surveyor(object):
         self.config = config
         self.stitcher_type = stitcher_type
 
-    def determine_mapping_parameters(self, img_l, img_r, angl_l, angl_r, cam_id_l, cam_id_r, stitcher_type):
+    def determine_mapping_parameters(self, img_l, img_r, angl_l, angl_r,
+                                     cam_id_l, cam_id_r, stitcher_type):
         """Determine the parameters to mapping parameters.
 
         This functions is used to calculate all needed data to stitch two images and to map
