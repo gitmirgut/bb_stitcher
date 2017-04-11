@@ -1,5 +1,4 @@
 """Module to connect stitcher and mapping from image coordinates to world coordinates."""
-import bb_stitcher.stitcher as stitcher
 
 
 class Surveyor(object):
@@ -10,10 +9,9 @@ class Surveyor(object):
     coordinates from these images to hive coordinates.
     """
 
-    def __init__(self, config, stitcher_type=None):
+    def __init__(self, config):
         """Initialize Surveyor."""
         self.config = config
-        self.stitcher_type = stitcher_type
 
     def determine_mapping_parameters(self, img_l, img_r, angl_l, angl_r,
                                      cam_id_l, cam_id_r, stitcher_type):
@@ -23,12 +21,12 @@ class Surveyor(object):
         image coordinates and angels to hive coordinates.
 
         Args:
-            img_l:
-            img_r:
-            angl_l:
-            angl_r:
-            cam_id_l:
-            cam_id_r:
-            stitcher_type:
+            img_l (str): Path to the left image.
+            img_r (str): Path to the right image.
+            angl_l (int): Angle in degree to rotate left image.
+            angl_r (int): Angle in degree to rotate right image.
+            cam_id_l (int): ID of the camera, which shot the left image.
+            cam_id_r (int): ID of the camera, which shot the right image.
+            stitcher_type (Stitcher): Stitcher to use for stitching of the images.
         """
-        stitcher.RectangleStitcher(self.config)
+        pass
