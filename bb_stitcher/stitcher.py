@@ -11,6 +11,7 @@ import bb_stitcher.prep as prep
 
 class ESTIMATION_STITCHERS(Enum):
     """Enumeration to define the possible stitchers for estimation of transformation."""
+
     FEATUREBASED = 0
     RECTANGLE = 1
 
