@@ -312,11 +312,6 @@ class FeatureBasedStitcher(Stitcher):
             image_right (ndarray): Input right image.
             angle_left (int): Angle in degree to rotate left image.
             angle_right (int): Angle in degree to rotate right image.
-
-        Returns:
-            - **homo_left** (ndarray) -- homography *(3,3)* for ``image_left`` to form a panorama.
-            - **homo_right** (ndarray) -- homography *(3,3)* for ``image_right`` to form a panorama.
-            - **pano_size** (tuple) -- Size *(width, height)* of the panorama.
         """
         self.size_left = image_left.shape[:2][::-1]
         self.size_right = image_right.shape[:2][::-1]
@@ -402,11 +397,6 @@ class RectangleStitcher(Stitcher):
             image_right (ndarray): Input right image.
             angle_left (int): Angle in degree to rotate left image.
             angle_right (int): Angle in degree to rotate right image.
-
-        Returns:
-            - **homo_left** (ndarray) -- homography *(3,3)* for ``image_left`` to form a panorama.
-            - **homo_right** (ndarray) -- homography *(3,3)* for ``image_right`` to form a panorama.
-            - **pano_size** (tuple) -- Size *(width, height)* of the panorama.
         """
         # TODO(gitmirgut) set all to False
         self.size_left = image_left.shape[:2][::-1]
@@ -444,7 +434,3 @@ class RectangleStitcher(Stitcher):
         self.homo_left = homo_trans.dot(homo_left)
         self.homo_right = homo_trans.dot(homo_right)
         self.pano_size = pano_size
-
-        # set origin/start and end point for convert measures from px to mm
-        self.origin = self.map_left_points(np.array([pts_left_srt[0]]))
-        self.end_point = self.map_right_points(np.array([pts_right_srt[1]]))
