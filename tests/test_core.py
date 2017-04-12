@@ -40,6 +40,7 @@ def test_determine_mapping_parameters(surveyor, left_img, right_img, monkeypatch
 
     def mock_get_ratio(image):
         return 0.0644410123918
+
     monkeypatch.setattr(bb_stitcher.picking.picker.PointPicker, 'pick', mock_pick)
     monkeypatch.setattr(bb_stitcher.measure, 'get_origin', mock_get_origin)
     monkeypatch.setattr(bb_stitcher.measure, 'get_ratio', mock_get_ratio)
@@ -47,4 +48,10 @@ def test_determine_mapping_parameters(surveyor, left_img, right_img, monkeypatch
                                           90, -90,
                                           0, 1,
                                           stitcher.RectangleStitcher)
-    print(surveyor.get_parameters())
+    assert 0 <= surveyor.ratio_px_mm <= 1
+    assert surveyor.stitching_params.pano_size[0] > 5500
+    assert surveyor.stitching_params.pano_size[1] >= 4000
+    assert 0 <= surveyor.origin[0] <= surveyor.stitching_params.pano_size[0]
+    assert 0 <= surveyor.origin[1] <= surveyor.stitching_params.pano_size[1]
+    assert surveyor._world_homo_left is not None
+    assert surveyor._world_homo_right is not None
