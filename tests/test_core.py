@@ -47,3 +47,4 @@ def test_determine_mapping_parameters(surveyor, left_img, right_img, monkeypatch
                                           90, -90,
                                           0, 1,
                                           stitcher.RectangleStitcher)
+    surveyor.map_points_angles(None, None, None)

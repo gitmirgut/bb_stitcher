@@ -1,5 +1,6 @@
 """Module to connect stitcher and mapping from image coordinates to world coordinates."""
 import cv2
+import numpy as np
 
 import bb_stitcher.measure as measure
 import bb_stitcher.stitcher as stitcher
@@ -19,6 +20,7 @@ class Surveyor(object):
         self.stitching_params = None
         self.origin = None
         self.ratio_px_mm = None
+        self.world_homo = None
         self.cam_id_l = None
         self.cam_id_r = None
 
@@ -49,6 +51,16 @@ class Surveyor(object):
         self.stitching_params = stitch.get_parameters()
         self.origin = measure.get_origin(panorama)
         self.ratio_px_mm = measure.get_ratio(panorama)
+        trans_homo = np.array([
+            [1, 0, -self.origin[0]],
+            [0, 1, -self.origin[1]],
+            [0, 0, 1]], dtype=np.float64)
+        ratio_homo = np.array([
+            [self.ratio_px_mm, 0, 0],
+            [0, self.ratio_px_mm, 0],
+            [0, 0, 1]
+        ], dtype=np.float64)
+        self.world_homo = ratio_homo.dot(trans_homo)
         self.cam_id_l = cam_id_l
         self.cam_id_r = cam_id_r
 
@@ -64,11 +76,17 @@ class Surveyor(object):
             cam_id (ndarray): ID of the camera, which shot the image.
 
         Returns:
-            - **points_mapped** (ndarray) -- ``points`` mapped to hive *(N,2)* in mm.
+            - **points_mapped** (ndarray) -- ``points`` mapped to hive in mm *(N,2)*.
             - **angles_mapped** (ndarray) -- ``angles`` mapped to  *(N,)*.
 
         Note:
             For all angles in ``angles`` it is assumed that a 0°-angle shows to the right border of
             the image and that a positive angle means clockwise rotation.
         """
-        pass
+        homo_left = self.stitching_params.homo_left
+        homo_right = self.stitching_params.homo_right
+        size_left = self.stitching_params.size_left
+        size_right = self.stitching_params.size_right
+        pano_size = self.stitching_params.pano_size
+        stitch = stitcher.Stitcher(self.config)
+
