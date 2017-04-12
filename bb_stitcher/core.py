@@ -102,7 +102,6 @@ class Surveyor(object):
                                  self.pano_size)
         return result
 
-
     def load_parameters(self, homo_left):
         pass
 

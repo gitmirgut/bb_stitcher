@@ -71,4 +71,3 @@ class TestSurveyor:
         assert 0 <= result.origin[0] <= result.pano_size[0]
         assert 0 <= result.origin[1] <= result.pano_size[1]
         assert 0 < result.ratio_px_mm <= 1
-
