@@ -19,7 +19,11 @@ class Surveyor(object):
     def __init__(self, config):
         """Initialize Surveyor."""
         self.config = config
-        self.stitching_params = None
+        self.homo_left = None
+        self.homo_right = None
+        self.size_left = None
+        self.size_right = None
+        self.pano_size = None
         self.origin = None
         self.ratio_px_mm = None
         self.world_homo = None
@@ -54,7 +58,12 @@ class Surveyor(object):
 
         panorama = stitch.compose_panorama(img_l, img_r)
 
-        self.stitching_params = stitch.get_parameters()
+        stitching_params = stitch.get_parameters()
+        self.homo_left = stitching_params.homo_left
+        self.homo_right = stitching_params.homo_right
+        self.size_left = stitching_params.size_left
+        self.size_right = stitching_params.size_right
+        self.pano_size = stitching_params.pano_size
         self.origin = measure.get_origin(panorama)
         self.ratio_px_mm = measure.get_ratio(panorama)
         trans_homo = np.array([
@@ -71,27 +80,31 @@ class Surveyor(object):
         self.cam_id_r = cam_id_r
 
         # modify homographies from the stitcher to map points to world coordinates
-        self._world_homo_left = self.world_homo.dot(self.stitching_params.homo_left)
-        self._world_homo_right = self.world_homo.dot(self.stitching_params.homo_right)
+        self._world_homo_left = self.world_homo.dot(self.homo_left)
+        self._world_homo_right = self.world_homo.dot(self.homo_right)
 
     def get_parameters(self):
         """Return the estimated or loaded parameters of the Surveyor needed for later stitching.
 
         With this function you could save the Surveyor parameters and load them later for further
-        stitching of images and mapping of image coordinates and angels to hive coordinates and
-        angles in relation to hive.
+        stitching of images and mapping of image coordinates/angels to hive coordinates/angles in
+        relation to hive.
         """
         StitchingParams = collections.namedtuple('SurveyorParams', ['homo_left', 'homo_right',
                                                                     'size_left', 'size_right',
                                                                     'cam_id_left', 'cam_id_right',
                                                                     'origin', 'ratio_px_mm',
                                                                     'pano_size'])
-        result = StitchingParams(self.stitching_params.homo_left, self.stitching_params.homo_right,
-                                 self.stitching_params.size_left, self.stitching_params.size_right,
+        result = StitchingParams(self.homo_left, self.homo_right,
+                                 self.size_left, self.size_right,
                                  self.cam_id_l, self.cam_id_r,
                                  self.origin, self.ratio_px_mm,
-                                 self.stitching_params.pano_size)
+                                 self.pano_size)
         return result
+
+
+    def load_parameters(self, homo_left):
+        pass
 
     def map_points_angles(self, points, angles, cam_id):
         u"""Map image points and angles to points and angles in relation to world/hive.
@@ -112,9 +125,9 @@ class Surveyor(object):
             For all angles in ``angles`` it is assumed that a 0°-angle shows to the right border of
             the image and that a positive angle means clockwise rotation.
         """
-        size_left = self.stitching_params.size_left
-        size_right = self.stitching_params.size_right
-        pano_size = self.stitching_params.pano_size
+        size_left = self.size_left
+        size_right = self.size_right
+        pano_size = self.pano_size
 
         stitch = stitcher.Stitcher(self.config)
 
