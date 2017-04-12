@@ -76,7 +76,7 @@ def not_to_bee():
     return img
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def config():
     return helpers.get_default_config()
 
