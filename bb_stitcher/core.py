@@ -26,13 +26,26 @@ class Surveyor(object):
         self.pano_size = None
         self.origin = None
         self.ratio_px_mm = None
-        self.world_homo = None
+        self._world_homo = None
         self.cam_id_l = None
         self.cam_id_r = None
 
         # these will not be exported
         self._world_homo_left = None
         self._world_homo_right = None
+
+    @staticmethod
+    def _determine_world_homo(origin, ratio_px_mm):
+        trans_homo = np.array([
+            [1, 0, -origin[0]],
+            [0, 1, -origin[1]],
+            [0, 0, 1]], dtype=np.float64)
+        ratio_homo = np.array([
+            [ratio_px_mm, 0, 0],
+            [0, ratio_px_mm, 0],
+            [0, 0, 1]
+        ], dtype=np.float64)
+        return ratio_homo.dot(trans_homo)
 
     def determine_mapping_parameters(self, path_l, path_r, angl_l, angl_r,
                                      cam_id_l, cam_id_r, stitcher_type):
@@ -66,22 +79,13 @@ class Surveyor(object):
         self.pano_size = stitching_params.pano_size
         self.origin = measure.get_origin(panorama)
         self.ratio_px_mm = measure.get_ratio(panorama)
-        trans_homo = np.array([
-            [1, 0, -self.origin[0]],
-            [0, 1, -self.origin[1]],
-            [0, 0, 1]], dtype=np.float64)
-        ratio_homo = np.array([
-            [self.ratio_px_mm, 0, 0],
-            [0, self.ratio_px_mm, 0],
-            [0, 0, 1]
-        ], dtype=np.float64)
-        self.world_homo = ratio_homo.dot(trans_homo)
         self.cam_id_l = cam_id_l
         self.cam_id_r = cam_id_r
 
         # modify homographies from the stitcher to map points to world coordinates
-        self._world_homo_left = self.world_homo.dot(self.homo_left)
-        self._world_homo_right = self.world_homo.dot(self.homo_right)
+        self._world_homo = Surveyor._determine_world_homo(self.origin, self.ratio_px_mm)
+        self._world_homo_left = self._world_homo.dot(self.homo_left)
+        self._world_homo_right = self._world_homo.dot(self.homo_right)
 
     def get_parameters(self):
         """Return the estimated or loaded parameters of the Surveyor needed for later stitching.
@@ -102,8 +106,22 @@ class Surveyor(object):
                                  self.pano_size)
         return result
 
-    def load_parameters(self, homo_left):
-        pass
+    def load_parameters(self, homo_left, homo_right, size_left, size_right, cam_id_l, cam_id_r,
+                        origin, ratio_px_mm, pano_size):
+        self.homo_left = homo_left
+        self.homo_right = homo_right
+        self.size_left = size_left
+        self.size_right = size_right
+        self.cam_id_l = cam_id_l
+        self.cam_id_r = cam_id_r
+        self.origin = origin
+        self.ratio_px_mm = ratio_px_mm
+        self.pano_size = pano_size
+
+        # modify homographies from the stitcher to map points to world coordinates
+        self._world_homo = Surveyor._determine_world_homo(self.origin, self.ratio_px_mm)
+        self._world_homo_left = self._world_homo.dot(self.homo_left)
+        self._world_homo_right = self._world_homo.dot(self.homo_right)
 
     def map_points_angles(self, points, angles, cam_id):
         u"""Map image points and angles to points and angles in relation to world/hive.
@@ -140,8 +158,8 @@ class Surveyor(object):
         elif cam_id == self.cam_id_r:
             stitch.map_right_points_angles(points, angles)
         else:
-            raise Exception('Got invalid cam_id {invalid_ID}, '
-                            'cam_id must be {left_ID} or {right_ID}.'.format(invalid_ID=cam_id,
-                                                                             left_ID=self.cam_id_l,
-                                                                             right_ID=self.cam_id_r)
+            raise ValueError('Got invalid cam_id {invalid_ID} cam_id must be '
+                             '{left_ID} or {right_ID}.'.format(invalid_ID=cam_id,
+                                                               left_ID=self.cam_id_l,
+                                                               right_ID=self.cam_id_r)
                             )
