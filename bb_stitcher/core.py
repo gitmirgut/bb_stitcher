@@ -108,6 +108,26 @@ class Surveyor(object):
 
     def load_parameters(self, homo_left, homo_right, size_left, size_right, cam_id_l, cam_id_r,
                         origin, ratio_px_mm, pano_size):
+        """Load needed parameters for mapping image points/angles to hive coordinates/angles.
+
+        This function becomes handy if you calculate the parameters in an earlier surveying
+        process and did not want to calculate the parameters again and just want to map image
+        points/angles to hive coordinates/angles.
+
+        Args:
+            homo_left (ndarray): homography *(3,3)* for data from the left side to form a panorama.
+            homo_right (ndarray): homography *(3,3)* for data from the right side to form a \
+            panorama.
+            size_left (tuple): Size of the left image in px, which was used to calculate \
+            homography.
+            size_right (tuple): Size of the right image in px, which was used to calculate \
+            homography.
+            cam_id_l (int): ID of the camera, which shot the left image.
+            cam_id_r (int): ID of the camera, which shot the right image.
+            origin (ndarray): Origin of the stitched data/image in px *(2,)*.
+            ratio_px_mm (float): Ratio to convert pixel to mm.
+            pano_size (tuple): Size of the panorama in px.
+        """
         self.homo_left = homo_left
         self.homo_right = homo_right
         self.size_left = size_left
@@ -154,12 +174,13 @@ class Surveyor(object):
                                pano_size)
 
         if cam_id == self.cam_id_l:
-            stitch.map_left_points_angles(points, angles)
+            points, angles = stitch.map_left_points_angles(points, angles)
         elif cam_id == self.cam_id_r:
-            stitch.map_right_points_angles(points, angles)
+            points, angles = stitch.map_right_points_angles(points, angles)
         else:
             raise ValueError('Got invalid cam_id {invalid_ID} cam_id must be '
                              '{left_ID} or {right_ID}.'.format(invalid_ID=cam_id,
                                                                left_ID=self.cam_id_l,
                                                                right_ID=self.cam_id_r)
                              )
+        return points, angles

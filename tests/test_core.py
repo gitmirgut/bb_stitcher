@@ -102,5 +102,21 @@ class TestSurveyorMapping:
         for val in surveyor.__dict__.values():
             assert val is not None
 
-    def test_map_points_angles(self, surveyor):
-        pass
+    def test_map_points_angles(self, surveyor, left_img):
+
+        with pytest.raises(ValueError):
+            # bad cam id should raise error
+            surveyor.map_points_angles(left_img['detections'], left_img['yaw_angles'], 666)
+
+        points, angles = surveyor.map_points_angles(left_img['detections'], left_img['yaw_angles'],
+                                                    left_img['cam_id'])
+
+        # left points must have an x coordinate lower then circa 2/3 of the width of the comb
+        assert np.max(points[:, 0]) <= 220
+        assert -50 <= np.min(points[:, 0])
+
+        assert np.max(points[:, 1]) <= 250
+        assert -50 <= np.min(points[:, 0])
+
+        assert np.max(angles) <= np.pi
+        assert -np.pi <= np.min(angles)
