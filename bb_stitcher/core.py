@@ -162,4 +162,4 @@ class Surveyor(object):
                              '{left_ID} or {right_ID}.'.format(invalid_ID=cam_id,
                                                                left_ID=self.cam_id_l,
                                                                right_ID=self.cam_id_r)
-                            )
+                             )

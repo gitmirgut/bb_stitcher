@@ -73,25 +73,24 @@ class TestSurveyorDetermination:
         assert 0 <= result.origin[0] <= result.pano_size[0]
         assert 0 <= result.origin[1] <= result.pano_size[1]
         assert 0 < result.ratio_px_mm <= 1
-        print(result)
 
 
 @pytest.mark.incremental
 class TestSurveyorMapping:
     def test_load_parameters(self, surveyor):
         homo_left = np.array([
-            [-1.98455538e-03,   1.02071571e+00,   5.95366897e+00],
-            [-1.02273832e+00,   3.99220466e-03,   4.18182127e+03],
-            [-4.53581281e-06,   1.47879389e-06,   1.01813872e+00]])
+            [-1.98455538e-03, 1.02071571e+00, 5.95366897e+00],
+            [-1.02273832e+00, 3.99220466e-03, 4.18182127e+03],
+            [-4.53581281e-06, 1.47879389e-06, 1.01813872e+00]])
         homo_right = np.array([
-            [4.15148897e-02,  -1.03153036e+00,   5.58610125e+03],
-            [1.03242057e+00,   1.02246208e-02,  -1.37264940e-05],
-            [6.53477459e-06,  -8.57424632e-07,   1.00257142e+00]])
+            [4.15148897e-02, -1.03153036e+00, 5.58610125e+03],
+            [1.03242057e+00, 1.02246208e-02, -1.37264940e-05],
+            [6.53477459e-06, -8.57424632e-07, 1.00257142e+00]])
         size_left = (4000, 3000)
         size_right = (4000, 3000)
         cam_id_left = 0
         cam_id_right = 1
-        origin = np.array([94.43029022,  471.89901733])
+        origin = np.array([94.43029022, 471.89901733])
         ratio_px_mm = 0.0644410123918
         pano_size = (5587, 4108)
         surveyor.load_parameters(homo_left, homo_right, size_left, size_right,
