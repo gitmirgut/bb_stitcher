@@ -162,16 +162,12 @@ class Surveyor(object):
             For all angles in ``angles`` it is assumed that a 0°-angle shows to the right border of
             the image and that a positive angle means clockwise rotation.
         """
-        size_left = self.size_left
-        size_right = self.size_right
-        pano_size = self.pano_size
-
         stitch = stitcher.Stitcher(self.config)
 
         # using modified homographies to map points and angles to world coordinates
         stitch.load_parameters(self._world_homo_left, self._world_homo_right,
-                               size_left, size_right,
-                               pano_size)
+                               self.size_left, self.size_right,
+                               self.pano_size)
 
         if cam_id == self.cam_id_l:
             points, angles = stitch.map_left_points_angles(points, angles)
