@@ -6,6 +6,7 @@ import numpy as np
 
 import bb_stitcher.measure as measure
 import bb_stitcher.stitcher as stitcher
+import bb_stitcher.visualisation as visualisation
 
 
 class Surveyor(object):
@@ -180,3 +181,27 @@ class Surveyor(object):
                                                                right_ID=self.cam_id_r)
                              )
         return points, angles
+
+    def compose_panorama(self, path_l, path_r, grid=False):
+        """Try to compose the given images into the final panorama.
+
+        This happens under the assumption that the mapping parameters were estimated or loaded
+        before.
+
+        Args:
+            path_l (str): Path to the left image.
+            path_r (str): Path to the right image.
+            grid (bool): If ``True``` a grid with axes in mm will be drawn on the image.
+        """
+
+        # TODO(gitmirgut): PoC draw grid in dependency of step_size
+        stitch = stitcher.Stitcher(self.config)
+        stitch.load_parameters(self.homo_left, self.homo_right,
+                               self.size_left, self.size_right,
+                               self.pano_size)
+        image_left = cv2.imread(path_l, -1)
+        image_right = cv2.imread(path_r, -1)
+        pano = stitch.compose_panorama(image_left, image_right)
+        if grid:
+            visualisation.draw_grid(pano, self.origin, self.ratio_px_mm, step_size_mm=8)
+        return pano

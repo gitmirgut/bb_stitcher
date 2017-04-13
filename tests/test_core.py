@@ -1,5 +1,6 @@
 import os
 
+import cv2
 import numpy as np
 import numpy.testing as npt
 import pytest
@@ -120,3 +121,10 @@ class TestSurveyorMapping:
 
         assert np.max(angles) <= np.pi
         assert -np.pi <= np.min(angles)
+
+    def test_compose_panorama(self, surveyor, left_img, right_img, outdir):
+        pano = surveyor.compose_panorama(left_img['path'], right_img['path'], grid=True)
+        assert pano.shape[0] >= 4000
+        assert pano.shape[1] >= 5000
+        out = os.path.join(outdir, 'panorama_w_grid.jpg')
+        cv2.imwrite(out, pano)
