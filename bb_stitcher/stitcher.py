@@ -131,10 +131,6 @@ class Stitcher(object):
 
         return image_left
 
-    def stitch(self, image_left, image_right):
-        """Try to stitch the given images into a panorama."""
-        pass
-
     def map_left_points(self, points):
         """Map points from the left image to the panorama.
 
