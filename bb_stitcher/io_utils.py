@@ -9,6 +9,8 @@
 #  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #  License for the specific language governing permissions and limitations
 #  under the License.
+"""This module provides different File Handlers
+to load and save the needed data for the surveyor."""
 from abc import ABCMeta
 from abc import abstractmethod
 import ast
@@ -19,6 +21,7 @@ import numpy as np
 
 
 class FileHandler(metaclass=ABCMeta):
+    """Abstract base class of FileHandler."""
 
     def __init__(self):
         self.surveyor = None
@@ -38,6 +41,11 @@ class FileHandler(metaclass=ABCMeta):
 class NPZHandler(FileHandler):
 
     def save(self, path):
+        """Save surveyor data to numpy file '.npz'.
+
+        Args:
+            path (str): Path of the file, which holds the needed data.
+        """
         np.savez(path,
                  homo_left=self.surveyor.homo_left,
                  homo_right=self.surveyor.homo_right,
@@ -51,6 +59,11 @@ class NPZHandler(FileHandler):
                  )
 
     def load(self, path):
+        """Load surveyor data to numpy file '.npz'.
+
+        Args:
+            path (str): Path of the file, which holds the needed data.
+        """
         with np.load(path) as data:
             self.surveyor.homo_left = data['homo_left']
             self.surveyor.homo_right = data['homo_right']
@@ -66,6 +79,11 @@ class NPZHandler(FileHandler):
 class CSVHandler(FileHandler):
 
     def save(self, path):
+        """Save surveyor data to numpy file '.csv'.
+
+        Args:
+            path (str): Path of the file, which holds the needed data.
+        """
         with open(path, 'w', newline='') as csvfile:
             fieldnames = ['homo_left', 'homo_right',
                           'size_left', 'size_right',
@@ -87,6 +105,11 @@ class CSVHandler(FileHandler):
             })
 
     def load(self, path):
+        """Load surveyor data to numpy file '.csv'.
+
+        Args:
+            path (str): Path of the file, which holds the needed data.
+        """
         with open(path, 'r', newline='') as csvfile:
             reader = csv.DictReader(csvfile, delimiter=';')
             for row in reader:
@@ -103,6 +126,14 @@ class CSVHandler(FileHandler):
 
 
 def get_file_handler(path):
+    """Returns FileHandler in dependency of file path extension.
+
+    Args:
+        path (str): Path of the file.
+
+    Returns:
+        FileHandler: FileHandler for load and save data from surveyor.
+    """
     __, ext = os.path.splitext(path)
     if ext == '.npz':
         filehandler = NPZHandler()
