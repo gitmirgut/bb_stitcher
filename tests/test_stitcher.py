@@ -32,26 +32,6 @@ def fb_stitcher(config):
 
 
 @pytest.fixture
-def homo_left():
-    homo = np.float64([
-        [1, 0, 0],
-        [0, 1, 199.91238403],
-        [0, 0, 1]
-    ])
-    return homo
-
-
-@pytest.fixture
-def homo_right():
-    homo = np.float64([
-        [1.01332402e+00, 4.11682445e-02, 2.46059578e+03],
-        [-4.11682445e-02, 1.01332402e+00, 1.23504729e+02],
-        [0, 0, 1]
-    ])
-    return homo
-
-
-@pytest.fixture
 def pano_size():
     return (5666, 4200)
 
