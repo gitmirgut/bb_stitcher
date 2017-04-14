@@ -31,11 +31,6 @@ def fb_stitcher(config):
     return fbs
 
 
-@pytest.fixture
-def pano_size():
-    return (5666, 4200)
-
-
 def test_super_estimate_transform(super_stitcher):
     with pytest.raises(NotImplementedError):
         super_stitcher.estimate_transform(None, None)
