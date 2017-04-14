@@ -5,9 +5,7 @@ import numpy as np
 import pytest
 import numpy.testing as npt
 
-import bb_stitcher.helpers as helpers
 import bb_stitcher.picking.picker
-import bb_stitcher.prep as prep
 import bb_stitcher.stitcher as stitcher
 import bb_stitcher.visualisation as vis
 
@@ -22,44 +20,15 @@ def outdir(main_outdir):
 
 
 @pytest.fixture
-def fb_stitcher(config):
-    fbs = stitcher.FeatureBasedStitcher(config)
-    return fbs
-
-
-@pytest.fixture
 def super_stitcher(config):
     st = stitcher.Stitcher(config)
     return st
 
 
-def create_prepared_image_dict(img, angle, config):
-    img_alpha = helpers.add_alpha_channel(img['img'])
-    rectificator = prep.Rectificator(config)
-    rect_img = rectificator.rectify_image(img_alpha)
-    rect_detections = rectificator.rectify_points(img['detections'], img['size'])
-    rect_img_w_detections = rectificator.rectify_image(img['img_w_detections'])
-
-    angle = 90
-    rot_img, rot_mat = prep.rotate_image(rect_img, angle)
-    rot_detections = prep.rotate_points(rect_detections, angle, img['size'])
-    rot_img_w_detections, rot_mat = prep.rotate_image(rect_img_w_detections, angle)
-
-    d = dict()
-    d['img'] = rot_img
-    d['detections'] = rot_detections
-    d['img_w_detections'] = rot_img_w_detections
-    return d
-
-
 @pytest.fixture
-def left_img_prep(left_img, config):
-    return create_prepared_image_dict(left_img, 90, config)
-
-
-@pytest.fixture
-def right_img_prep(right_img, config):
-    return create_prepared_image_dict(right_img, -90, config)
+def fb_stitcher(config):
+    fbs = stitcher.FeatureBasedStitcher(config)
+    return fbs
 
 
 @pytest.fixture
@@ -223,8 +192,8 @@ def test_overall_fb_stitching(fb_stitcher, left_img, right_img, outdir):
         left_img['img_w_detections'], right_img['img_w_detections'])
     detections_left_mapped = fb_stitcher.map_left_points(left_img['detections'])
     detections_right_mapped = fb_stitcher.map_right_points(right_img['detections'])
-    pano = vis.draw_marks(pano, detections_left_mapped)
-    pano = vis.draw_marks(pano, detections_right_mapped)
+    vis.draw_marks(pano, detections_left_mapped)
+    vis.draw_marks(pano, detections_right_mapped)
 
     out = os.path.join(outdir, 'panorama_fb_w_detections.jpg')
     cv2.imwrite(out, pano)
@@ -278,8 +247,8 @@ def test_overall_rt_stitching(left_img, right_img, outdir, config, monkeypatch):
         left_img['img_w_detections'], right_img['img_w_detections'])
     detections_left_mapped = rt_stitcher.map_left_points(left_img['detections'])
     detections_right_mapped = rt_stitcher.map_right_points(right_img['detections'])
-    pano = vis.draw_marks(pano, detections_left_mapped)
-    pano = vis.draw_marks(pano, detections_right_mapped)
+    vis.draw_marks(pano, detections_left_mapped)
+    vis.draw_marks(pano, detections_right_mapped)
 
     out = os.path.join(outdir, 'panorama_rt_w_detections.jpg')
     cv2.imwrite(out, pano)
