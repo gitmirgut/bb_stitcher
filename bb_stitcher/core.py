@@ -4,6 +4,7 @@ import collections
 import cv2
 import numpy as np
 
+import bb_stitcher.io_utils as io_utils
 import bb_stitcher.measure as measure
 import bb_stitcher.stitcher as stitcher
 import bb_stitcher.visualisation as visualisation
@@ -28,12 +29,32 @@ class Surveyor(object):
         self.origin = None
         self.ratio_px_mm = None
         self._world_homo = None
-        self.cam_id_l = None
-        self.cam_id_r = None
+        self.cam_id_left = None
+        self.cam_id_right = None
 
         # these will not be exported
         self._world_homo_left = None
         self._world_homo_right = None
+
+    def _acept_filehandler(self, filehandler):
+        filehandler.visit_surveyor(self)
+
+    def load(self, path):
+
+        filehandler = io_utils.NPZHandler()
+        self._acept_filehandler(filehandler)
+        filehandler.load(path)
+
+        # modify homographies from the stitcher to map points to world coordinates
+        self._world_homo = Surveyor._determine_world_homo(self.origin, self.ratio_px_mm)
+        self._world_homo_left = self._world_homo.dot(self.homo_left)
+        self._world_homo_right = self._world_homo.dot(self.homo_right)
+
+    def save(self, path):
+
+        filehandler = io_utils.NPZHandler()
+        self._acept_filehandler(filehandler)
+        filehandler.save(path)
 
     @staticmethod
     def _determine_world_homo(origin, ratio_px_mm):
@@ -80,8 +101,8 @@ class Surveyor(object):
         self.pano_size = stitching_params.pano_size
         self.origin = measure.get_origin(panorama)
         self.ratio_px_mm = measure.get_ratio(panorama)
-        self.cam_id_l = cam_id_l
-        self.cam_id_r = cam_id_r
+        self.cam_id_left = cam_id_l
+        self.cam_id_right = cam_id_r
 
         # modify homographies from the stitcher to map points to world coordinates
         self._world_homo = Surveyor._determine_world_homo(self.origin, self.ratio_px_mm)
@@ -102,13 +123,13 @@ class Surveyor(object):
                                                                     'pano_size'])
         result = StitchingParams(self.homo_left, self.homo_right,
                                  self.size_left, self.size_right,
-                                 self.cam_id_l, self.cam_id_r,
+                                 self.cam_id_left, self.cam_id_right,
                                  self.origin, self.ratio_px_mm,
                                  self.pano_size)
         return result
 
-    def load_parameters(self, homo_left, homo_right, size_left, size_right, cam_id_l, cam_id_r,
-                        origin, ratio_px_mm, pano_size):
+    def set_parameters(self, homo_left, homo_right, size_left, size_right, cam_id_l, cam_id_r,
+                       origin, ratio_px_mm, pano_size):
         """Load needed parameters for mapping image points/angles to hive coordinates/angles.
 
         This function becomes handy if you calculate the parameters in an earlier surveying
@@ -133,8 +154,8 @@ class Surveyor(object):
         self.homo_right = homo_right
         self.size_left = size_left
         self.size_right = size_right
-        self.cam_id_l = cam_id_l
-        self.cam_id_r = cam_id_r
+        self.cam_id_left = cam_id_l
+        self.cam_id_right = cam_id_r
         self.origin = origin
         self.ratio_px_mm = ratio_px_mm
         self.pano_size = pano_size
@@ -170,15 +191,15 @@ class Surveyor(object):
                                self.size_left, self.size_right,
                                self.pano_size)
 
-        if cam_id == self.cam_id_l:
+        if cam_id == self.cam_id_left:
             points, angles = stitch.map_left_points_angles(points, angles)
-        elif cam_id == self.cam_id_r:
+        elif cam_id == self.cam_id_right:
             points, angles = stitch.map_right_points_angles(points, angles)
         else:
             raise ValueError('Got invalid cam_id {invalid_ID} cam_id must be '
                              '{left_ID} or {right_ID}.'.format(invalid_ID=cam_id,
-                                                               left_ID=self.cam_id_l,
-                                                               right_ID=self.cam_id_r)
+                                                               left_ID=self.cam_id_left,
+                                                               right_ID=self.cam_id_right)
                              )
         return points, angles
 
