@@ -54,7 +54,7 @@ def draw_marks(img, positions, color=(0, 0, 255), marker_types=cv2.MARKER_CROSS)
         img (ndarray): Image (min. 3 channel) to draw on.
         positions (ndarray): The points to mark. *(N,2)*
     """
-    for position in positions:
+    for position in positions.astype(int):
         cv2.drawMarker(img, tuple(position), color, markerType=marker_types,
                        markerSize=40, thickness=5)
 
