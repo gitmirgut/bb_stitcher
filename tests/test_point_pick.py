@@ -6,46 +6,32 @@ import bb_stitcher.prep as prep
 import bb_stitcher.picking.picker as picker
 
 
-@pytest.fixture
-def left_img_prep(left_img, config):
-    left_img_alpha = helpers.add_alpha_channel(left_img['img'])
+def create_prepared_image_dict(img, angle, config):
+    img_alpha = helpers.add_alpha_channel(img['img'])
     rectificator = prep.Rectificator(config)
-    rect_img = rectificator.rectify_image(left_img_alpha)
-    rect_detections = rectificator.rectify_points(left_img['detections'], left_img['size'])
-    rect_img_w_detections = rectificator.rectify_image(left_img['img_w_detections'])
+    rect_img = rectificator.rectify_image(img_alpha)
+    rect_detections = rectificator.rectify_points(img['detections'], img['size'])
+    rect_img_w_detections = rectificator.rectify_image(img['img_w_detections'])
 
-    angle = 90
     rot_img, rot_mat = prep.rotate_image(rect_img, angle)
-    rot_detections = prep.rotate_points(rect_detections, angle, left_img['size'])
+    rot_detections = prep.rotate_points(rect_detections, angle, img['size'])
     rot_img_w_detections, rot_mat = prep.rotate_image(rect_img_w_detections, angle)
 
     d = dict()
     d['img'] = rot_img
     d['detections'] = rot_detections
     d['img_w_detections'] = rot_img_w_detections
-
     return d
+
+
+@pytest.fixture
+def left_img_prep(left_img, config):
+    return create_prepared_image_dict(left_img, 90, config)
 
 
 @pytest.fixture
 def right_img_prep(right_img, config):
-    right_img_alpha = helpers.add_alpha_channel(right_img['img'])
-    rectificator = prep.Rectificator(config)
-    rect_img = rectificator.rectify_image(right_img_alpha)
-    rect_detections = rectificator.rectify_points(right_img['detections'], right_img['size'])
-    rect_img_w_detections = rectificator.rectify_image(right_img['img_w_detections'])
-
-    angle = -90
-    rot_img, rot_mat = prep.rotate_image(rect_img, angle)
-    rot_detections = prep.rotate_points(rect_detections, angle, right_img['size'])
-    rot_img_w_detections, rot_mat = prep.rotate_image(rect_img_w_detections, angle)
-
-    d = dict()
-    d['img'] = rot_img
-    d['detections'] = rot_detections
-    d['img_w_detections'] = rot_img_w_detections
-
-    return d
+    return create_prepared_image_dict(right_img, -90, config)
 
 
 @pytest.mark.slow
@@ -53,8 +39,8 @@ def test_gui(left_img_prep, right_img_prep):
     # TODO(gitmirgut): better gui test...
     pt = picker.PointPicker()
     print(pt)
-    # points = pt.pick([left_img_prep['img'], right_img_prep['img']])
-    # print(points)
+    #points = pt.pick([left_img_prep['img'], right_img_prep['img']])
+    #print(points)
 
 
 def test_pick_length(panorama, monkeypatch):
