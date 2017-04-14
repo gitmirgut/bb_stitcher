@@ -14,7 +14,8 @@ import bb_stitcher.visualisation as vis
 
 @pytest.fixture
 def outdir(main_outdir):
-    out_path = os.path.join(main_outdir, str(__name__))
+    # out_path = os.path.join(main_outdir, str(__name__))
+    out_path = os.path.join(main_outdir, 'test_stitcher2')
     if not os.path.exists(out_path):
         os.makedirs(out_path)
     return out_path
@@ -24,17 +25,6 @@ def outdir(main_outdir):
 def fb_stitcher(config):
     fbs = stitcher.FeatureBasedStitcher(config)
     return fbs
-
-
-def draw_marks(img, pts, color=(0, 0, 255), marker_types=cv2.MARKER_CROSS):
-    img_m = np.copy(img)
-    if len(img_m.shape) == 2:
-        img_m = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
-    pts = pts.astype(int)
-    for pt in pts:
-        cv2.drawMarker(img_m, tuple(pt), color, markerType=marker_types,
-                       markerSize=40, thickness=5)
-    return img_m
 
 
 @pytest.fixture
@@ -233,8 +223,8 @@ def test_overall_fb_stitching(fb_stitcher, left_img, right_img, outdir):
         left_img['img_w_detections'], right_img['img_w_detections'])
     detections_left_mapped = fb_stitcher.map_left_points(left_img['detections'])
     detections_right_mapped = fb_stitcher.map_right_points(right_img['detections'])
-    pano = draw_marks(pano, detections_left_mapped)
-    pano = draw_marks(pano, detections_right_mapped)
+    pano = vis.draw_marks(pano, detections_left_mapped)
+    pano = vis.draw_marks(pano, detections_right_mapped)
 
     out = os.path.join(outdir, 'panorama_fb_w_detections.jpg')
     cv2.imwrite(out, pano)
@@ -288,8 +278,8 @@ def test_overall_rt_stitching(left_img, right_img, outdir, config, monkeypatch):
         left_img['img_w_detections'], right_img['img_w_detections'])
     detections_left_mapped = rt_stitcher.map_left_points(left_img['detections'])
     detections_right_mapped = rt_stitcher.map_right_points(right_img['detections'])
-    pano = draw_marks(pano, detections_left_mapped)
-    pano = draw_marks(pano, detections_right_mapped)
+    pano = vis.draw_marks(pano, detections_left_mapped)
+    pano = vis.draw_marks(pano, detections_right_mapped)
 
     out = os.path.join(outdir, 'panorama_rt_w_detections.jpg')
     cv2.imwrite(out, pano)
