@@ -39,8 +39,8 @@ def test_gui(left_img_prep, right_img_prep):
     # TODO(gitmirgut): better gui test...
     pt = picker.PointPicker()
     print(pt)
-    #points = pt.pick([left_img_prep['img'], right_img_prep['img']])
-    #print(points)
+    # points = pt.pick([left_img_prep['img'], right_img_prep['img']])
+    # print(points)
 
 
 def test_pick_length(panorama, monkeypatch):
