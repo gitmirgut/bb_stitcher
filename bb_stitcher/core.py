@@ -40,8 +40,12 @@ class Surveyor(object):
         filehandler.visit_surveyor(self)
 
     def load(self, path):
+        """Load saved parameters for mapping from file.
 
-        filehandler = io_utils.NPZHandler()
+        Args:
+            path (str): Path of the file, which holds the needed data.
+        """
+        filehandler = io_utils.get_file_handler(path)
         self._acept_filehandler(filehandler)
         filehandler.load(path)
 
@@ -51,8 +55,12 @@ class Surveyor(object):
         self._world_homo_right = self._world_homo.dot(self.homo_right)
 
     def save(self, path):
+        """Save parameters of the Surveyor needed for later stitching to a file.
 
-        filehandler = io_utils.NPZHandler()
+        Args:
+            path (str): Path of the output file. The extension must be '.npz' or '.csv'.
+        """
+        filehandler = io_utils.get_file_handler(path)
         self._acept_filehandler(filehandler)
         filehandler.save(path)
 
@@ -214,7 +222,6 @@ class Surveyor(object):
             path_r (str): Path to the right image.
             grid (bool): If ``True``` a grid with axes in mm will be drawn on the image.
         """
-
         # TODO(gitmirgut): PoC draw grid in dependency of step_size
         stitch = stitcher.Stitcher(self.config)
         stitch.load_parameters(self.homo_left, self.homo_right,

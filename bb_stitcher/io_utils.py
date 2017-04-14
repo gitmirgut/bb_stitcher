@@ -1,5 +1,8 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
+from abc import abstractmethod
+import ast
 import csv
+import os
 
 import numpy as np
 
@@ -48,8 +51,52 @@ class NPZHandler(FileHandler):
             self.surveyor.ratio_px_mm = data['ratio_px_mm']
             self.surveyor.pano_size = tuple(data['pano_size'])
 
+
 class CSVHandler(FileHandler):
 
     def save(self, path):
         with open(path, 'w', newline='') as csvfile:
-            writer=csv.DictWriter
+            fieldnames = ['homo_left', 'homo_right',
+                          'size_left', 'size_right',
+                          'cam_id_left', 'cam_id_right',
+                          'origin', 'ratio_px_mm',
+                          'pano_size']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
+            writer.writeheader()
+            writer.writerow({
+                'homo_left': self.surveyor.homo_left.tolist(),
+                'homo_right': self.surveyor.homo_right.tolist(),
+                'size_left': self.surveyor.size_left,
+                'size_right': self.surveyor.size_right,
+                'cam_id_left': self.surveyor.cam_id_left,
+                'cam_id_right': self.surveyor.cam_id_right,
+                'origin': self.surveyor.origin.tolist(),
+                'ratio_px_mm': self.surveyor.ratio_px_mm,
+                'pano_size': self.surveyor.pano_size,
+            })
+
+    def load(self, path):
+        with open(path, 'r', newline='') as csvfile:
+            reader = csv.DictReader(csvfile, delimiter=';')
+            for row in reader:
+                self.surveyor.homo_left = np.array(ast.literal_eval(row['homo_left']))
+                self.surveyor.homo_right = np.array(ast.literal_eval(row['homo_right']))
+                self.surveyor.size_left = ast.literal_eval(row['size_left'])
+                self.surveyor.size_right = ast.literal_eval(row['size_right'])
+                self.surveyor.cam_id_left = int(row['cam_id_left'])
+                self.surveyor.cam_id_right = int(row['cam_id_right'])
+                self.surveyor.origin = np.array(ast.literal_eval(row['origin']))
+                self.surveyor.ratio_px_mm = float(row['ratio_px_mm'])
+                self.surveyor.pano_size = ast.literal_eval(row['pano_size'])
+                break
+
+
+def get_file_handler(path):
+    __, ext = os.path.splitext(path)
+    if ext == '.npz':
+        filehandler = NPZHandler()
+    elif ext == '.csv':
+        filehandler = CSVHandler()
+    else:
+        raise Exception('File format with "{ext}" not supported'.format(ext=ext))
+    return filehandler

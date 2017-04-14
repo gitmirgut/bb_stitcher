@@ -140,20 +140,28 @@ class TestSurveyorMapping:
         surveyor.save(out)
 
 
+@pytest.fixture(scope="class", params=['.npz', '.csv'])
+def ext(request):
+    return request.param
+
+
 @pytest.mark.incremental
 class TestSurveyorFileHandlerNPZ:
 
     @classmethod
+    @staticmethod
     @pytest.fixture(scope="function")
     def surveyor(config):
         return core.Surveyor(config)
 
-    def test_save_NPZ(self, surveyor, surveyor_params, outdir):
+    def test_save(self, surveyor, surveyor_params, ext, outdir):
         surveyor.set_parameters(*surveyor_params)
-        out = os.path.join(outdir, 'Surveyor_data2.npz')
-        surveyor.save(out)
+        out = os.path.join(outdir, 'Surveyor_data')
+        out_w_ext = ''.join([out, ext])
+        surveyor.save(out_w_ext)
 
-    def test_load(self, surveyor, surveyor_params, outdir):
-        out = os.path.join(outdir, 'Surveyor_data2.npz')
-        surveyor.load(out)
+    def test_load(self, surveyor, surveyor_params, ext, outdir):
+        input = os.path.join(outdir, 'Surveyor_data')
+        input_w_ext = ''.join([input, ext])
+        surveyor.load(input_w_ext)
         npt.assert_equal(surveyor.get_parameters(), surveyor_params)
