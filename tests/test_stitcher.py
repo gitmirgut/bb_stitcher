@@ -85,6 +85,7 @@ def test_map_points_angles(left_img, right_img, outdir, config, monkeypatch):
             [255.66642761, 431.24780273]], dtype=np.float32)
         return left_points, right_points
     monkeypatch.setattr(bb_stitcher.picking.picker.PointPicker, 'pick', mockreturn)
+
     rt_stitcher = stitcher.RectangleStitcher(config)
     rt_stitcher.estimate_transform(left_img['img'], right_img['img'], 90, -90)
     assert rt_stitcher.homo_left is not None
@@ -119,6 +120,7 @@ def test_calc_image_to_world_mat(super_stitcher, panorama, monkeypatch):
         return points
     monkeypatch.setattr(bb_stitcher.picking.picker.PointPicker, 'pick', mockreturn)
     monkeypatch.setitem(__builtins__, 'input', lambda x: "348")
+
     super_stitcher._calc_image_to_world_mat(panorama)
 
 
@@ -189,7 +191,7 @@ def test_rect_stitcher_estimate_transform(left_img, right_img, outdir, config,
             [255.66642761, 431.24780273]], dtype=np.float32)
         return left_points, right_points
     monkeypatch.setattr(bb_stitcher.picking.picker.PointPicker, 'pick', mockreturn)
-    # print(left_points)
+
     rt_stitcher = stitcher.RectangleStitcher(config)
     rt_stitcher.estimate_transform(
         left_img['img'], right_img['img'], 90, -90)
@@ -213,6 +215,7 @@ def test_overall_rt_stitching(left_img, right_img, outdir, config, monkeypatch):
             [255.66642761, 431.24780273]], dtype=np.float32)
         return left_points, right_points
     monkeypatch.setattr(bb_stitcher.picking.picker.PointPicker, 'pick', mockreturn)
+
     rt_stitcher = stitcher.RectangleStitcher(config)
     rt_stitcher.estimate_transform(left_img['img'], right_img['img'], 90, -90)
     assert rt_stitcher.homo_left is not None
