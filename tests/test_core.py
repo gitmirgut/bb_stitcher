@@ -110,7 +110,7 @@ class TestSurveyorGetSet:
 @pytest.mark.incremental
 class TestSurveyorMapping:
 
-    def test_map_points_angles(self, surveyor, surveyor_params, left_img):
+    def test_map_points_angles_left(self, surveyor, surveyor_params, left_img):
         surveyor.set_parameters(*surveyor_params)
         with pytest.raises(ValueError):
             # bad cam id should raise error
@@ -122,6 +122,20 @@ class TestSurveyorMapping:
         # left points must have an x coordinate lower then circa 2/3 of the width of the comb
         assert np.max(points[:, 0]) <= 220
         assert -50 <= np.min(points[:, 0])
+
+        assert np.max(points[:, 1]) <= 250
+        assert -50 <= np.min(points[:, 0])
+
+        assert np.max(angles) <= np.pi
+        assert -np.pi <= np.min(angles)
+
+    def test_map_points_angles_right(self, surveyor, right_img):
+        points, angles = surveyor.map_points_angles(right_img['detections'],
+                                                    right_img['yaw_angles'],
+                                                    right_img['cam_id'])
+
+        assert np.max(points[:, 0]) <= 360
+        assert 150 <= np.min(points[:, 0])
 
         assert np.max(points[:, 1]) <= 250
         assert -50 <= np.min(points[:, 0])
