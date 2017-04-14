@@ -60,7 +60,8 @@ def create_prepared_image_dict(img, angle, config):
     d['detections'] = rot_detections
     d['img_w_detections'] = rot_img_w_detections
     return d
-    
+
+
 @pytest.fixture
 def left_img_prep(left_img, config):
     return create_prepared_image_dict(left_img, 90, config)
