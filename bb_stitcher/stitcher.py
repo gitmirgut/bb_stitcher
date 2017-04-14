@@ -258,11 +258,7 @@ class FeatureBasedStitcher(Stitcher):
             config: config file which holds the basic stitching parameters.
         """
         # TODO(gitmirgut) initialize super()
-        if config is None:
-            self.config = helpers.get_default_config()
-        else:
-            self.config = config
-        super().__init__(self.config, rectify)
+        super().__init__(config, rectify)
         self.overlap = int(self.config['FeatureBasedStitcher']['OVERLAP'])
         self.border_top = int(self.config['FeatureBasedStitcher']['BORDER_TOP'])
         self.border_bottom = int(self.config['FeatureBasedStitcher']['BORDER_BOTTOM'])
