@@ -77,6 +77,7 @@ def test_determine_mapping_parameters(surveyor, left_img, right_img, monkeypatch
     monkeypatch.setattr(bb_stitcher.picking.picker.PointPicker, 'pick', mock_pick)
     monkeypatch.setattr(bb_stitcher.measure, 'get_origin', mock_get_origin)
     monkeypatch.setattr(bb_stitcher.measure, 'get_ratio', mock_get_ratio)
+
     surveyor.determine_mapping_parameters(left_img['path'], right_img['path'],
                                           90, -90,
                                           0, 1,
