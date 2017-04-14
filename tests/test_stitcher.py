@@ -30,13 +30,23 @@ def fb_stitcher(config):
     return fbs
 
 
-def test_super_estimate_transform(super_stitcher):
-    with pytest.raises(NotImplementedError):
-        super_stitcher.estimate_transform(None, None)
+def test_get_default_config():
+    stitch = stitcher.RectangleStitcher()
+    config_set = {
+        'Rectificator',
+        'FeatureBasedStitcher',
+        'SURF',
+        'FeatureMatcher'}
+    assert set(stitch.config.sections()) == config_set
 
 
 def test_prepare_image(left_img, super_stitcher):
     super_stitcher._prepare_image(left_img['img'])
+
+
+def test_super_estimate_transform(super_stitcher):
+    with pytest.raises(NotImplementedError):
+        super_stitcher.estimate_transform(None, None)
 
 
 def test_map_points(config):
