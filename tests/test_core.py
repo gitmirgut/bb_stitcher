@@ -165,3 +165,8 @@ class TestSurveyorFileHandlerNPZ:
         input_w_ext = ''.join([input, ext])
         surveyor.load(input_w_ext)
         npt.assert_equal(surveyor.get_parameters(), surveyor_params)
+
+
+def test_bad_extension_FileHandler(surveyor):
+    with pytest.raises(Exception):
+        surveyor.load('not_to_bee.666')
