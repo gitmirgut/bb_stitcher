@@ -11,8 +11,10 @@ def get_ratio(image):
 
     The user must select two points on the image. The selected points, will be used to determine the
     ratio between px and mm.
+
     Args:
         image (ndarray): Reference image.
+
     Returns:
          float: Ratio to convert pixel to mm.
     """

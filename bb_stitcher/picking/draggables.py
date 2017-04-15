@@ -20,13 +20,14 @@ import numpy as np
 
 
 class DraggableMark(object):
-    """Defines Marker which can be dragged by mouse.
+    """Defines marks which can be dragged by mouse.
 
-    The placed mark can be dragged by simple left click and can be refined
-    by pressing the specific button.
+    The placed mark can be dragged by simple left click and can be **refined** by pressing the
+    :const:`key_refine` specific button and they can be marked as **selected** by pressing
+    :const:`key_select`.
     """
 
-    lock = None  # only one mark at at time can be animated.
+    _lock = None  # only one mark at at time can be animated.
     key_refine = 'r'  # if this key is pressed the mark will be refined
     key_select = 's'  # if this key is pressed the mark will be selected
 
@@ -80,7 +81,7 @@ class DraggableMark(object):
         self.mark.figure.canvas.draw()
 
     def connect(self):
-        """Connect to all needed Events."""
+        """Connect to the mark to various Events."""
         self.cid_press = self.mark.figure.canvas.mpl_connect(
             'button_press_event', self._on_press)
         self.cid_release = self.mark.figure.canvas.mpl_connect(
@@ -97,7 +98,7 @@ class DraggableMark(object):
             return
 
         # checks if an other DraggableMarks is already chosen
-        if DraggableMark.lock is not None:
+        if DraggableMark._lock is not None:
             return
 
         # This checks if the mouse is over us (marker)
@@ -116,7 +117,7 @@ class DraggableMark(object):
         self.press = x, y, event.xdata, event.ydata
 
         # Locks the dragging of other DraggableMarker
-        DraggableMark.lock = self
+        DraggableMark._lock = self
 
         # draw everything but the selected marker and store the pixel buffer
         canvas = self.mark.figure.canvas
@@ -133,7 +134,7 @@ class DraggableMark(object):
 
     def _on_motion(self, event):
         """On motion the mark will move if the mouse is over this marker."""
-        if DraggableMark.lock is not self:
+        if DraggableMark._lock is not self:
             return
         if event.inaxes != self.mark.axes:
             return
@@ -157,11 +158,11 @@ class DraggableMark(object):
 
     def _on_release(self, event):
         """On release the press data will be reset."""
-        if DraggableMark.lock is not self:
+        if DraggableMark._lock is not self:
             return
 
         self.press = None
-        DraggableMark.lock = None
+        DraggableMark._lock = None
 
         # turn off the mark animation property and reset the background
         self.mark.set_animated(False)
@@ -197,21 +198,22 @@ class DraggableMark(object):
 
 
 class DraggableMarkList(list):
-    """Extended List with some extra functions for DraggableMarks."""
+    """Extended List with some extra functions for :obj:`DraggableMark` objects."""
 
     def __init__(self, *args):
-        """Initialize a list which holds DraggableMarks."""
+        """Initialize a list which holds :obj:`DraggableMark` objects."""
         list.__init__(self, *args)
 
     def get_points(self, all_pts=True):
-        """Convert the list of DraggableMarks to a ndarray holding just coordinates.
+        """Convert the list of :obj:`DraggableMark` objects to a ndarray holding just coordinates.
 
         Args:
             all_pts (bool): if ``True`` function returns all coordinate. If ``False`` function \
-            return just coordinates form DraggableMarks marked as selected.
+            return just coordinates form :obj:`DraggableMark` objects marked as selected.
 
         Returns:
-            ndarray: array that contains just the coordinates of the DraggableMarks of the list.
+            ndarray: array that contains just the coordinates of the :obj:`DraggableMark` objects \
+            of the list.
         """
         dms = []
         if all_pts:

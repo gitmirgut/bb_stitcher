@@ -9,8 +9,8 @@
 #  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #  License for the specific language governing permissions and limitations
 #  under the License.
-"""This module provides different File Handlers
-to load and save the needed data for the surveyor."""
+"""This module provides different file handlers
+to load and save the needed data for the :obj:`.core.Surveyor`."""
 from abc import ABCMeta
 from abc import abstractmethod
 import ast
@@ -41,7 +41,7 @@ class FileHandler(metaclass=ABCMeta):
 class NPZHandler(FileHandler):
 
     def save(self, path):
-        """Save surveyor data to numpy file '.npz'.
+        """Save :obj:`.core.Surveyor` data to numpy file '.npz'.
 
         Args:
             path (str): Path of the file, which holds the needed data.
@@ -59,7 +59,7 @@ class NPZHandler(FileHandler):
                  )
 
     def load(self, path):
-        """Load surveyor data to numpy file '.npz'.
+        """Load :obj:`.core.Surveyor` data to numpy file '.npz'.
 
         Args:
             path (str): Path of the file, which holds the needed data.
@@ -79,7 +79,7 @@ class NPZHandler(FileHandler):
 class CSVHandler(FileHandler):
 
     def save(self, path):
-        """Save surveyor data to numpy file '.csv'.
+        """Save :obj:`.core.Surveyor` data to numpy file '.csv'.
 
         Args:
             path (str): Path of the file, which holds the needed data.
@@ -105,7 +105,7 @@ class CSVHandler(FileHandler):
             })
 
     def load(self, path):
-        """Load surveyor data to numpy file '.csv'.
+        """Load :obj:`.core.Surveyor` data to numpy file '.csv'.
 
         Args:
             path (str): Path of the file, which holds the needed data.
@@ -132,7 +132,7 @@ def get_file_handler(path):
         path (str): Path of the file.
 
     Returns:
-        FileHandler: FileHandler for load and save data from surveyor.
+        :obj:`FileHandler`: file handler for load and save data from surveyor.
     """
     __, ext = os.path.splitext(path)
     if ext == '.npz':

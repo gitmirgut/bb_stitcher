@@ -60,7 +60,7 @@ def draw_marks(img, positions, color=(0, 0, 255), marker_types=cv2.MARKER_CROSS)
 
 
 def draw_complex_marks(img, centres, angles, color=(0, 0, 255), marker_types=cv2.MARKER_CROSS):
-    """Draw a more complex marks, with circles, marked centres and arrows for angles/drection.
+    """Draw more complex marks, with circles, marked centres and arrows for angles/direction.
 
     Args:
         img (ndarray): Image (min. 3 channel) to draw on.

@@ -1,8 +1,8 @@
 Picking
 =======
 
-GUI
----
+Picker
+------
 
 .. automodule:: bb_stitcher.picking.picker
     :members:

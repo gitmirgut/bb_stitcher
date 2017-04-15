@@ -40,7 +40,7 @@ def get_default_debug_config():
 def align_to_display_area(size_left, size_right, homo_left, homo_right):
     """Determine translation matrix & size of two transformed images to align them with display area.
 
-    When two images have been transformed by an homography, it's possible
+    When two images have been transformed by homographies, it's possible
     that they are not aligned with the displayed area anymore. So they need to
     be translated and the display area must be increased.
 
@@ -95,7 +95,7 @@ def add_alpha_channel(image):
     """Add alpha channel to image for transparent areas.
 
     Args:
-        image (ndarray): image of shape *(M,N)* (black/white), *(M,N,3)* (BGR)
+        image (ndarray): Image of shape *(M,N)* (black/white), *(M,N,3)* (BGR)
                         or *(M,N,4)* already with alpha channel.
 
     Returns:
@@ -123,11 +123,11 @@ def form_rectangle(width, height):
     The starting point is the Origin and the points are sorted in clockwise order.
 
     Args:
-        width (float): width of the rectangle.
-        height (float): width of the rectangle.
+        width (float): Width of the rectangle.
+        height (float): Height of the rectangle.
 
     Returns:
-        ndarray: rectangle represented by 4 points as ndarray *(4,2)*.
+        ndarray: Rectangle represented by 4 points as ndarray *(4,2)*.
     """
     rect = np.zeros((4, 2), dtype=np.float32)
     rect[0] = 0, 0
@@ -264,8 +264,8 @@ def harmonize_rects(rect_a, rect_b):
         rect_b (ndarray): Same as ``rect_a``
 
     Returns:
-        - **harm_rect_a** (ndarray) -- harmonized version of ``rect_a``
-        - **harm_rect_b** (ndarray) -- harmonized version of ``rect_b``
+        - **harm_rect_a** (ndarray) -- Harmonized version of ``rect_a``
+        - **harm_rect_b** (ndarray) -- Harmonized version of ``rect_b``
     """
     A = rect_a[0]
     B = rect_a[1]
@@ -339,6 +339,9 @@ def angles_to_points(angle_centers, angles, distance=22):
 
     Returns:
         - **points_repr** (ndarray) -- Angles represented by points. *(N,2)*
+
+    See Also:
+        - :meth:`points_to_angles`
     """
     assert len(angle_centers) == len(angles)
     points_repr = np.zeros((len(angle_centers), 2), dtype=np.float32)
@@ -353,7 +356,7 @@ def angles_to_points(angle_centers, angles, distance=22):
 def points_to_angles(angle_centers, points_repr):
     """Convert angle point representation back to normal angle.
 
-    This function is the inverted version of ``angles_to_points``.
+    This function is the inverted version of :meth:`angles_to_points`.
 
     Args:
         angle_centers (ndarray): The centers of the ``angles``. *(N,2)*
@@ -362,6 +365,8 @@ def points_to_angles(angle_centers, points_repr):
     Returns:
         ndarray: Angles in rad *(N,)*
 
+    See Also:
+        - :meth:`angles_to_points`
     """
     """Calculate angle between vertical line passing through angle_centers and line AB."""
     # https://de.wikipedia.org/wiki/Roll-Nick-Gier-Winkel#/media/File:RPY_angles_of_spaceships_(local_frame).png
@@ -414,8 +419,7 @@ def get_ratio_px_to_mm(start_point, end_point, distance_mm):
     """Return ratio between pixel and millimetre.
 
     The function calculates the distance of two points (``start_point``, ``end_point``) in pixels
-    and then calculates ratio using the distance in pixels and the distance in mm ``distance_mm``
-    the ratio between pixel and millimetre
+    and then calculates ratio using the distance in pixels and the distance in mm ``distance_mm``.
 
     Args:
         start_point (ndarray): Start point of the reference Line Segment *(2,)*

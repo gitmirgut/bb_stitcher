@@ -15,6 +15,8 @@ Welcome to bb_stitcher's documentation!
    api/helpers
    api/picking
    api/visualisation
+   api/io_utils
+   api/measure
 
 
 

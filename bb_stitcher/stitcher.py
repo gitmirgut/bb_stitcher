@@ -10,7 +10,17 @@ import bb_stitcher.prep as prep
 
 
 class Stitcher(object):
-    """Class to create a 'panorama' from two images."""
+    """Class to create a 'panorama' from two images.
+
+    Warnings:
+        This class is more like an abstract class. This :obj:`Stitcher` can not be used to estimate
+        the required parameters for stitching. But if you already estimated the parameters with an
+        other :obj:`Stitcher` you could use this on for stitching.
+
+    See Also:
+        - :obj:`FeatureBasedStitcher`
+        - :obj:`RectangleStitcher`
+    """
 
     def __init__(self, config=None, rectify=True):
         """"Initialize the stitcher."""
@@ -77,6 +87,7 @@ class Stitcher(object):
         stitching of points and angles (see ``set_parameters``).
 
         Use this function if you estimated the transform and did not want to estimate the parameters
+        again.
         """
         StitchingParams = collections.namedtuple('StichingParams', ['homo_left', 'homo_right',
                                                                     'size_left', 'size_right',

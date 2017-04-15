@@ -1,4 +1,4 @@
-"""Module to connect stitcher and mapping from image coordinates to world coordinates."""
+"""Module to connect the stitching and mapping from image coordinates to world coordinates."""
 import collections
 
 import cv2
@@ -13,9 +13,9 @@ import bb_stitcher.visualisation as visualisation
 class Surveyor(object):
     """Class to determine the relationship between two images of one comb side .
 
-    The ``Surveyor`` determines all needed data to stitch two images from different areas of one
-    comb side to a complete view of the comb. On this basis the ``Surveyor`` can be used to map the
-    coordinates from these images to hive coordinates.
+    The :obj:`Surveyor` determines all needed data to stitch two images from different areas of one
+    comb side to a complete view of the comb. On this basis the :obj:`Surveyor` can also be used to
+    map the coordinates from these images to hive coordinates.
     """
 
     def __init__(self, config):
@@ -55,10 +55,13 @@ class Surveyor(object):
         self._world_homo_right = self._world_homo.dot(self.homo_right)
 
     def save(self, path):
-        """Save parameters of the Surveyor needed for later stitching to a file.
+        """Save parameters of the :obj:`Surveyor` needed for later stitching to a file.
 
         Args:
             path (str): Path of the output file. The extension must be '.npz' or '.csv'.
+
+        See Also:
+            - :mod:`.io_utils`
         """
         filehandler = io_utils.get_file_handler(path)
         self._acept_filehandler(filehandler)
@@ -79,10 +82,10 @@ class Surveyor(object):
 
     def determine_mapping_parameters(self, path_l, path_r, angl_l, angl_r,
                                      cam_id_l, cam_id_r, stitcher_type):
-        """Determine the parameters to mapping parameters.
+        """Determine the parameters for mapping of images and coordinates.
 
         This functions is used to calculate all needed data to stitch two images and to map
-        image coordinates and angels to hive coordinates.
+        image coordinates/angels to hive coordinates/angles.
 
         Args:
             path_l (str): Path to the left image.
@@ -118,11 +121,11 @@ class Surveyor(object):
         self._world_homo_right = self._world_homo.dot(self.homo_right)
 
     def get_parameters(self):
-        """Return the estimated or loaded parameters of the Surveyor needed for later stitching.
+        """Return the estimated or loaded parameters of the :obj:`Surveyor` needed for later stitching.
 
-        With this function you could save the Surveyor parameters and load them later for further
-        stitching of images and mapping of image coordinates/angels to hive coordinates/angles in
-        relation to hive.
+        With this function you could save the :obj:`Surveyor` parameters and load them later for
+        further stitching of images and mapping of image coordinates/angels to hive
+        coordinates/angles in relation to hive.
         """
         StitchingParams = collections.namedtuple('SurveyorParams', ['homo_left', 'homo_right',
                                                                     'size_left', 'size_right',
@@ -140,7 +143,7 @@ class Surveyor(object):
                        origin, ratio_px_mm, pano_size):
         """Load needed parameters for mapping image points/angles to hive coordinates/angles.
 
-        This function becomes handy if you calculate the parameters in an earlier surveying
+        This function becomes handy if you calculated the parameters in an earlier surveying
         process and did not want to calculate the parameters again and just want to map image
         points/angles to hive coordinates/angles.
 
@@ -174,7 +177,7 @@ class Surveyor(object):
         self._world_homo_right = self._world_homo.dot(self.homo_right)
 
     def map_points_angles(self, points, angles, cam_id):
-        u"""Map image points and angles to points and angles in relation to world/hive.
+        u"""Map image points/angles to points/angles in relation to world/hive.
 
         This happens under the assumption that the mapping parameters were estimated or loaded
         before.
@@ -220,7 +223,7 @@ class Surveyor(object):
         Args:
             path_l (str): Path to the left image.
             path_r (str): Path to the right image.
-            grid (bool): If ``True``` a grid with axes in mm will be drawn on the image.
+            grid (bool, optional): If ``True`` a grid with axes in mm will be drawn on the image.
         """
         # TODO(gitmirgut): PoC draw grid in dependency of step_size
         stitch = stitcher.Stitcher(self.config)

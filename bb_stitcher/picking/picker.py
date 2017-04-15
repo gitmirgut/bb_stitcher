@@ -9,7 +9,7 @@
 #  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #  License for the specific language governing permissions and limitations
 #  under the License.
-"""Initialise GUI to pick various points on an images.
+"""Initialise a GUI to pick various points on images.
 
 This Module provides a class to initialise a GUI, to pick various points
 on one or multiple images.
@@ -36,7 +36,7 @@ class PointPicker(object):
         """Initialise a GUI to pick points on multiple images.
 
         A matplot GUI will be initialised, where the user can pick multiple points
-        on the **N** ``images``. Afterwards the ``PointPicker`` will return **N** ndarrays, which
+        on the **N** ``images``. Afterwards the :obj:`PointPicker` will return **N** ndarrays, which
         holds the coordinates of the marked points. Each ndarray holds the points for one image.
 
         Args:

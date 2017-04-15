@@ -66,7 +66,7 @@ class Rectificator(object):
 
         Args:
             points (ndarray): List of (distorted) points *(N,2)*.
-            size (tuple): Size *(width, height)* of the image, which was used for determine the
+            size (tuple): Size *(width, height)* of the image, which was used to determine the
                                 points.
 
         Returns:
@@ -96,7 +96,7 @@ class Rectificator(object):
         Args:
             points(ndarray): List of (distorted) points *(N,2)*.
             angles (ndarray): List of Angles in rad (length *(N,)*).
-            size (tuple): Size *(width, height)* of the image, which was used for determine the
+            size (tuple): Size *(width, height)* of the image, which was used to determine the
                                 points.
 
         Returns:
@@ -204,7 +204,7 @@ def rotate_points(points, angle, size):
     Args:
         points (ndarray): List of points *(N, 2)*.
         angle (int): Rotation angle in degree. Positive values mean counter-clockwise rotation.
-        size (tuple): Size *(width, height)* of the image, which was used for determine the
+        size (tuple): Size *(width, height)* of the image, which was used to determine the
                     ``points``.
 
     Returns:
