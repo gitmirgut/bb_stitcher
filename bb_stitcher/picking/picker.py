@@ -52,7 +52,7 @@ class PointPicker(object):
         for img in images:
             imgs_a.append(helpers.add_alpha_channel(img))
         count_images = len(imgs_a)
-        # creating one list per image, which will hold the draggable markers
+        # creating one list per image, which will hold the draggable marks
         # e.g. for 2 images:
         # dms_per_image = [[<dragableMarks first image>],[<dragableMarks second image>]]
 
