@@ -27,6 +27,8 @@ class DraggableMark(object):
     """
 
     lock = None  # only one mark at at time can be animated.
+    key_refine = 'r'  # if this key is pressed the mark will be refined
+    key_select = 's'  # if this key is pressed the mark will be selected
 
     def __init__(self, mark, img=None):
         """Initialize a draggable mark."""
@@ -178,9 +180,9 @@ class DraggableMark(object):
         if not contains:
             return
 
-        if event.key == 's':
+        if event.key == DraggableMark.key_select:
             self._toggle_select()
-        elif event.key == 'r':
+        elif event.key == DraggableMark.key_refine:
             self._refine()
 
         self.mark.figure.canvas.draw()
