@@ -115,7 +115,6 @@ class Stitcher(object):
         Returns:
             ndarray: panorama (stitched image)
         """
-        # TODO(gitmirgut): Needs speed up.
         image_left = helpers.add_alpha_channel(image_left)
         image_right = helpers.add_alpha_channel(image_right)
 
@@ -253,7 +252,6 @@ class FeatureBasedStitcher(Stitcher):
         Args:
             config: config file which holds the basic stitching parameters.
         """
-        # TODO(gitmirgut) initialize super()
         super().__init__(config, rectify)
         self.overlap = int(self.config['FeatureBasedStitcher']['OVERLAP'])
         self.border_top = int(self.config['FeatureBasedStitcher']['BORDER_TOP'])
@@ -314,7 +312,6 @@ class FeatureBasedStitcher(Stitcher):
         # Initialize the feature detector and descriptor SURF
         # http://www.vision.ee.ethz.ch/~surf/download.html
         # is noncommercial licensed
-        # TODO(gitmirgut) add note to doc and requirements on license
         surf = cv2.xfeatures2d.SURF_create(
             hessianThreshold=self.hessianThreshold, nOctaves=self.nOctaves)
         surf.setUpright(True)
