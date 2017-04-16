@@ -19,6 +19,9 @@ import os
 
 import numpy as np
 
+# TODO(gitmirgut): make it more dynamic
+valid_ext = ['.npz', '.csv']
+
 
 class FileHandler(metaclass=ABCMeta):
     """Abstract base class of FileHandler."""
