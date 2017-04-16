@@ -27,10 +27,10 @@ class PointPicker(object):
 
     def __init__(self):
         """Initialise GUI to pick various point on an image."""
-        mpl.rcParams['keymap.quit'] = ['ctrl+w', 'cmd+w', 'q']
+        mpl.rcParams['keymap.quit'] = ['q', 'ctrl+w', 'cmd+w']
         mpl.rcParams['keymap.home'] = ['h', 'home']
+        mpl.rcParams['keymap.zoom'] = ['z', 'o']
         mpl.rcParams['keymap.save'] = ['ctrl+s']
-        mpl.rcParams['keymap.zoom'] = ['o', 'z']
 
     def pick(self, images, all_pts=True):
         """Initialise a GUI to pick points on multiple images.
