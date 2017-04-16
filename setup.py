@@ -9,6 +9,11 @@ setup(
     description='Stitch images from different cam positions,'
                 'with an affine transformation',
     long_description='',
+    entry_points={
+            'console_scripts': [
+                'bb_stitcher = bb_stitcher.scripts.bb_stitcher:main'
+            ]
+    },
     url='https://github.com/gitmirgut/bb_stitcher',
     author='gitmirgut',
     author_email="gitmirgut@users.noreply.github.com",
