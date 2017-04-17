@@ -6,10 +6,10 @@ import textwrap
 import bb_stitcher.io_utils as io_utils
 
 
-def filepath(string):
+def exist_path(string):
     """Define a special argument type for the argument parser.
 
-    It checks if the given string is a valid file path.
+    It checks if the given string is a valid file string.
     """
     if not os.path.exists(string):
         msg = 'File "{path}" does not exists.'.format(path=string)
@@ -17,18 +17,39 @@ def filepath(string):
     return string
 
 
-def output_path(string):
+def data_path(string):
     """Define a special argument type for the argument parser.
 
-    It checks if the output path has a valid extension.
+    It checks if the path has a valid extension.
     """
     __, ext = os.path.splitext(string)
     if ext not in io_utils.valid_ext:
-        msg = 'Extension "{ext}" is not a valid extension, please use ' \
+        msg = 'The Extension "{ext}" of "{path}" is not a valid extension, please use ' \
               'one of these {valid_ext} extensions.'.format(ext=ext,
+                                                            path=string,
                                                             valid_ext=','.join(io_utils.valid_ext))
         raise argparse.ArgumentTypeError(msg)
     return string
+
+
+def img_path(string):
+    """Define a special argument type for the argument parser.
+
+    It checks if the path is a valid image.
+    """
+    valid_ext = ['.jpeg', '.jpg', '.png']
+    __, ext = os.path.splitext(string)
+    if ext not in valid_ext:
+        msg = 'Did not understand the image type of {path}, please use one of these {valid_ext}' \
+              ' extensions.'.format(path=string,
+                                    valid_ext=','.join(valid_ext))
+        raise argparse.ArgumentTypeError(msg)
+    return string
+
+
+def stitching_data(string):
+    string = data_path(string)
+    return exist_path(string)
 
 
 def get_parser():
@@ -58,10 +79,10 @@ def get_parser():
                                 '''))
 
     estimate_parser.add_argument('left',
-                                 help='Path of the left image.', type=filepath)
+                                 help='Path of the left image.', type=exist_path)
 
     estimate_parser.add_argument('right',
-                                 help='Path of the right image.', type=filepath)
+                                 help='Path of the right image.', type=exist_path)
 
     estimate_parser.add_argument('left_angle',
                                  help='Rotation angle of the left image '
@@ -81,9 +102,12 @@ def get_parser():
                                  help=textwrap.dedent('''\
                                  Output path of the stitching data.
                                  Supported Types: {ext}
-                                 '''.format(ext=','.join(io_utils.valid_ext))), type=output_path)
+                                 '''.format(ext=','.join(io_utils.valid_ext))), type=data_path)
 
     # Define composer parser ----------------------------------------------------------------------
-    compose_parser.add_argument('left', help='Path of the left image.', type=filepath)
-    compose_parser.add_argument('right', help='Path of the right image.', type=filepath)
+    compose_parser.add_argument('left', help='Path of the left image.', type=exist_path)
+    compose_parser.add_argument('right', help='Path of the right image.', type=exist_path)
+    compose_parser.add_argument('data', help='Path of the file which holds the stitching data.',
+                                type=stitching_data)
+    compose_parser.add_argument('out', help='Output path of the stitchted images.', type=img_path)
     return main_parser
