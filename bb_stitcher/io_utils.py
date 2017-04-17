@@ -82,7 +82,7 @@ class NPZHandler(FileHandler):
 class CSVHandler(FileHandler):
 
     def save(self, path):
-        """Save :obj:`.core.Surveyor` data to numpy file '.csv'.
+        """Save :obj:`.core.Surveyor` data to csv file '.csv'.
 
         Args:
             path (str): Path of the file, which holds the needed data.
@@ -108,7 +108,7 @@ class CSVHandler(FileHandler):
             })
 
     def load(self, path):
-        """Load :obj:`.core.Surveyor` data to numpy file '.csv'.
+        """Load :obj:`.core.Surveyor` data to csv file '.csv'.
 
         Args:
             path (str): Path of the file, which holds the needed data.
