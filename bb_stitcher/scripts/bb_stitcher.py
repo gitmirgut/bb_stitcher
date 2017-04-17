@@ -18,10 +18,14 @@ Define the subcommands to work with ArgumentParser.
 def estimate_params(args):
     """Execute the subcommand 'estimate' from the parser."""
     surveyor = core.Surveyor(helpers.get_default_config())
+    if args.type == 'fb':
+        stitch = stitcher.FeatureBasedStitcher
+    else:
+        stitch = stitcher.RectangleStitcher
     surveyor.determine_mapping_parameters(args.left, args.right,
                                           args.left_angle, args.right_angle,
                                           args.left_camID, args.right_camID,
-                                          stitcher.RectangleStitcher)
+                                          stitch)
     surveyor.compose_panorama(args.left, args.right)
     surveyor.save(args.out)
 
@@ -30,7 +34,7 @@ def compose_params(args):
     """Execute the subcommand 'compose' from the parser."""
     surveyor = core.Surveyor(helpers.get_default_config())
     surveyor.load(args.data)
-    img = surveyor.compose_panorama(args.left, args.right)
+    img = surveyor.compose_panorama(args.left, args.right, args.grid)
     cv2.imwrite(args.out, img)
     pass
 
@@ -136,6 +140,8 @@ def _get_main_parser():
     compose_parser.add_argument('data', help='Path of the file which holds the stitching data.',
                                 type=_stitching_data)
     compose_parser.add_argument('out', help='Output path of the stitchted images.', type=_img_path)
+    compose_parser.add_argument('-g', '--grid', help='Draw grid in mm on stitched images.',
+                                action='store_true')
     compose_parser.set_defaults(func=compose_params)
     return main_parser
 
@@ -146,7 +152,3 @@ def main():
     main_parser = _get_main_parser()
     args = main_parser.parse_args()
     args.func(args)
-
-
-if __name__ == '__main__':
-    main()
