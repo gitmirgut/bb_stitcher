@@ -95,6 +95,8 @@ def _get_main_parser():
                     'stitching with points and angles.',
     )
     subparsers = main_parser.add_subparsers(title="Commands")
+    subparsers.dest = 'command'
+    subparsers.required = True
 
     estimate_parser = subparsers.add_parser('estimate',
                                             aliases=['est'], usage='bb_stitcher estimate',
