@@ -38,7 +38,7 @@ def fname(path):
     return os.path.basename(os.path.splitext(path)[0])
 
 
-def create_image_dict(img_path, img_with_detections, detections_path, cam_id):
+def create_image_dict(img_path, img_with_detections, detections_path, cam_id, angle):
     d = dict()
     d['path'] = get_test_fname(img_path)
     d['name'] = os.path.basename(os.path.splitext(d['path'])[0])
@@ -51,6 +51,7 @@ def create_image_dict(img_path, img_with_detections, detections_path, cam_id):
     d['yaw_angles'] = np.load(get_test_fname(detections_path))['yaw_angles']
     d['img_w_detections'] = cv2.imread(get_test_fname(img_with_detections), -1)
     d['cam_id'] = cam_id
+    d['angle'] = angle
     return d
 
 
@@ -60,7 +61,8 @@ def left_img():
     img_with_detections = 'data/Cam_0_2016-09-01T12:56:50.801920Z_det_yaws.jpg'
     detections_path = 'data/Cam_0_2016-09-01T12:56:50.801920Z_det_yaws.npz'
     cam_id = 0
-    return create_image_dict(img_path, img_with_detections, detections_path, cam_id)
+    angle = 90
+    return create_image_dict(img_path, img_with_detections, detections_path, cam_id, angle)
 
 
 @pytest.fixture
@@ -69,7 +71,8 @@ def right_img():
     img_with_detections = 'data/Cam_1_2016-09-01T12:56:50.801926Z_det_yaws.jpg'
     detections_path = 'data/Cam_1_2016-09-01T12:56:50.801926Z_det_yaws.npz'
     cam_id = 1
-    return create_image_dict(img_path, img_with_detections, detections_path, cam_id)
+    angle = -90
+    return create_image_dict(img_path, img_with_detections, detections_path, cam_id, angle)
 
 
 @pytest.fixture
