@@ -79,6 +79,11 @@ def not_to_bee():
     return img
 
 
+@pytest.fixture
+def surveyor_csv_path():
+    return get_test_fname('data/Surveyor_data.csv')
+
+
 @pytest.fixture(scope="session")
 def config():
     return helpers.get_default_config()
