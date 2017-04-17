@@ -1,6 +1,7 @@
+import os
+
 import cv2
 import numpy as np
-import os
 import pytest
 
 import bb_stitcher.visualisation as visualisation
