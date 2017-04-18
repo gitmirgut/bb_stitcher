@@ -397,8 +397,6 @@ class RectangleStitcher(Stitcher):
         image_left, affine_left = self._prepare_image(image_left, angle_left)
         image_right, affine_right = self._prepare_image(image_right, angle_right)
 
-        rot_size_left = image_left.shape[:2][::-1]
-        rot_size_right = image_right.shape[:2][::-1]
         pt_picker = picker.PointPicker()
         pts_left, pts_right = pt_picker.pick([image_left, image_right], False)
         assert len(pts_left) == 4 and len(pts_right) == 4
