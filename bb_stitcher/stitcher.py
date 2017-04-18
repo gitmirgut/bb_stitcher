@@ -368,7 +368,7 @@ class FeatureBasedStitcher(Stitcher):
         homo_right = homo_right.dot(affine_right)
 
         homo_trans, pano_size = helpers.align_to_display_area(
-            rot_size_left, rot_size_right, homo_left, homo_right)
+            self.size_left, self.size_right, homo_left, homo_right)
 
         self.homo_left = homo_trans.dot(homo_left)
         self.homo_right = homo_trans.dot(homo_right)
@@ -421,7 +421,7 @@ class RectangleStitcher(Stitcher):
         homo_right = homo_right.dot(affine_right)
 
         homo_trans, pano_size = helpers.align_to_display_area(
-            rot_size_left, rot_size_right, homo_left, homo_right)
+            self.size_left, self.size_right, homo_left, homo_right)
 
         self.homo_left = homo_trans.dot(homo_left)
         self.homo_right = homo_trans.dot(homo_right)
