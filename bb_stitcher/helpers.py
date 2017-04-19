@@ -13,7 +13,6 @@
 import collections
 import configparser
 from logging import getLogger
-import math
 import os
 
 import cv2
@@ -36,33 +35,6 @@ def get_default_debug_config():
     path_config = os.path.join(os.path.dirname(__file__), 'logging_config.ini')
     default_config.read(path_config)
     return default_config
-
-
-def align_to_display_area(size_left, size_right, homo_left, homo_right):
-    """Determine translation matrix & size of two transformed images to align them with display area.
-
-    When two images have been transformed by homographies, it's possible
-    that they are not aligned with the displayed area anymore. So they need to
-    be translated and the display area must be increased.
-
-    Args:
-        size_left (tuple): Size *(width, height)* of the left image.
-        size_right (tuple): Size *(width, height)* of the right image.
-        homo_left (ndarray): An homography *(3,3)* which is used to transform the left image.
-        homo_right (ndarray): An homography *(3,3)* which is used to transform the right image.
-
-    Returns:
-        - **homo_trans** (ndarray) -- homography *(3,3)* to translate the left and the right image.
-        - **display_size** (tuple) -- Size *(width, height)* of the panorama.
-    """
-    bounds = get_boundaries(size_left, size_right, homo_left, homo_right)
-
-    # define translation matrix
-    homo_trans = get_transform_to_origin_mat(bounds.xmin, bounds.ymin)
-
-    display_size = (math.ceil(bounds.xmax - bounds.xmin), math.ceil(bounds.ymax - bounds.ymin))
-
-    return homo_trans, display_size
 
 
 def get_boundaries(size_left, size_right, homo_left, homo_right):
