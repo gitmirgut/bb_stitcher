@@ -1,5 +1,6 @@
 """This module contains various image stitchers especially designed for the BeesBook Project."""
 import collections
+import math
 
 import cv2
 import numpy as np
@@ -35,7 +36,6 @@ class Stitcher(object):
         self.homo_right = None
         self.size_left = None
         self.size_right = None
-        self.pano_size = None
 
     def _prepare_image(self, image, angle=0):
         """Prepare image for stitching.
@@ -57,8 +57,7 @@ class Stitcher(object):
         image_rot, affine = prep.rotate_image(image, angle)
         return image_rot, affine
 
-    def load_parameters(self, homo_left=None, homo_right=None, size_left=None, size_right=None,
-                        pano_size=None):
+    def load_parameters(self, homo_left=None, homo_right=None, size_left=None, size_right=None):
         """Load needed parameters for stitching points, angles and images.
 
          This function becomes handy if you calculate the parameters in an earlier stitching
@@ -72,13 +71,11 @@ class Stitcher(object):
             panorama.
             size_left (tuple): Size of the left image, which was used to calculate homography.
             size_right (tuple): Size of the right image, which was used to calculate homography.
-            pano_size (tuple): Size of the panorama.
         """
         self.homo_left = homo_left
         self.homo_right = homo_right
         self.size_left = size_left
         self.size_right = size_right
-        self.pano_size = pano_size
 
     def get_parameters(self):
         """Return the estimated or loaded parameters of the stitcher needed for later stitching.
@@ -90,11 +87,9 @@ class Stitcher(object):
         again.
         """
         StitchingParams = collections.namedtuple('StichingParams', ['homo_left', 'homo_right',
-                                                                    'size_left', 'size_right',
-                                                                    'pano_size'])
+                                                                    'size_left', 'size_right'])
         result = StitchingParams(self.homo_left, self.homo_right,
-                                 self.size_left, self.size_right,
-                                 self.pano_size)
+                                 self.size_left, self.size_right)
         return result
 
     def estimate_transform(self, image_left, image_right, angle_left=0, angle_right=0):
@@ -133,8 +128,12 @@ class Stitcher(object):
             image_left = self.rectificator.rectify_image(image_left)
             image_right = self.rectificator.rectify_image(image_right)
 
-        image_left = cv2.warpPerspective(image_left, self.homo_left, self.pano_size)
-        image_right = cv2.warpPerspective(image_right, self.homo_right, self.pano_size)
+        bounds = helpers.get_boundaries(self.size_left, self.size_right,
+                                        self.homo_left, self.homo_right)
+        pano_size = (math.ceil(bounds.xmax - bounds.xmin), math.ceil(bounds.ymax - bounds.ymin))
+
+        image_left = cv2.warpPerspective(image_left, self.homo_left, pano_size)
+        image_right = cv2.warpPerspective(image_right, self.homo_right, pano_size)
 
         alpha = 0.5
         cv2.addWeighted(image_left, alpha, image_right, 1 - alpha, 0, image_left)
@@ -367,12 +366,12 @@ class FeatureBasedStitcher(Stitcher):
         homo_left = affine_left
         homo_right = homo_right.dot(affine_right)
 
-        homo_trans, pano_size = helpers.align_to_display_area(
-            self.size_left, self.size_right, homo_left, homo_right)
+        # define translation matrix
+        bounds = helpers.get_boundaries(self.size_left, self.size_right, homo_left, homo_right)
+        homo_trans = helpers.get_transform_to_origin_mat(bounds.xmin, bounds.ymin)
 
         self.homo_left = homo_trans.dot(homo_left)
         self.homo_right = homo_trans.dot(homo_right)
-        self.pano_size = pano_size
 
 
 class RectangleStitcher(Stitcher):
@@ -418,9 +417,9 @@ class RectangleStitcher(Stitcher):
         homo_left = homo_left.dot(affine_left)
         homo_right = homo_right.dot(affine_right)
 
-        homo_trans, pano_size = helpers.align_to_display_area(
-            self.size_left, self.size_right, homo_left, homo_right)
+        # define translation matrix
+        bounds = helpers.get_boundaries(self.size_left, self.size_right, homo_left, homo_right)
+        homo_trans = helpers.get_transform_to_origin_mat(bounds.xmin, bounds.ymin)
 
         self.homo_left = homo_trans.dot(homo_left)
         self.homo_right = homo_trans.dot(homo_right)
-        self.pano_size = pano_size

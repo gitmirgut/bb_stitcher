@@ -5,23 +5,49 @@ import pytest
 import bb_stitcher.helpers as helpers
 
 
-def test_align_to_display_area():
-    # TODO(gitmirgut): Add test with rotation.
+def test_get_boundaries():
     size_left = (4, 3)
     size_right = (5, 2)
-    homo_left = np.float32([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
-    homo_right = np.float32([[1, 0, 3], [0, 1, 2], [0, 0, 1]])
-    homo_trans, display_size = helpers.align_to_display_area(
-        size_left, size_right, homo_left, homo_right)
+    homo_left = np.float32([[1, 0, -1],
+                            [0, 1, 0],
+                            [0, 0, 1]])
+    homo_right = np.float32([[1, 0, 3],
+                             [0, 1, -2],
+                             [0, 0, 1]])
+    bounds = helpers.get_boundaries(size_left, size_right, homo_left, homo_right)
+    target_bounds = (-1, -2, 8, 3)
+    assert bounds == target_bounds
 
-    target_homo = np.float32(
-        [[1, 0, 0],
-         [0, 1, 0],
-         [0, 0, 1]])
-    target_size = (8, 4)
 
-    npt.assert_equal(homo_trans, target_homo)
-    assert display_size == target_size
+def test_get_transform_to_origin_mat():
+    homo = helpers.get_transform_to_origin_mat(-1, -3)
+    target_homo = np.float32([
+        [1, 0, 1],
+        [0, 1, 3],
+        [0, 0, 1]
+    ])
+    npt.assert_equal(homo, target_homo)
+    homo = helpers.get_transform_to_origin_mat(1.3, -3)
+    target_homo = np.float32([
+        [1, 0, -1.3],
+        [0, 1, 3],
+        [0, 0, 1]
+    ])
+    npt.assert_equal(homo, target_homo)
+    homo = helpers.get_transform_to_origin_mat(1, 3)
+    target_homo = np.float32([
+        [1, 0, -1],
+        [0, 1, -3],
+        [0, 0, 1]
+    ])
+    npt.assert_equal(homo, target_homo)
+    homo = helpers.get_transform_to_origin_mat(-1, 3)
+    target_homo = np.float32([
+        [1, 0, 1],
+        [0, 1, -3],
+        [0, 0, 1]
+    ])
+    npt.assert_equal(homo, target_homo)
 
 
 def test_add_alpha_channel(left_img):

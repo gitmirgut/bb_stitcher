@@ -29,8 +29,7 @@ def surveyor_params():
     StitchingParams = collections.namedtuple('SurveyorParams', ['homo_left', 'homo_right',
                                                                 'size_left', 'size_right',
                                                                 'cam_id_left', 'cam_id_right',
-                                                                'origin', 'ratio_px_mm',
-                                                                'pano_size'])
+                                                                'origin', 'ratio_px_mm'])
     homo_left = np.array([
         [-1.98455538e-03, 1.02071571e+00, 5.95366897e+00],
         [-1.02273832e+00, 3.99220466e-03, 4.18182127e+03],
@@ -45,12 +44,10 @@ def surveyor_params():
     cam_id_right = 1
     origin = np.array([94.43029022, 471.89901733])
     ratio_px_mm = 0.0644410123918
-    pano_size = (5587, 4108)
     result = StitchingParams(homo_left, homo_right,
                              size_left, size_right,
                              cam_id_left, cam_id_right,
-                             origin, ratio_px_mm,
-                             pano_size)
+                             origin, ratio_px_mm)
     return result
 
 
@@ -83,10 +80,6 @@ def test_determine_mapping_parameters(surveyor, left_img, right_img, monkeypatch
                                           0, 1,
                                           stitcher.RectangleStitcher)
     assert 0 <= surveyor.ratio_px_mm <= 1
-    assert surveyor.pano_size[0] > 5500
-    assert surveyor.pano_size[1] >= 4000
-    assert 0 <= surveyor.origin[0] <= surveyor.pano_size[0]
-    assert 0 <= surveyor.origin[1] <= surveyor.pano_size[1]
     assert surveyor._world_homo_left is not None
     assert surveyor._world_homo_right is not None
 
