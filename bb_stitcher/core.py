@@ -25,7 +25,6 @@ class Surveyor(object):
         self.homo_right = None
         self.size_left = None
         self.size_right = None
-        self.pano_size = None
         self.origin = None
         self.ratio_px_mm = None
         self._world_homo = None
@@ -109,7 +108,6 @@ class Surveyor(object):
         self.homo_right = stitching_params.homo_right
         self.size_left = stitching_params.size_left
         self.size_right = stitching_params.size_right
-        self.pano_size = stitching_params.pano_size
         self.origin = measure.get_origin(panorama)
         self.ratio_px_mm = measure.get_ratio(panorama)
         self.cam_id_left = cam_id_l
@@ -130,17 +128,15 @@ class Surveyor(object):
         StitchingParams = collections.namedtuple('SurveyorParams', ['homo_left', 'homo_right',
                                                                     'size_left', 'size_right',
                                                                     'cam_id_left', 'cam_id_right',
-                                                                    'origin', 'ratio_px_mm',
-                                                                    'pano_size'])
+                                                                    'origin', 'ratio_px_mm'])
         result = StitchingParams(self.homo_left, self.homo_right,
                                  self.size_left, self.size_right,
                                  self.cam_id_left, self.cam_id_right,
-                                 self.origin, self.ratio_px_mm,
-                                 self.pano_size)
+                                 self.origin, self.ratio_px_mm)
         return result
 
     def set_parameters(self, homo_left, homo_right, size_left, size_right, cam_id_l, cam_id_r,
-                       origin, ratio_px_mm, pano_size):
+                       origin, ratio_px_mm):
         """Load needed parameters for mapping image points/angles to hive coordinates/angles.
 
         This function becomes handy if you calculated the parameters in an earlier surveying
@@ -169,7 +165,6 @@ class Surveyor(object):
         self.cam_id_right = cam_id_r
         self.origin = origin
         self.ratio_px_mm = ratio_px_mm
-        self.pano_size = pano_size
 
         # modify homographies from the stitcher to map points to world coordinates
         self._world_homo = Surveyor._determine_world_homo(self.origin, self.ratio_px_mm)
@@ -199,8 +194,7 @@ class Surveyor(object):
 
         # using modified homographies to map points and angles to world coordinates
         stitch.load_parameters(self._world_homo_left, self._world_homo_right,
-                               self.size_left, self.size_right,
-                               self.pano_size)
+                               self.size_left, self.size_right)
 
         if cam_id == self.cam_id_left:
             points, angles = stitch.map_left_points_angles(points, angles)
@@ -228,8 +222,7 @@ class Surveyor(object):
         # TODO(gitmirgut): PoC draw grid in dependency of step_size
         stitch = stitcher.Stitcher(self.config)
         stitch.load_parameters(self.homo_left, self.homo_right,
-                               self.size_left, self.size_right,
-                               self.pano_size)
+                               self.size_left, self.size_right)
         image_left = cv2.imread(path_l, -1)
         image_right = cv2.imread(path_r, -1)
         pano = stitch.compose_panorama(image_left, image_right)

@@ -100,7 +100,6 @@ def test_map_points_angles(left_img, right_img, outdir, config, monkeypatch):
 
     assert rt_stitcher.homo_left is not None
     assert rt_stitcher.homo_right is not None
-    assert rt_stitcher.pano_size is not None
 
     pano = rt_stitcher.compose_panorama(
         left_img['img_w_detections'], right_img['img_w_detections'])
@@ -219,7 +218,6 @@ def test_overall_rt_stitching(left_img, right_img, outdir, config, monkeypatch):
 
     assert rt_stitcher.homo_left is not None
     assert rt_stitcher.homo_right is not None
-    assert rt_stitcher.pano_size is not None
 
     pano = rt_stitcher.compose_panorama(left_img['img_w_detections'], right_img['img_w_detections'])
 

@@ -57,8 +57,7 @@ class NPZHandler(FileHandler):
                  cam_id_left=self.surveyor.cam_id_left,
                  cam_id_right=self.surveyor.cam_id_right,
                  origin=self.surveyor.origin,
-                 ratio_px_mm=self.surveyor.ratio_px_mm,
-                 pano_size=self.surveyor.pano_size
+                 ratio_px_mm=self.surveyor.ratio_px_mm
                  )
 
     def load(self, path):
@@ -76,7 +75,6 @@ class NPZHandler(FileHandler):
             self.surveyor.cam_id_right = data['cam_id_right']
             self.surveyor.origin = data['origin']
             self.surveyor.ratio_px_mm = data['ratio_px_mm']
-            self.surveyor.pano_size = tuple(data['pano_size'])
 
 
 class CSVHandler(FileHandler):
@@ -91,8 +89,7 @@ class CSVHandler(FileHandler):
             fieldnames = ['homo_left', 'homo_right',
                           'size_left', 'size_right',
                           'cam_id_left', 'cam_id_right',
-                          'origin', 'ratio_px_mm',
-                          'pano_size']
+                          'origin', 'ratio_px_mm']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
             writer.writeheader()
             writer.writerow({
@@ -104,7 +101,6 @@ class CSVHandler(FileHandler):
                 'cam_id_right': self.surveyor.cam_id_right,
                 'origin': self.surveyor.origin.tolist(),
                 'ratio_px_mm': self.surveyor.ratio_px_mm,
-                'pano_size': self.surveyor.pano_size,
             })
 
     def load(self, path):
@@ -124,7 +120,6 @@ class CSVHandler(FileHandler):
                 self.surveyor.cam_id_right = int(row['cam_id_right'])
                 self.surveyor.origin = np.array(ast.literal_eval(row['origin']))
                 self.surveyor.ratio_px_mm = float(row['ratio_px_mm'])
-                self.surveyor.pano_size = ast.literal_eval(row['pano_size'])
                 break
 
 
