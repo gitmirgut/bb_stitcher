@@ -10,6 +10,7 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 """This module provides various helper functions."""
+import collections
 import configparser
 from logging import getLogger
 import math
@@ -89,6 +90,57 @@ def align_to_display_area(size_left, size_right, homo_left, homo_right):
     display_size = (math.ceil(xmax - xmin), math.ceil(ymax - ymin))
 
     return homo_trans, display_size
+
+
+def _get_boundaries(size_left, size_right, homo_left, homo_right):
+    """Determine the boundaries of two transformed images.
+
+    When two images have been transformed by homographies, it's possible
+    that they are not aligned with the displayed area anymore. Its possible that various points
+    are outside of the display areas. This function determines the max/min values of x and y of
+    the two images.
+
+    Args:
+        size_left (tuple): Size *(width, height)* of the left image.
+        size_right (tuple): Size *(width, height)* of the right image.
+        homo_left (ndarray): An homography *(3,3)* which is used to transform the left image.
+        homo_right (ndarray): An homography *(3,3)* which is used to transform the right image.
+
+    Returns:
+        -- **xmin** (float) -- Minimal x value of both images after transformation.
+        -- **ymin** (float) -- Minimal y value of both images after transformation.
+        -- **xmax** (float) -- Maximal x value of both images after transformation.
+        -- **ymax** (float) -- Maximal x value of both images after transformation.
+    """
+    h_l, w_l = size_left
+    h_r, w_r = size_right
+
+    corners_l = np.float32([
+        [0, 0],
+        [0, w_l],
+        [h_l, w_l],
+        [h_l, 0]
+    ]).reshape(-1, 1, 2)
+    corners_r = np.float32([
+        [0, 0],
+        [0, w_r],
+        [h_r, w_r],
+        [h_r, 0]
+    ]).reshape(-1, 1, 2)
+
+    # transform the corners of the images, to get the dimension of the
+    # transformed images and stitched image
+    corners_tr_l = cv2.perspectiveTransform(corners_l, homo_left)
+    corners_tr_r = cv2.perspectiveTransform(corners_r, homo_right)
+
+    pts = np.concatenate((corners_tr_l, corners_tr_r), axis=0)
+    # measure the max values in x and y direction to get the translation vector
+    # so that whole image will be shown
+    [xmin, ymin] = np.float32(pts.min(axis=0).ravel())
+    [xmax, ymax] = np.float32(pts.max(axis=0).ravel())
+
+    Bounderies = collections.namedtuple('Bounderies', ['xmin', 'ymin', 'xmax', 'ymax'])
+    return Bounderies(xmin, ymin, xmax, ymax)
 
 
 def add_alpha_channel(image):
