@@ -55,50 +55,49 @@ def align_to_display_area(size_left, size_right, homo_left, homo_right):
         - **homo_trans** (ndarray) -- homography *(3,3)* to translate the left and the right image.
         - **display_size** (tuple) -- Size *(width, height)* of the panorama.
     """
-    h_l, w_l = size_left
-    h_r, w_r = size_right
-
-    corners_l = np.float32([
-        [0, 0],
-        [0, w_l],
-        [h_l, w_l],
-        [h_l, 0]
-    ]).reshape(-1, 1, 2)
-    corners_r = np.float32([
-        [0, 0],
-        [0, w_r],
-        [h_r, w_r],
-        [h_r, 0]
-    ]).reshape(-1, 1, 2)
-
-    # transform the corners of the images, to get the dimension of the
-    # transformed images and stitched image
-    corners_tr_l = cv2.perspectiveTransform(corners_l, homo_left)
-    corners_tr_r = cv2.perspectiveTransform(corners_r, homo_right)
-
-    pts = np.concatenate((corners_tr_l, corners_tr_r), axis=0)
-    # measure the max values in x and y direction to get the translation vector
-    # so that whole image will be shown
-    [xmin, ymin] = np.float32(pts.min(axis=0).ravel())
-    [xmax, ymax] = np.float32(pts.max(axis=0).ravel())
-    t = [-xmin, -ymin]
+    bounds = get_boundaries(size_left, size_right, homo_left, homo_right)
 
     # define translation matrix
-    homo_trans = np.array(
-        [[1, 0, t[0]], [0, 1, t[1]], [0, 0, 1]])  # translate
+    homo_trans = get_transform_to_origin_mat(bounds.xmin, bounds.ymin)
 
-    display_size = (math.ceil(xmax - xmin), math.ceil(ymax - ymin))
+    display_size = (math.ceil(bounds.xmax - bounds.xmin), math.ceil(bounds.ymax - bounds.ymin))
 
     return homo_trans, display_size
 
 
-def _get_boundaries(size_left, size_right, homo_left, homo_right):
+def get_boundaries(size_left, size_right, homo_left, homo_right):
     """Determine the boundaries of two transformed images.
 
-    When two images have been transformed by homographies, it's possible
-    that they are not aligned with the displayed area anymore. Its possible that various points
-    are outside of the display areas. This function determines the max/min values of x and y of
-    the two images.
+    When two images have been transformed by homographies to a 'shared space' (which holds both
+    images), it's possible that this 'shared space' is not aligned with the displayed area.
+    Its possible that various points are outside of the display area.
+    This function determines the max/min values of x and y of the both images in shared space
+    in relation to the origin of the display area.
+
+    Example:
+        .. code::
+
+                         *--------*    *--------*
+                         |        |    |        |
+                         |  left  |    | right  |
+                         |        |    |        |
+                         *--------*    *--------*
+                             \            /
+                   homo_left  \          / homo_right
+                               \        /
+                                v      v
+
+            shared space:      *--------*
+                  +~~~~~~~~~~~~|        |~~~~+
+                  ;  *--------*| right  |    ;
+                  ;  |        ||        |    ;
+                  ;  |  left  |*--------*    ;
+                  ;  |        |              ;
+                  ;  *--------* display_area ;
+                  +~~~~~~~~~~~~~~~~~~~~~~~~~~+
+
+    (In this example ``xmin`` would be the x value of the left border from the left image and
+    ``ymin`` would be the y value of the top border from the right image)
 
     Args:
         size_left (tuple): Size *(width, height)* of the left image.
@@ -141,6 +140,51 @@ def _get_boundaries(size_left, size_right, homo_left, homo_right):
 
     Bounderies = collections.namedtuple('Bounderies', ['xmin', 'ymin', 'xmax', 'ymax'])
     return Bounderies(xmin, ymin, xmax, ymax)
+
+
+def get_transform_to_origin_mat(xmin, ymin):
+    """Determine homography matrix to align 'shared_space' to display area origin.
+
+    Example:
+        .. code::
+
+            shared space:      *--------*
+                  +~~~~~~~~~~~~|        |~~~~+
+                  ;  *--------*| right  |    ;
+                  ;  |        ||        |    ;
+                  ;  |  left  |*--------*    ;
+                  ;  |        |              ;
+                  ;  *--------* display_area ;
+                  +~~~~~~~~~~~~~~~~~~~~~~~~~~+
+
+                                |
+                                | transformation to origin
+                                V
+
+                  +~~~~~~~~~*--------*~~~~~~+
+                  ;         |        |      ;
+                  *--------*| right  |      ;
+                  |        ||        |      ;
+                  |  left  |*--------*      ;
+                  |        |                ;
+                  *--------* display_area   ;
+                  ;                         ;
+                  +~~~~~~~~~~~~~~~~~~~~~~~~~+
+    Args:
+        xmin (float): Minimal x value of images in 'shared space'.
+        ymin (float): Minimal y value of images in 'shared space'.
+
+    Returns:
+        ndarray: *(3,3)* homography to align 'shared space' the to the origin of display area.
+
+    See Also:
+        - :meth:`get_boundaries`
+    """
+    t = [-xmin, -ymin]
+
+    # define translation matrix
+    homo_trans = np.array([[1, 0, t[0]], [0, 1, t[1]], [0, 0, 1]], dtype=np.float32)  # translate
+    return homo_trans
 
 
 def add_alpha_channel(image):
