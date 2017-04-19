@@ -147,20 +147,19 @@ def __get_affine_mat_and_new_size(angle, size=(4000, 3000)):
         [width_half, -height_half]
     ])
     log.debug('corners of the rectangle: {}'.format(corners))
-
     # get the rotated corners
     corners_rotated = corners.dot(rot_matrix_2x2)
     corners_rotated = np.array(corners_rotated, np.float32)
 
     # calculate the new dimension of the potential image.
     x_cor = corners_rotated[:, [0][0]]
-    right_bound = max(x_cor[x_cor > 0])
-    left_bound = min(x_cor[x_cor < 0])
+    right_bound = max(x_cor)
+    left_bound = min(x_cor)
     w = math.ceil(abs(right_bound - left_bound))
 
     y_cor = corners_rotated[:, [1][0]]
-    top_bound = max(y_cor[y_cor > 0])
-    bot_bound = min(y_cor[y_cor < 0])
+    top_bound = max(y_cor)
+    bot_bound = min(y_cor)
     h = math.ceil(abs(top_bound - bot_bound))
 
     size_new = (w, h)
