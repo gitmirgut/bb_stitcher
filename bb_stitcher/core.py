@@ -4,6 +4,7 @@ import collections
 import cv2
 import numpy as np
 
+import bb_stitcher.helpers as helpers
 import bb_stitcher.io_utils as io_utils
 import bb_stitcher.measure as measure
 import bb_stitcher.stitcher as stitcher
@@ -18,9 +19,12 @@ class Surveyor(object):
     map the coordinates from these images to hive coordinates.
     """
 
-    def __init__(self, config):
+    def __init__(self, config=None):
         """Initialize Surveyor."""
-        self.config = config
+        if config is None:
+            self.config = helpers.get_default_config()
+        else:
+            self.config = config
         self.homo_left = None
         self.homo_right = None
         self.size_left = None
