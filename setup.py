@@ -9,7 +9,7 @@ dep_links = [str(req_line.url) for req_line in install_reqs]
 
 setup(
     name='bb_stitcher',
-    version='0.0.0.dev5',
+    version='0.0.0.dev6',
     description='Stitch images from different cam positions,'
                 'with an affine transformation',
     long_description='',
