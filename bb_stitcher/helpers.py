@@ -477,8 +477,10 @@ def points_to_angles(angle_centers, points_repr):
             raise Exception('Angle center point {} and angle point representation {}'
                             ' seams to be the same.'.format(angle_center, point_repr))
         cos_angle = (p ** 2 + r ** 2 - d ** 2) / (2 * r * p)
-
-        angle = np.arccos(cos_angle)
+        try:
+            angle = np.arccos(cos_angle)
+        except Warning:
+            raise Exception('arccos can not handle {cos_angle}'.format(cos_angle=cos_angle))
 
         if angle_center_y > point_repr_y:
             angle = -angle
