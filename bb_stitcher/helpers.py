@@ -439,6 +439,10 @@ def points_to_angles(angle_centers, points_repr):
     """Calculate angle between vertical line passing through angle_centers and line AB."""
     # https://de.wikipedia.org/wiki/Roll-Nick-Gier-Winkel#/media/File:RPY_angles_of_spaceships_(local_frame).png
     # TODO(zeor_angle) variablen Nullwinkel einbauen, momentan ist entspricht dieser der x-Achse
+    import warnings
+    warnings.filterwarnings('error')
+    np.seterr(all='warn')
+
     assert len(angle_centers) == len(points_repr)
 
     angles = np.zeros(len(angle_centers), dtype=np.float32)
@@ -449,8 +453,8 @@ def points_to_angles(angle_centers, points_repr):
 
         # the 0-angle has to be a ray from the center, which is perpendicular to the right border
         # we abstract this ray as a point ``ray_pt`` which always lies on the right side of the
-        # center, so ``ray_pt_dis`` has to be just greater 0, we take 10
-        ray_pt_dis = 10
+        # center, so ``ray_pt_dis`` has to be just greater 0, we take 80
+        ray_pt_dis = np.float64(80)
         ray_pt = np.array([angle_center_x + ray_pt_dis, angle_center_y])
 
         """
@@ -468,11 +472,12 @@ def points_to_angles(angle_centers, points_repr):
 
         d = np.linalg.norm(ray_pt - point_repr)
         p = ray_pt_dis
-        r = np.linalg.norm(angle_center - point_repr)
+        r = np.linalg.norm(np.float64(angle_center) - point_repr)
         if r == 0:
             raise Exception('Angle center point {} and angle point representation {}'
                             ' seams to be the same.'.format(angle_center, point_repr))
         cos_angle = (p ** 2 + r ** 2 - d ** 2) / (2 * r * p)
+
         angle = np.arccos(cos_angle)
 
         if angle_center_y > point_repr_y:
