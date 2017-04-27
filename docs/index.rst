@@ -9,8 +9,8 @@ Welcome to bb_stitcher's documentation!
 .. toctree::
    :maxdepth: 2
 
+   installation
    api_main
-
 
 Indices and tables
 ==================
