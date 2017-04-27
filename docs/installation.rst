@@ -24,6 +24,8 @@ The following steps will install all dependencies including opencv.
 
     (bb_stitcher_env) $ pip install git+https://github.com/BioroboticsLab/bb_stitcher.git
 
+------------------
+
 ----------------
 Pip Installation
 ----------------

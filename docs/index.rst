@@ -10,6 +10,7 @@ Welcome to bb_stitcher's documentation!
    :maxdepth: 2
 
    installation
+   tutorial_main
    api_main
 
 Indices and tables
