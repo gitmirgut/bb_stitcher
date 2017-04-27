@@ -7,6 +7,12 @@
 * **Documentation:** http://bb-stitcher.readthedocs.io/
 * **Source:** https://github.com/BioroboticsLab/bb_stitcher
 
+## (special) Requirements
+The following requirements must be installed manually and cannot be installed by pip:
+* [OpenCV3](https://github.com/opencv/opencv)
+* [opencv_contrib](https://github.com/opencv/opencv_contrib)
+
+[Good Instruction](http://www.pyimagesearch.com/2016/10/24/ubuntu-16-04-how-to-install-opencv/) for installing opencv with opencv_contrib package.
 ##Installation from source
 
 Install dependencies using:
