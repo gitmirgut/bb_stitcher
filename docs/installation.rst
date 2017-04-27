@@ -3,24 +3,43 @@ Installation
 ============
 This part of the documentation covers the installation of the ``bb_stitcher``.
 
+--------------------------------
+(Recommended) Conda Installation
+--------------------------------
+The following steps will install all dependencies including opencv.
+
+1. Download and install `Conda <https://conda.io/docs/install/quick.html>`_::
+
+    $ wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    $ bash Miniconda3-latest-Linux-x86_64.sh
+    $ conda update conda
+
+2. Setup conda environment for ``bb_stitcher``::
+
+    $ conda create --name bb_stitcher_env python=3
+    $ source activate bb_stitcher_env
+    (bb_stitcher_env)$ conda install --channel https://conda.binstar.org/menpo opencv3
+
+3. Install the ``bb_stitcher``::
+
+    (bb_stitcher_env) $ pip install git+https://github.com/BioroboticsLab/bb_stitcher.git
+
 ----------------
 Pip Installation
 ----------------
 
-(Special) Requirements
-^^^^^^^^^^^^^^^^^^^^^^
+.. important::
+    The following requirements must be installed manually and cannot be installed by pip:
 
-The following requirements must be installed manually and cannot be installed by pip:
+    * `OpenCV3 <https://github.com/opencv/opencv>`_
+    * `opencv_contrib <https://github.com/opencv/opencv_contrib>`_
 
-* `OpenCV3 <https://github.com/opencv/opencv>`_
-* `opencv_contrib <https://github.com/opencv/opencv_contrib>`_
+    Good Instruction for installing opencv with opencv_contrib package
+    can be found under `pyimagesearch <http://www.pyimagesearch.com/2016/10/24/ubuntu-16-04-how-to-install-opencv/>`_.
 
-Good Instruction for installing opencv with opencv_contrib package
-can be found under `pyimagesearch <http://www.pyimagesearch.com/2016/10/24/ubuntu-16-04-how-to-install-opencv/>`_.
-
-Simple Installation
-^^^^^^^^^^^^^^^^^^^
-Direct install from github::
+Installation from GitHub
+^^^^^^^^^^^^^^^^^^^^^^^^
+Direct install from GitHub::
 
     pip install git+https://github.com/BioroboticsLab/bb_stitcher.git
 
