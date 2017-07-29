@@ -1,0 +1,45 @@
+@startuml
+
+
+package Module:preperation <<Frame>> {
+    class Rectificator{
+        ndarray: intr_m
+        ndarray: dist_c
+        + rectify_image()
+        + rectify_points()
+        - __get_affine_mat_and_new_size()
+    }
+
+    class ModuleFunctions <<(M, orchid)>> {
+        + rotate_image()
+        + rotate_points()
+    }
+}
+
+package Module:stitcher <<Frame>> {
+    class Stitcher{
+        ndarray: homo_left
+        ndarray: homo_right
+        tuple: pano_size
+        ---
+        + estimate_transform(image_left, image_right)
+        + compose_panorama(image_left, image_right)
+        + stitch(image_left, image_right)
+        + map_left_points(points)
+        + map_right_points(points)
+        .. should be overridden by a sublcass ..
+        + estimate_transform(image_left, image_right)
+    }
+    class FeatureBasedStitcher {
+        + compose_panorama(image_left, image_right)
+        #  _calc_feature_mask(size_left, size_right, overlap, border_top, border_bottom)
+    }
+    class RectangleStitcher {
+        + compose_panorama(image_left, image_right)
+    }
+    Stitcher <|-- FeatureBasedStitcher
+    Stitcher <|-- RectangleStitcher
+
+}
+
+@enduml
