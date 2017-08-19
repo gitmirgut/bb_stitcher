@@ -105,3 +105,9 @@ def panorama():
     img_path = get_test_fname('data/panorama.jpg')
     img = cv2.imread(img_path, -1)
     return img
+
+
+@pytest.fixture
+def error_params():
+    error_parameters = np.load(get_test_fname('data/error_points_to_angles.npz'))
+    return error_parameters['arr_0'], error_parameters['arr_1']

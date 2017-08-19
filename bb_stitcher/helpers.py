@@ -477,6 +477,13 @@ def points_to_angles(angle_centers, points_repr):
             raise Exception('Angle center point {} and angle point representation {}'
                             ' seams to be the same.'.format(angle_center, point_repr))
         cos_angle = (p ** 2 + r ** 2 - d ** 2) / (2 * r * p)
+
+        # this is due to some arithmetic problems, where cos_angle is something like
+        # cos_angle = 1.000000000000008 which leads to an error.
+        if cos_angle > 1 and np.isclose(cos_angle, 1, atol=1e-10, rtol=1e-9):
+            cos_angle = 1
+        elif cos_angle < -1 and np.isclose(cos_angle, -1, atol=1e-10, rtol=1e-9):
+            cos_angle = -1
         try:
             angle = np.arccos(cos_angle)
         except Warning:

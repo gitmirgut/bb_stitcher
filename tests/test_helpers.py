@@ -183,7 +183,7 @@ def test_angles_to_points():
     npt.assert_almost_equal(result, target)
 
 
-def test_points_to_angles():
+def test_points_to_angles(error_params):
     angle_centers = np.zeros((5, 2), dtype=np.uint16)
     points_repr = np.array([
         [-10, - 0.00000001],  # if it would be zero it will be pi
@@ -202,6 +202,14 @@ def test_points_to_angles():
     points_repr = np.ones((1, 2))
     with pytest.raises(Exception):
         helpers.points_to_angles(angle_centers, points_repr)
+
+    # the following values are from a real bb_binary
+    # hard to reconstruct with real values.
+    angle_centers, points_repr = error_params
+
+    target = np.array([0.])
+    result = helpers.points_to_angles(angle_centers, points_repr)
+    npt.assert_equal(target, result)
 
 
 def test_get_ratio_px_to_mm():
