@@ -480,6 +480,7 @@ def points_to_angles(angle_centers, points_repr):
         try:
             angle = np.arccos(cos_angle)
         except Warning:
+            print('angle_centers = {angle_centers}, points_repr = {points_repr}')
             raise Exception('arccos can not handle {cos_angle}'.format(cos_angle=cos_angle))
 
         if angle_center_y > point_repr_y:
