@@ -148,7 +148,7 @@ class TestSurveyorMapping:
         surveyor.save(out)
 
 
-@pytest.fixture(scope="class", params=['.npz', '.csv'])
+@pytest.fixture(scope="class", params=['.npz', '.csv', '.json'])
 def ext(request):
     return request.param
 

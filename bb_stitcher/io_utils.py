@@ -15,12 +15,13 @@ from abc import ABCMeta
 from abc import abstractmethod
 import ast
 import csv
+import json
 import os
 
 import numpy as np
 
 # TODO(gitmirgut): make it more dynamic
-valid_ext = ['.npz', '.csv']
+valid_ext = ['.npz', '.csv', '.json']
 
 
 class FileHandler(metaclass=ABCMeta):
@@ -123,6 +124,44 @@ class CSVHandler(FileHandler):
                 break
 
 
+class JSONHandler(FileHandler):
+
+    def save(self, path):
+        """Save :obj:`.core.Surveyor` data to json file '.json'.
+
+        Args:
+            path (str): Path of the file, which holds the needed data.
+        """
+        with open(path, 'w', newline='') as json_file:
+            json.dump({
+                'homo_left': self.surveyor.homo_left.tolist(),
+                'homo_right': self.surveyor.homo_right.tolist(),
+                'size_left': self.surveyor.size_left,
+                'size_right': self.surveyor.size_right,
+                'cam_id_left': self.surveyor.cam_id_left,
+                'cam_id_right': self.surveyor.cam_id_right,
+                'origin': self.surveyor.origin.tolist(),
+                'ratio_px_mm': self.surveyor.ratio_px_mm,
+            }, json_file)
+
+    def load(self, path):
+        """Load :obj:`.core.Surveyor` data to json file '.json'.
+
+        Args:
+            path (str): Path of the file, which holds the needed data.
+        """
+        with open(path, 'r', newline='') as json_file:
+            json_data = json.load(json_file)
+            self.surveyor.homo_left = np.array(json_data['homo_left'])
+            self.surveyor.homo_right = np.array(json_data['homo_right'])
+            self.surveyor.size_left = json_data['size_left']
+            self.surveyor.size_right = json_data['size_right']
+            self.surveyor.cam_id_left = int(json_data['cam_id_left'])
+            self.surveyor.cam_id_right = int(json_data['cam_id_right'])
+            self.surveyor.origin = np.array(json_data['origin'])
+            self.surveyor.ratio_px_mm = float(json_data['ratio_px_mm'])
+
+
 def get_file_handler(path):
     """Returns FileHandler in dependency of file path extension.
 
@@ -137,6 +176,8 @@ def get_file_handler(path):
         filehandler = NPZHandler()
     elif ext == '.csv':
         filehandler = CSVHandler()
+    elif ext == '.json':
+        filehandler = JSONHandler()
     else:
         raise Exception('File format with "{ext}" not supported'.format(ext=ext))
     return filehandler
