@@ -142,7 +142,7 @@ class JSONHandler(FileHandler):
                 'cam_id_right': self.surveyor.cam_id_right,
                 'origin': self.surveyor.origin.tolist(),
                 'ratio_px_mm': self.surveyor.ratio_px_mm,
-            }, json_file)
+            }, json_file, sort_keys=True, indent=2)
 
     def load(self, path):
         """Load :obj:`.core.Surveyor` data to json file '.json'.
