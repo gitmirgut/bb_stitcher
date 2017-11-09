@@ -154,8 +154,8 @@ class JSONHandler(FileHandler):
             json_data = json.load(json_file)
             self.surveyor.homo_left = np.array(json_data['homo_left'])
             self.surveyor.homo_right = np.array(json_data['homo_right'])
-            self.surveyor.size_left = json_data['size_left']
-            self.surveyor.size_right = json_data['size_right']
+            self.surveyor.size_left = tuple(json_data['size_left'])
+            self.surveyor.size_right = tuple(json_data['size_right'])
             self.surveyor.cam_id_left = int(json_data['cam_id_left'])
             self.surveyor.cam_id_right = int(json_data['cam_id_right'])
             self.surveyor.origin = np.array(json_data['origin'])
