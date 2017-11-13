@@ -1,4 +1,5 @@
 numpy>=1.11.3 # BSD 3-clause license
 matplotlib>=1.5.3 # PSF license
+numba
 # cv2 -> BSD 3-clause
 # SURF from opencv_contrib is noncommercial licensed, see http://www.vision.ee.ethz.ch/~surf/download.html

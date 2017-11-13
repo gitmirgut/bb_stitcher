@@ -39,6 +39,8 @@ class Surveyor(object):
         self._world_homo_left = None
         self._world_homo_right = None
 
+        self._stitcher = None
+
     def _acept_filehandler(self, filehandler):
         filehandler.visit_surveyor(self)
 
@@ -194,16 +196,16 @@ class Surveyor(object):
             For all angles in ``angles`` it is assumed that a 0°-angle shows to the right border of
             the image and that a positive angle means clockwise rotation.
         """
-        stitch = stitcher.Stitcher(self.config)
+        self._stitcher = self._stitcher or stitcher.Stitcher(self.config)
 
         # using modified homographies to map points and angles to world coordinates
-        stitch.load_parameters(self._world_homo_left, self._world_homo_right,
+        self._stitcher.load_parameters(self._world_homo_left, self._world_homo_right,
                                self.size_left, self.size_right)
 
         if cam_id == self.cam_id_left:
-            points, angles = stitch.map_left_points_angles(points, angles)
+            points, angles = self._stitcher.map_left_points_angles(points, angles)
         elif cam_id == self.cam_id_right:
-            points, angles = stitch.map_right_points_angles(points, angles)
+            points, angles = self._stitcher.map_right_points_angles(points, angles)
         else:
             raise ValueError('Got invalid cam_id {invalid_ID} cam_id must be '
                              '{left_ID} or {right_ID}.'.format(invalid_ID=cam_id,

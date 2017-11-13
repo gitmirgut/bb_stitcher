@@ -17,6 +17,7 @@ import os
 
 import cv2
 import numpy as np
+from numba import njit
 
 log = getLogger(__name__)
 
@@ -378,7 +379,7 @@ def harmonize_rects(rect_a, rect_b):
         harm_rect_a = form_rectangle(harm_hori_a, harm_vert_a)
         return harm_rect_a, rect_b
 
-
+@njit
 def angles_to_points(angle_centers, angles, distance=22):
     r"""Calculate point representations of angles.
 
@@ -413,12 +414,65 @@ def angles_to_points(angle_centers, angles, distance=22):
     """
     assert len(angle_centers) == len(angles)
     points_repr = np.zeros((len(angle_centers), 2), dtype=np.float32)
-    for i, center in enumerate(angle_centers):
+    for i in range(angle_centers.shape[0]):
+        center = angle_centers[i, :]
         z_rotation = np.array(angles[i])
         # remove round
         points_repr[i, 0] = center[0] + distance * np.cos(z_rotation)
         points_repr[i, 1] = center[1] + distance * np.sin(z_rotation)
     return points_repr
+
+@njit
+def _process_points_to_angles(angle_centers, points_repr):
+	angles = np.zeros(len(angle_centers), dtype=np.float32)
+	
+	for i in range(angle_centers.shape[0]):
+		angle_center = angle_centers[i, :]
+		point_repr = points_repr[i]
+		angle_center_x, angle_center_y = angle_center
+		point_repr_x, point_repr_y = point_repr
+
+		# the 0-angle has to be a ray from the center, which is perpendicular to the right border
+		# we abstract this ray as a point ``ray_pt`` which always lies on the right side of the
+		# center, so ``ray_pt_dis`` has to be just greater 0, we take 80
+		ray_pt_dis = np.float64(80.)
+		ray_pt = np.array([angle_center_x + ray_pt_dis, angle_center_y])
+
+		"""
+		angle_center      p       ray_pt
+				  *---------------*
+				   \         |   /
+					\ angle /   /
+				 r   \     /   /  d
+					  \ --´   /
+					   \     /
+						\   /
+						 \ /
+			   point_repr *
+		"""
+
+		d = np.linalg.norm(ray_pt - point_repr)
+		p = ray_pt_dis
+		r = np.linalg.norm(angle_center - point_repr)
+		if r == 0:
+			return None
+		cos_angle = (p ** 2 + r ** 2 - d ** 2) / (2 * r * p)
+
+		# this is due to some arithmetic problems, where cos_angle is something like
+		# cos_angle = 1.000000000000008 which leads to an error.
+		if cos_angle > 1 and cos_angle < 1 + 1e-9:
+			cos_angle = 1
+		elif cos_angle < -1 and cos_angle > -1 - 1e-9:
+			cos_angle = -1
+
+		angle = np.arccos(cos_angle)
+
+		if angle_center_y > point_repr_y:
+			angle = -angle
+
+		angles[i] = angle
+
+	return angles
 
 
 def points_to_angles(angle_centers, points_repr):
@@ -439,63 +493,12 @@ def points_to_angles(angle_centers, points_repr):
     """Calculate angle between vertical line passing through angle_centers and line AB."""
     # https://de.wikipedia.org/wiki/Roll-Nick-Gier-Winkel#/media/File:RPY_angles_of_spaceships_(local_frame).png
     # TODO(zeor_angle) variablen Nullwinkel einbauen, momentan ist entspricht dieser der x-Achse
-    import warnings
-    warnings.filterwarnings('error')
-    np.seterr(all='warn')
-
     assert len(angle_centers) == len(points_repr)
 
-    angles = np.zeros(len(angle_centers), dtype=np.float32)
-    for i, angle_center in enumerate(angle_centers):
-        point_repr = points_repr[i]
-        angle_center_x, angle_center_y = angle_center
-        point_repr_x, point_repr_y = point_repr
-
-        # the 0-angle has to be a ray from the center, which is perpendicular to the right border
-        # we abstract this ray as a point ``ray_pt`` which always lies on the right side of the
-        # center, so ``ray_pt_dis`` has to be just greater 0, we take 80
-        ray_pt_dis = np.float64(80)
-        ray_pt = np.array([angle_center_x + ray_pt_dis, angle_center_y])
-
-        """
-        angle_center      p       ray_pt
-                  *---------------*
-                   \         |   /
-                    \ angle /   /
-                 r   \     /   /  d
-                      \ --´   /
-                       \     /
-                        \   /
-                         \ /
-               point_repr *
-        """
-
-        d = np.linalg.norm(ray_pt - point_repr)
-        p = ray_pt_dis
-        r = np.linalg.norm(np.float64(angle_center) - point_repr)
-        if r == 0:
-            raise Exception('Angle center point {} and angle point representation {}'
-                            ' seams to be the same.'.format(angle_center, point_repr))
-        cos_angle = (p ** 2 + r ** 2 - d ** 2) / (2 * r * p)
-
-        # this is due to some arithmetic problems, where cos_angle is something like
-        # cos_angle = 1.000000000000008 which leads to an error.
-        if cos_angle > 1 and np.isclose(cos_angle, 1, atol=1e-10, rtol=1e-9):
-            cos_angle = 1
-        elif cos_angle < -1 and np.isclose(cos_angle, -1, atol=1e-10, rtol=1e-9):
-            cos_angle = -1
-        try:
-            angle = np.arccos(cos_angle)
-        except Warning:
-            print('angle_centers = {angle_centers}, '
-                  'points_repr = {points_repr}'.format(angle_centers=angle_centers,
-                                                       points_repr=points_repr))
-            raise Exception('arccos can not handle {cos_angle}'.format(cos_angle=cos_angle))
-
-        if angle_center_y > point_repr_y:
-            angle = -angle
-
-        angles[i] = angle
+    angles = _process_points_to_angles(angle_centers, points_repr)
+    if angles is None:
+        raise Exception('Angle center point {} and angle point representation {}'
+                                ' seams to be the same.'.format(angle_centers, points_repr))
 
     return angles
 
