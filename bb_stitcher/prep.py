@@ -84,7 +84,7 @@ class Rectificator(object):
                                                                         self.dist_c,
                                                                         self.cached_size, 1,
                                                                         self.cached_size, 0)
-        log.debug('new_camera_mat = \n{}'.format(self.cached_new_cam_mat))
+            log.debug('new_camera_mat = \n{}'.format(self.cached_new_cam_mat))
         return cv2.undistortPoints(
             points, self.intr_m, self.dist_c, None, self.cached_new_cam_mat)[0]
 
