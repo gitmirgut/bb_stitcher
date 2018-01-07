@@ -16,8 +16,8 @@ from logging import getLogger
 import os
 
 import cv2
-import numpy as np
 from numba import njit
+import numpy as np
 
 log = getLogger(__name__)
 
@@ -379,6 +379,7 @@ def harmonize_rects(rect_a, rect_b):
         harm_rect_a = form_rectangle(harm_hori_a, harm_vert_a)
         return harm_rect_a, rect_b
 
+
 @njit
 def angles_to_points(angle_centers, angles, distance=22):
     r"""Calculate point representations of angles.
@@ -422,57 +423,58 @@ def angles_to_points(angle_centers, angles, distance=22):
         points_repr[i, 1] = center[1] + distance * np.sin(z_rotation)
     return points_repr
 
+
 @njit
 def _process_points_to_angles(angle_centers, points_repr):
-	angles = np.zeros(len(angle_centers), dtype=np.float32)
-	
-	for i in range(angle_centers.shape[0]):
-		angle_center = angle_centers[i, :]
-		point_repr = points_repr[i]
-		angle_center_x, angle_center_y = angle_center
-		point_repr_x, point_repr_y = point_repr
+    angles = np.zeros(len(angle_centers), dtype=np.float32)
 
-		# the 0-angle has to be a ray from the center, which is perpendicular to the right border
-		# we abstract this ray as a point ``ray_pt`` which always lies on the right side of the
-		# center, so ``ray_pt_dis`` has to be just greater 0, we take 80
-		ray_pt_dis = np.float64(80.)
-		ray_pt = np.array([angle_center_x + ray_pt_dis, angle_center_y])
+    for i in range(angle_centers.shape[0]):
+        angle_center = angle_centers[i, :]
+        point_repr = points_repr[i]
+        angle_center_x, angle_center_y = angle_center
+        point_repr_x, point_repr_y = point_repr
 
-		"""
-		angle_center      p       ray_pt
-				  *---------------*
-				   \         |   /
-					\ angle /   /
-				 r   \     /   /  d
-					  \ --´   /
-					   \     /
-						\   /
-						 \ /
-			   point_repr *
-		"""
+        # the 0-angle has to be a ray from the center, which is perpendicular to the right border
+        # we abstract this ray as a point ``ray_pt`` which always lies on the right side of the
+        # center, so ``ray_pt_dis`` has to be just greater 0, we take 80
+        ray_pt_dis = np.float64(80.)
+        ray_pt = np.array([angle_center_x + ray_pt_dis, angle_center_y])
 
-		d = np.linalg.norm(ray_pt - point_repr)
-		p = ray_pt_dis
-		r = np.linalg.norm(angle_center - point_repr)
-		if r == 0:
-			return None
-		cos_angle = (p ** 2 + r ** 2 - d ** 2) / (2 * r * p)
+        """
+        angle_center      p       ray_pt
+                  *---------------*
+                   \         |   /
+                    \ angle /   /
+                 r   \     /   /  d
+                      \ --´   /
+                       \     /
+                        \   /
+                         \ /
+               point_repr *
+        """
 
-		# this is due to some arithmetic problems, where cos_angle is something like
-		# cos_angle = 1.000000000000008 which leads to an error.
-		if cos_angle > 1 and cos_angle < 1 + 1e-9:
-			cos_angle = 1
-		elif cos_angle < -1 and cos_angle > -1 - 1e-9:
-			cos_angle = -1
+        d = np.linalg.norm(ray_pt - point_repr)
+        p = ray_pt_dis
+        r = np.linalg.norm(angle_center - point_repr)
+        if r == 0:
+            return None
+        cos_angle = (p ** 2 + r ** 2 - d ** 2) / (2 * r * p)
 
-		angle = np.arccos(cos_angle)
+        # this is due to some arithmetic problems, where cos_angle is something like
+        # cos_angle = 1.000000000000008 which leads to an error.
+        if cos_angle > 1 and cos_angle < 1 + 1e-9:
+            cos_angle = 1
+        elif cos_angle < -1 and cos_angle > -1 - 1e-9:
+            cos_angle = -1
 
-		if angle_center_y > point_repr_y:
-			angle = -angle
+        angle = np.arccos(cos_angle)
 
-		angles[i] = angle
+        if angle_center_y > point_repr_y:
+            angle = -angle
 
-	return angles
+        angles[i] = angle
+
+    return angles
 
 
 def points_to_angles(angle_centers, points_repr):
@@ -498,7 +500,7 @@ def points_to_angles(angle_centers, points_repr):
     angles = _process_points_to_angles(angle_centers, points_repr)
     if angles is None:
         raise Exception('Angle center point {} and angle point representation {}'
-                                ' seams to be the same.'.format(angle_centers, points_repr))
+                        ' seams to be the same.'.format(angle_centers, points_repr))
 
     return angles
 

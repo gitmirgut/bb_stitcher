@@ -200,7 +200,7 @@ class Surveyor(object):
 
         # using modified homographies to map points and angles to world coordinates
         self._stitcher.load_parameters(self._world_homo_left, self._world_homo_right,
-                               self.size_left, self.size_right)
+                                       self.size_left, self.size_right)
 
         if cam_id == self.cam_id_left:
             points, angles = self._stitcher.map_left_points_angles(points, angles)
