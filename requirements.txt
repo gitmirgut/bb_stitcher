@@ -1,5 +1,6 @@
 numpy>=1.11.3 # BSD 3-clause license
 matplotlib>=1.5.3 # PSF license
 numba>=0.36.2 # BSD
+scipy>=1.0.0 # BSD is needed by numba and it does not seem to be installed automatically.
 # cv2 -> BSD 3-clause
 # SURF from opencv_contrib is noncommercial licensed, see http://www.vision.ee.ethz.ch/~surf/download.html
