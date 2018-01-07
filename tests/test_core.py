@@ -87,13 +87,16 @@ def test_determine_mapping_parameters(surveyor, left_img, right_img, monkeypatch
 @pytest.mark.incremental
 class TestSurveyorGetSet:
     def test_set_parameters(self, surveyor, surveyor_params):
+        excluded_parameters = ['_stitcher']
         surveyor.set_parameters(*surveyor_params)
         npt.assert_equal(surveyor.homo_left, surveyor.homo_left)
         npt.assert_equal(surveyor.homo_right, surveyor.homo_right)
 
         # after loading of parameters every instance variable should have a value that is not None
-        for val in surveyor.__dict__.values():
-            assert val is not None
+        for parameter in surveyor.__dict__:
+            if parameter not in excluded_parameters:
+                val = getattr(surveyor, parameter)
+                assert val is not None
 
     def test_get_parameters(self, surveyor, surveyor_params):
         result = surveyor.get_parameters()
